@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  parent_route: one
+  name: MyString
+  short_name: MyString
+
+two:
+  parent_route: two
+  name: MyString
+  short_name: MyString
