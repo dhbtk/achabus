@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Short name:</strong>
+  <%= @line.short_name %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @line.name %>
+</p>
+
+<p>
+  <strong>Line group:</strong>
+  <%= @line.line_group_id %>
+</p>
+
+<%= link_to 'Edit', edit_line_path(@line) %> |
+<%= link_to 'Back', lines_path %>
