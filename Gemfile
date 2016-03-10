@@ -44,3 +44,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'dotenv-rails'
 
 gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
+
+gem 'bower-rails', '~> 0.10.0'
+gem 'angular-rails-templates'

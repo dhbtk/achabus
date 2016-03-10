@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Parent route:</strong>
+  <%= @route.parent_route_id %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @route.name %>
+</p>
+
+<p>
+  <strong>Short name:</strong>
+  <%= @route.short_name %>
+</p>
+
+<p>
+  <strong>Route path markers:</strong>
+  <%= @route.route_path_markers %>
+</p>
+
+<p>
+  <strong>Route:</strong>
+  <%= @route.route %>
+</p>
+
+<p>
+  <strong>Line:</strong>
+  <%= @route.line %>
+</p>
+
+<%= link_to 'Edit', edit_route_path(@route) %> |
+<%= link_to 'Back', routes_path %>
