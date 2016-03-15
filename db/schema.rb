@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160309233245) do
+ActiveRecord::Schema.define(version: 20160314224931) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,8 +28,10 @@ ActiveRecord::Schema.define(version: 20160309233245) do
     t.string   "short_name"
     t.string   "name"
     t.integer  "line_group_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.string   "timetable_link"
+    t.string   "itinerary_link"
   end
 
   add_index "lines", ["line_group_id"], name: "index_lines_on_line_group_id", using: :btree
@@ -57,16 +59,18 @@ ActiveRecord::Schema.define(version: 20160309233245) do
     t.string    "name"
     t.string    "notable_name"
     t.boolean   "notable"
-    t.datetime  "created_at",                                                            null: false
-    t.datetime  "updated_at",                                                            null: false
+    t.datetime  "created_at",                                                                            null: false
+    t.datetime  "updated_at",                                                                            null: false
+    t.boolean   "waypoint",                                                              default: false
   end
 
   create_table "route_points", force: :cascade do |t|
     t.integer  "route_id"
     t.integer  "point_id"
     t.integer  "order"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.boolean  "pass_through", default: false
   end
 
   add_index "route_points", ["point_id"], name: "index_route_points_on_point_id", using: :btree

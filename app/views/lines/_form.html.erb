@@ -11,19 +11,29 @@
     </div>
   <% end %>
 
-  <div class="field">
+  <div class="form-group">
     <%= f.label :short_name %>
-    <%= f.text_field :short_name %>
+    <%= f.text_field :short_name, class: 'form-control' %>
   </div>
 
-  <div class="field">
+  <div class="form-group">
     <%= f.label :name %>
-    <%= f.text_field :name %>
+    <%= f.text_field :name, class: 'form-control' %>
   </div>
 
-  <div class="field">
+  <div class="form-group">
     <%= f.label :line_group_id %>
-    <%= f.number_field :line_group_id %>
+    <%= f.collection_select :line_group_id, LineGroup.all, :id, :name, {}, {class: 'form-control'} %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :timetable_link %>
+    <%= f.text_field :timetable_link, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :itinerary_link %>
+    <%= f.text_field :itinerary_link, class: 'form-control' %>
   </div>
 
   <div class="actions">
