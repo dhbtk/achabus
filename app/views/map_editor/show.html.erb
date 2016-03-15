@@ -1,2 +1,19 @@
-<h1>MapEditor#show</h1>
-<p>Find me in app/views/map_editor/show.html.erb</p>
+<md-toolbar class="md-menu-toolbar">
+	<md-menu-bar>
+		<md-menu>
+			<button ng-click="$mdOpenMenu()">
+				Linhas
+			</button>
+			<md-menu-content>
+				<md-menu-item>
+					<md-button ng-click="openLine()">Abrir linha</md-button>
+				</md-menu-item>
+			</md-menu-content>
+		</md-menu>
+	</md-menu-bar>
+</md-toolbar>
+<div layout="row" class="first-row">
+	<div flex="15" layout="column">
+	</div>
+	<ui-gmap-google-map center="map.center" zoom="map.zoom" options="map.options" flex="85"></ui-gmap-google-map>
+</div>

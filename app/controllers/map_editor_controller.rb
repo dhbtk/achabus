@@ -1,5 +1,6 @@
 class MapEditorController < ApplicationController
+  layout 'map_editor'
   def show
-    layout :map_editor
+    render :show
   end
 end

@@ -3,6 +3,9 @@
   "dependencies": {
     "angular": "latest",
     "angular-route": "latest",
-    "angular-bootstrap": "latest"
+    "angular-animate": "latest",
+    "angular-bootstrap": "latest",
+    "angular-google-maps": "latest",
+    "angular-material": "latest"
   }
 }

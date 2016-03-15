@@ -46,6 +46,11 @@ GEM
       sprockets (~> 3.0)
       tilt
     arel (7.0.0)
+    autoprefixer-rails (6.3.3.1)
+      execjs
+    bootstrap-sass (3.3.6)
+      autoprefixer-rails (>= 5.2.1)
+      sass (>= 3.3.4)
     bower-rails (0.10.0)
     builder (3.2.2)
     byebug (8.2.2)
@@ -167,6 +172,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-postgis-adapter (~> 4.0.0.beta)
   angular-rails-templates
+  bootstrap-sass
   bower-rails (~> 0.10.0)
   byebug
   coffee-rails (~> 4.1.0)
