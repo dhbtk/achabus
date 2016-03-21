@@ -17,7 +17,7 @@ function OpenLineController($scope, $mdDialog, $http)
 	}
 	$scope.confirm = function()
 	{
-		$mdDialog.hide();
+		$mdDialog.hide($scope.model.line);
 	}
 
 	$scope.$watch('model.line_group',function(newVal, oldVal)

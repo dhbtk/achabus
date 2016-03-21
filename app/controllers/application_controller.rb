@@ -7,4 +7,8 @@ class ApplicationController < ActionController::Base
       request_http_basic_authentication
     end
   end
+
+  def default_url_options
+    {protocol: 'https', host: 'abadm.edanni.io'}
+  end
 end

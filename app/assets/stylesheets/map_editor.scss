@@ -2,12 +2,49 @@
  *= require angular-material/angular-material
  */
 
-.first-row, ui-gmap-google-map
+// GAS Tecnologia sucks
+object[width="0"]
+{
+  display: none;
+}
+
+.first-row
+{
+  position: relative;
+}
+
+.first-row
 {
   height: calc(100% - 64px);
 }
 
-.angular-google-map-container, .angular-google-map
+.angular-google-map-container, .angular-google-map, .big-map-container, #street-view
 {
   height: 100%;
+}
+
+.big-map-container
+{
+  .md-button
+  {
+    position: absolute;
+    bottom: 5px;
+  }
+  .add-button
+  {
+    right: 5px;
+  }
+  .back-button
+  {
+    left: 5px;
+  }
+}
+
+.little-map-container
+{
+  position: absolute;
+  width: 25%;
+  height: 35%;
+  top: 0;
+  right: 0;
 }

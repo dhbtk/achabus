@@ -1,4 +1,4 @@
-<md-toolbar class="md-menu-toolbar">
+<md-toolbar class="md-menu-toolbar" layout="row">
 	<md-menu-bar>
 		<md-menu>
 			<button ng-click="$mdOpenMenu()">
@@ -11,9 +11,25 @@
 			</md-menu-content>
 		</md-menu>
 	</md-menu-bar>
+	<span flex></span>
 </md-toolbar>
 <div layout="row" class="first-row">
-	<div flex="15" layout="column">
+	<div flex-md="30" flex="15">
+		<div ng-if="model.line" layout="column">
+			<h2>{{model.line.name}}</h2>
+			<md-button ng-href="{{model.line.itinerary_link}}" target="_blank" class="md-raised md-primary">Abrir Itinerário</md-button>
+		</div>
+		<div ng-if="!model.line" layout="column">
+			Nenhuma linha selecionada
+		</div>
+		<p>Lat: {{map.streetView.position.lat()}}, lng: {{map.streetView.position.lng()}}, heading: {{map.streetView.pov.heading}}</p>
 	</div>
-	<ui-gmap-google-map center="map.center" zoom="map.zoom" options="map.options" flex="85"></ui-gmap-google-map>
+	<div class="big-map-container" flex-md="70" flex="85">
+		<ui-gmap-google-map id="map" center="mapOptions.center" zoom="mapOptions.zoom" options="mapOptions.options"></ui-gmap-google-map>
+		<div id="street-view" style="display: none"></div>
+		<md-button ng-show="streetView" ng-click="toggleStreetView()" class="md-primary md-raised back-button">Voltar</md-button>
+		<md-button ng-show="streetView" ng-click="addPoint()" class="md-primary md-raised add-button">Adicionar Ponto</md-button>
+	</div>
+	<div class="little-map-container">
+	</div>
 </div>

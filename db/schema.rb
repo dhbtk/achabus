@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160314224931) do
+ActiveRecord::Schema.define(version: 20160316161212) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,13 +55,13 @@ ActiveRecord::Schema.define(version: 20160314224931) do
 
   create_table "points", force: :cascade do |t|
     t.geography "position",     limit: {:srid=>4326, :type=>"point", :geographic=>true}
-    t.geometry  "heading",      limit: {:srid=>0, :type=>"point"}
     t.string    "name"
     t.string    "notable_name"
     t.boolean   "notable"
-    t.datetime  "created_at",                                                                            null: false
-    t.datetime  "updated_at",                                                                            null: false
-    t.boolean   "waypoint",                                                              default: false
+    t.datetime  "created_at",                                                                                                     null: false
+    t.datetime  "updated_at",                                                                                                     null: false
+    t.boolean   "waypoint",                                                                                       default: false
+    t.decimal   "heading",                                                               precision: 16, scale: 5
   end
 
   create_table "route_points", force: :cascade do |t|
