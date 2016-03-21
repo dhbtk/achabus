@@ -88,18 +88,23 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
         point.marker = new google.maps.Marker({
           map: $scope.map,
         });
+				google.maps.event.addListener(point.marker, 'click', function(e)
+				{
+					$scope.model.selectedPoint = point;
+					$scope.$apply();
+				});
       }
       var nums = point.position.split('(')[1].split(' ');
       var lon = parseFloat(nums[0]);
       var lat = parseFloat(nums[1]);
       point.marker.setOptions({
         icon: { // google.maps.Symbol
-          strokeColor: '#000099',
-          strokeOpacity: 0.6,
-          rotation: parseInt(point.heading),
-          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-          scale: 3,
-        },
+					strokeColor: '#000099',
+					strokeOpacity: 0.6,
+					rotation: parseInt(point.heading),
+					path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+					scale: 3,
+				},
         position: new google.maps.LatLng(lat, lon),
       });
     });
@@ -209,12 +214,18 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 					$scope.toggleStreetView();
 				}
 			});
-			// Clicar no mapa para ir para lá no modo street view
+
 			google.maps.event.addListener(inst.map, "click", function(e)
 			{
+				// Clicar no mapa para ir para lá no modo street view
 				if($scope.streetView != null)
 				{
 					$scope.streetView.setPosition(e.latLng);
+				}
+				else
+				{
+					$scope.model.selectedPoint = null;
+					$scope.$apply();
 				}
 			});
  		});
@@ -224,6 +235,8 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
    });
 
 	/** watches **/
+
+	// mudanças de linha
 	$scope.$watch('model.line',function(newVal, oldVal)
 	{
     if(!google.maps) return;
@@ -250,5 +263,18 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 			clickable: false,
 			preserveViewport: false,
 		});
+	});
+
+	// mudanças de ponto selecionado
+	$scope.$watch('model.selectedPoint', function(oldVal, newVal)
+	{
+		if(newVal)
+		{
+			newVal.marker.setIcon(angular.extend(newVal.marker.getIcon(), {strokeColor: '#000099'}));
+		}
+		if(oldVal)
+		{
+			oldVal.marker.setIcon(angular.extend(oldVal.marker.getIcon(), {strokeColor: '#009999'}));
+		}
 	});
 });
