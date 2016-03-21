@@ -20,7 +20,7 @@
         <md-input-container ng-if="model.line_group && model.lines.length">
           <label>Linha</label>
           <md-select ng-model="model.line">
-            <md-option ng-repeat="line in model.lines" ng-value="{{line}}">{{line.short_name}} &endash; {{line.name}}</md-option>
+            <md-option ng-repeat="line in model.lines" ng-value="{{line}}">{{line.short_name}} - {{line.name}}</md-option>
           </md-select>
         </md-input-container>
       </div>

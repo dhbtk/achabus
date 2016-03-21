@@ -45,6 +45,8 @@ GEM
       railties (>= 4.2, < 6)
       sprockets (~> 3.0)
       tilt
+    angular_rails_csrf (1.0.4)
+      rails (>= 3, < 5)
     arel (7.0.0)
     autoprefixer-rails (6.3.3.1)
       execjs
@@ -172,6 +174,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-postgis-adapter (~> 4.0.0.beta)
   angular-rails-templates
+  angular_rails_csrf
   bootstrap-sass
   bower-rails (~> 0.10.0)
   byebug
