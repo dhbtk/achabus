@@ -102,13 +102,29 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 					strokeColor: '#000099',
 					strokeOpacity: 0.6,
 					rotation: parseInt(point.heading),
-					path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-					scale: 3,
+					path: "M 2 7 L 13 0 L 23 7 M 13 0 L 13 13 L 7 13 L 7 21 L 19 21 L 19 13 L 13 13",
+					anchor: new google.maps.Point(13, 13),
+					scale: 1,
+					strokeWeight: 2,
 				},
         position: new google.maps.LatLng(lat, lon),
       });
     });
   };
+
+	$scope.deletePoint = function(point)
+	{
+		if(confirm("Excluir ponto?"))
+		{
+			if(point.url)
+			{
+				$http.delete(point.url);
+			}
+			$scope.model.selectedPoint = null;
+			$scope.model.points[point.id] = undefined;
+			point.marker.setMap(null);
+		}
+	};
 
 	/** Menu Linhas **/
 
