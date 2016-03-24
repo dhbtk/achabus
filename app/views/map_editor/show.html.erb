@@ -1,26 +1,36 @@
-<md-toolbar class="md-menu-toolbar" layout="row">
-	<md-menu-bar>
-		<md-menu>
-			<button ng-click="$mdOpenMenu()">
-				Linhas
-			</button>
-			<md-menu-content>
-				<md-menu-item>
-					<md-button ng-click="openLine()">Abrir linha</md-button>
-				</md-menu-item>
-			</md-menu-content>
-		</md-menu>
-	</md-menu-bar>
-	<span flex></span>
-</md-toolbar>
-<div layout="row" class="first-row">
-	<div flex-md="30" flex="15">
-		<div ng-if="model.line" layout="column">
-			<h2>{{model.line.name}}</h2>
-			<md-button ng-href="{{model.line.itinerary_link}}" target="_blank" class="md-raised md-primary">Abrir Itinerário</md-button>
+<md-toolbar>
+	<div layout="row" class="md-toolbar-tools">
+		<md-button ng-click="openLine()">Abrir linha</md-button>
+		<div ng-if="model.line" flex layout="row" layout-align="center center">
+			<h2><span>{{model.line.short_name}} - {{model.line.name}}</span></h2>
+			<span flex></span>
+			<md-button ng-href="{{model.line.itinerary_link}}" target="_blank" class="md-raised md-accent">Abrir Itinerário</md-button>
+			<md-button ng-href="{{model.line.timetable_link}}" target="_blank" class="md-raised md-accent">Abrir Horário</md-button>
 		</div>
 		<div ng-if="!model.line" layout="column">
 			Nenhuma linha selecionada
+		</div>
+	</div>
+</md-toolbar>
+<div layout="row" class="first-row">
+	<div flex-md="30" flex="15">
+		<div ng-if="model.selectedPoint" layout="column">
+			<md-toolbar>
+				<div class="md-toolbar-tools">
+					<h2><span>{{model.selectedPoint.name || 'Ponto'}}</span></h2>
+					<span flex></span>
+					<md-button ng-click="deletePoint(model.selectedPoint)" class="md-icon-button"><md-icon>delete</md-icon></md-button>
+				</div>
+			</md-toolbar>
+			<md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
+				<section layout-align="center center" layout="row">
+					<md-button class="md-icon-button"><md-icon>keyboard_arrow_left</md-icon></md-button>
+					<md-button class="md-icon-button"><md-icon>keyboard_arrow_up</md-icon></md-button>
+					<md-button class="md-icon-button"><md-icon>keyboard_arrow_down</md-icon></md-button>
+					<md-button class="md-icon-button"><md-icon>keyboard_arrow_right</md-icon></md-button>
+				</section>
+			</md-content>
+			<p>Lat: {{model.selectedPoint.marker.position.lat()}}, lng: {{model.selectedPoint.marker.position.lng()}}, heading: {{model.selectedPoint.heading}}</p>
 		</div>
 		<p>Lat: {{map.streetView.position.lat()}}, lng: {{map.streetView.position.lng()}}, heading: {{map.streetView.pov.heading}}</p>
 	</div>
