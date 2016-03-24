@@ -1,5 +1,12 @@
 Rails.application.routes.draw do
-  resources :points
+  resources :points do
+    member do
+      post 'forward'
+      post 'backward'
+      post 'left'
+      post 'right'
+    end
+  end
   get 'map_editor', to: 'map_editor#show'
 
   resources :routes

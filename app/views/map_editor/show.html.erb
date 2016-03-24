@@ -24,10 +24,10 @@
 			</md-toolbar>
 			<md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
 				<section layout-align="center center" layout="row">
-					<md-button class="md-icon-button"><md-icon>keyboard_arrow_left</md-icon></md-button>
-					<md-button class="md-icon-button"><md-icon>keyboard_arrow_up</md-icon></md-button>
-					<md-button class="md-icon-button"><md-icon>keyboard_arrow_down</md-icon></md-button>
-					<md-button class="md-icon-button"><md-icon>keyboard_arrow_right</md-icon></md-button>
+					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'left')"><md-icon>keyboard_arrow_left</md-icon></md-button>
+					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'forward')"><md-icon>keyboard_arrow_up</md-icon></md-button>
+					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'backward')"><md-icon>keyboard_arrow_down</md-icon></md-button>
+					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'right')"><md-icon>keyboard_arrow_right</md-icon></md-button>
 				</section>
 			</md-content>
 			<p>Lat: {{model.selectedPoint.marker.position.lat()}}, lng: {{model.selectedPoint.marker.position.lng()}}, heading: {{model.selectedPoint.heading}}</p>
