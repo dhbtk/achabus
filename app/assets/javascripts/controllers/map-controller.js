@@ -102,13 +102,18 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 					strokeColor: '#000099',
 					strokeOpacity: 0.6,
 					rotation: parseInt(point.heading),
-					path: "M 2 7 L 13 0 L 23 7 M 13 0 L 13 13 L 7 13 L 7 21 L 19 21 L 19 13 L 13 13",
-					anchor: new google.maps.Point(13, 13),
+					path: "M 9 5 L 13 0 L 17 5 M 13 0 L 13 13 L 9 13 L 9 21 L 17 21 L 17 13 L 13 13",
+					anchor: new google.maps.Point(13, 21),
 					scale: 1,
 					strokeWeight: 2,
 				},
         position: new google.maps.LatLng(lat, lon),
       });
+			if($scope.model.selectedPoint && $scope.model.selectedPoint.id == point.id)
+			{
+				$scope.model.selectedPoint = point;
+				$scope.$apply();
+			}
     });
   };
 
@@ -211,7 +216,17 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 		{
 			alert('Só podemos adicionar pontos via street view no momento.');
 		}
-	}
+	};
+
+	/** Mover ponto **/
+	$scope.movePoint = function(id, dir)
+	{
+		$http.post('/points/' + id + '/' + dir + '.json').then(function(data)
+		{
+			console.log(data);
+			$scope.syncPoints(data.data);
+		});
+	};
 
 	/*
 	 * Inicialização

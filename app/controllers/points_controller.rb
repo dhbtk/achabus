@@ -1,5 +1,5 @@
 class PointsController < ApplicationController
-  before_action :set_point, only: [:show, :edit, :update, :destroy]
+  before_action :set_point, only: [:show, :edit, :update, :destroy, :forward, :backward, :left, :right]
 
   # GET /points
   # GET /points.json
@@ -59,6 +59,26 @@ class PointsController < ApplicationController
       format.html { redirect_to points_url, notice: 'Point was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def forward
+    @point.move_forward
+    render :show
+  end
+
+  def backward
+    @point.move_backward
+    render :show
+  end
+
+  def left
+    @point.move_left
+    render :show
+  end
+
+  def right
+    @point.move_right
+    render :show
   end
 
   private
