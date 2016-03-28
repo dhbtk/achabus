@@ -1,4 +1,4 @@
-mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleMapApi, $scope, $mdDialog, $mdMedia, $http)
+mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleMapApi, $scope, $mdDialog, $mdMedia, $http, $timeout)
 {
 	/*
 	 * Classes
@@ -8,17 +8,36 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 		var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
 		this.name = name;
 		this.color = color || '#000000';
-		this.points = {};
 		this.path = new google.maps.MVCArray();
 		this.poly = new google.maps.Polyline({
-			map: map,
+			map: $scope.map,
 			strokeColor: '#000000',
 			strokeOpacity: 1.0,
 			strokeWeight: 5,
-			icons: [
-				{icon: lineSymbol, offset: '0%'},
-				{icon: lineSymbol, offset: '100%'},
-				]
+		});
+		this.points = [];
+		this.poly.setPath(this.path);
+	};
+
+	Route.prototype.addPoint = function(point)
+	{
+		this.points.push(point);
+		if(this.points.length == 1)
+			return;
+		var p1 = this.points[this.points.length - 2];
+		var p2 = this.points[this.points.length - 1];
+		var qs = "?key=" + "<%= ENV['GOOGLE_MAPS_WEB_API_KEY'] %>" + "&" +
+				"&path=" +
+				p1.marker.getPosition().lat() + "," + p2.marker.getPosition().lng() + "|" +
+				p1.marker.getPosition().lat() + "," + p2.marker.getPosition().lng() +
+				"&interpolate=true";
+		var path = this.path;
+		$http.get("https://roads.googleapis.com/v1/snapToRoads" + qs).then(function (data)
+		{
+			$.each(data.data.snappedPoints, function(i, point)
+			{
+				path.push(new google.maps.LatLng(point.location.latitude, point.location.longitude));
+			});
 		});
 	};
 	/*
@@ -50,6 +69,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 	$scope.model = {
 		line: null,
 		selectedRoute: null,
+		routes: {},
 		points: {},
 		selectedPoint: null,
 	};
@@ -90,8 +110,11 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
         });
 				google.maps.event.addListener(point.marker, 'click', function(e)
 				{
-					$scope.model.selectedPoint = point;
-					$scope.$apply();
+					$timeout(function()
+					{
+						$scope.model.selectedPoint = point;
+					});
+					$scope.model.selectedRoute.addPoint(point);
 				});
       }
       var nums = point.position.split('(')[1].split(' ');
@@ -237,6 +260,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
  		instances.forEach(function(inst) {
  			$scope.map = inst.map;
       $scope.downloadPoints();
+			$scope.model.selectedRoute = new Route();
 			// Handler do modo street view
 			google.maps.event.addListener(inst.map.getStreetView(), "visible_changed", function()
 			{
@@ -255,8 +279,10 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 				}
 				else
 				{
-					$scope.model.selectedPoint = null;
-					$scope.$apply();
+					$timeout(function()
+					{
+						$scope.model.selectedPoint = null;
+					});
 				}
 			});
  		});
