@@ -14,6 +14,19 @@
 </md-toolbar>
 <div layout="row" class="first-row">
 	<div flex-md="30" flex="15">
+		<div layout="column">
+			<md-content flex layout-padding>
+				<md-list class="md-dense" flex>
+					<md-subheader class="md-no-sticky">Rotas</md-subheader>
+					<md-list-item class="md-2-line" ng-repeat="route in model.routes" ng-click="selectRoute(route)">
+						<div class="md-list-item-text">
+							<h3>{{route.name}}</h3>
+							<p></p>
+						</div>
+					</md-list-item>
+				</md-list>
+			</md-content>
+		</div>
 		<div ng-if="model.selectedPoint" layout="column">
 			<md-toolbar>
 				<div class="md-toolbar-tools">

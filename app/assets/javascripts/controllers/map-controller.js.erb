@@ -11,7 +11,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 		this.path = new google.maps.MVCArray();
 		this.poly = new google.maps.Polyline({
 			map: $scope.map,
-			strokeColor: '#000000',
+			strokeColor: color,
 			strokeOpacity: 1.0,
 			strokeWeight: 5,
 		});
@@ -101,7 +101,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 	$scope.model = {
 		line: null,
 		selectedRoute: null,
-		routes: {},
+		routes: [],
 		points: {},
 		selectedPoint: null,
 	};
@@ -146,7 +146,10 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 					{
 						$scope.model.selectedPoint = point;
 					});
-					$scope.model.selectedRoute.handleClick(point);
+					if($scope.model.selectedRoute)
+					{
+						$scope.model.selectedRoute.handleClick(point);
+					}
 				});
       }
       var nums = point.position.split('(')[1].split(' ');
@@ -337,6 +340,23 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 		}
 	};
 
+	$scope.addWaypoint = function(position)
+	{
+		var point = {
+			point: {
+				position: 'POINT(' + position.lng() + ' ' + position.lat() + ')',
+				waypoint: true,
+				heading: 0,
+				notable: false,
+			}
+		};
+		$http.post('/points.json', point).then(function(data)
+		{
+			console.log(data);
+			$scope.syncPoints(data.data);
+		});
+	};
+
 	/** Mover ponto **/
 	$scope.movePoint = function(id, dir)
 	{
@@ -348,6 +368,15 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 	};
 
 	/*
+	 * Rotas
+	 */
+
+	$scope.selectRoute = function(route)
+	{
+		$scope.model.selectedRoute = route;
+	};
+
+	/*
 	 * Inicialização
 	 */
 
@@ -356,7 +385,8 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
  		instances.forEach(function(inst) {
  			$scope.map = inst.map;
       $scope.downloadPoints();
-			$scope.model.selectedRoute = new Route();
+			$scope.model.routes.push(new Route("Rota de Teste", "#509900"));
+			$scope.model.selectedRoute = $scope.model.routes[0];
 			// Handler do modo street view
 			google.maps.event.addListener(inst.map.getStreetView(), "visible_changed", function()
 			{
@@ -377,6 +407,10 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 				{
 					$timeout(function()
 					{
+						if($scope.model.selectedRoute && !$scope.model.selectedPoint)
+						{
+							$scope.addWaypoint(e.latLng);
+						}
 						$scope.model.selectedPoint = null;
 					});
 				}
@@ -395,8 +429,8 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 			waypoint: {
 				selectedColor: "#990000",
 				unselectedColor: "#990099",
-				path: google.maps.SymbolPath.CIRCLE,
-				anchor: new google.maps.Point(0, 0),
+				path: "M 13 13 L 9 13 L 9 21 L 17 21 L 17 13 L 13 13",
+				anchor: new google.maps.Point(13, 21),
 			},
 		});
    });
