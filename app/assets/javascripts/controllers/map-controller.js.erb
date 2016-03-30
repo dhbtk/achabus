@@ -3,6 +3,12 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 	/*
 	 * Classes
 	 */
+
+	var RoutePoint = function(point, pathIndex)
+	{
+		this.point = point;
+		this.pathIndex = pathIndex;
+	};
 	var Route = function(name, color)
 	{
 		var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
@@ -23,7 +29,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 	{
 		if(this.points.length < 1)
 		{
-			this.points.push(point);
+			this.points.push(new RoutePoint(point, 0));
 		}
 		else
 		{
@@ -31,7 +37,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 			var path = this.path; // eu detesto JS
 			var points = this.points;
 			svc.route({
-				origin: this.points[this.points.length - 1].marker.getPosition(),
+				origin: this.points[this.points.length - 1].point.marker.getPosition(),
 				destination: point.marker.getPosition(),
 				travelMode: google.maps.DirectionsTravelMode.DRIVING
 			}, function(res, status)
@@ -43,7 +49,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 					{
 						path.push(line[i]);
 					}
-					points.push(point);
+					points.push(new RoutePoint(point, path.getLength() - 1));
 				}
 			});
 		}
@@ -51,17 +57,41 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 
 	Route.prototype._removePoint = function(point)
 	{
+		var index;
+		var routePoint = this.points.find(function(el, i)
+		{
+			if(el.point.id == point.id)
+			{
+				index = i;
+				return true;
+			}
+			return false;
+		}, this);
+		console.log(routePoint);
+		console.log(index);
 
+		if(index == 0)
+		{
+			this.points.pop();
+			return;
+		}
+
+		var prevPoint = this.points[index - 1];
+		for(var i = this.path.getLength() - 1; i > prevPoint.pathIndex; i--)
+		{
+			this.path.removeAt(i);
+		}
+		this.points.pop();
 	};
 
 	Route.prototype.handleClick = function(point)
 	{
 		for(var i = 0; i < this.points.length; i++)
 		{
-			if(this.points[i].id == point.id)
+			if(this.points[i].point.id == point.id)
 			{
 				// Só remover caso seja o último, senão não fazemos nada
-				if(this.points[i].id == this.points[this.points.length - 1].id)
+				if(this.points[i].point.id == this.points[this.points.length - 1].point.id)
 				{
 					this._removePoint(point);
 				}
