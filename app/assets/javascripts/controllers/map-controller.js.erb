@@ -76,6 +76,7 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 	 */
 
 	$scope.map = null;
+	$scope.icons = {};
 	var google = {};
 
 	$scope.mapOptions = {
@@ -151,25 +152,89 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
       var nums = point.position.split('(')[1].split(' ');
       var lon = parseFloat(nums[0]);
       var lat = parseFloat(nums[1]);
+			var color, anchor, path;
+			if(point.waypoint)
+			{
+				path = $scope.icons.waypoint.path;
+				anchor = $scope.icons.waypoint.anchor;
+				if($scope.model.selectedPoint && $scope.model.selectedPoint.id == point.id)
+				{
+					color = $scope.icons.waypoint.selectedColor;
+				}
+				else
+				{
+					color = $scope.icons.waypoint.unselectedColor;
+				}
+			}
+			else
+			{
+				path = $scope.icons.stop.path;
+				anchor = $scope.icons.stop.anchor;
+				if($scope.model.selectedPoint && $scope.model.selectedPoint.id == point.id)
+				{
+					color = $scope.icons.stop.selectedColor;
+				}
+				else
+				{
+					color = $scope.icons.stop.unselectedColor;
+				}
+			}
       point.marker.setOptions({
         icon: { // google.maps.Symbol
-					strokeColor: '#000099',
+					strokeColor: color,
 					strokeOpacity: 0.6,
 					rotation: parseInt(point.heading),
-					path: "M 9 5 L 13 0 L 17 5 M 13 0 L 13 13 L 9 13 L 9 21 L 17 21 L 17 13 L 13 13",
-					anchor: new google.maps.Point(13, 21),
+					path: path,
+					anchor: anchor,
 					scale: 1,
 					strokeWeight: 2,
 				},
         position: new google.maps.LatLng(lat, lon),
       });
-			if($scope.model.selectedPoint && $scope.model.selectedPoint.id == point.id)
-			{
-				$scope.model.selectedPoint = point;
-				$scope.$apply();
-			}
     });
   };
+
+	$scope.updatePointIcon = function(point)
+	{
+		var color, anchor, path;
+		if(point.waypoint)
+		{
+			path = $scope.icons.waypoint.path;
+			anchor = $scope.icons.waypoint.anchor;
+			if($scope.model.selectedPoint && $scope.model.selectedPoint.id == point.id)
+			{
+				color = $scope.icons.waypoint.selectedColor;
+			}
+			else
+			{
+				color = $scope.icons.waypoint.unselectedColor;
+			}
+		}
+		else
+		{
+			path = $scope.icons.stop.path;
+			anchor = $scope.icons.stop.anchor;
+			if($scope.model.selectedPoint && $scope.model.selectedPoint.id == point.id)
+			{
+				color = $scope.icons.stop.selectedColor;
+			}
+			else
+			{
+				color = $scope.icons.stop.unselectedColor;
+			}
+		}
+		point.marker.setOptions({
+			icon: { // google.maps.Symbol
+				strokeColor: color,
+				strokeOpacity: 0.6,
+				rotation: parseInt(point.heading),
+				path: path,
+				anchor: anchor,
+				scale: 1,
+				strokeWeight: 2,
+			},
+		});
+	};
 
 	$scope.deletePoint = function(point)
 	{
@@ -320,6 +385,20 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
  	});
  	uiGmapGoogleMapApi.then(function(maps) {
  		google.maps = maps;
+		angular.extend($scope.icons, {
+			stop: {
+				selectedColor: "#990000",
+				unselectedColor: "#990099",
+				path: "M 9 5 L 13 0 L 17 5 M 13 0 L 13 13 L 9 13 L 9 21 L 17 21 L 17 13 L 13 13",
+				anchor: new google.maps.Point(13, 21),
+			},
+			waypoint: {
+				selectedColor: "#990000",
+				unselectedColor: "#990099",
+				path: google.maps.SymbolPath.CIRCLE,
+				anchor: new google.maps.Point(0, 0),
+			},
+		});
    });
 
 	/** watches **/
@@ -358,11 +437,11 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 	{
 		if(newVal)
 		{
-			newVal.marker.setIcon(angular.extend(newVal.marker.getIcon(), {strokeColor: '#000099'}));
+			$scope.updatePointIcon(newVal);
 		}
 		if(oldVal)
 		{
-			oldVal.marker.setIcon(angular.extend(oldVal.marker.getIcon(), {strokeColor: '#009999'}));
+			$scope.updatePointIcon(oldVal);
 		}
 	});
 });
