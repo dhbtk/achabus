@@ -49,7 +49,10 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 					{
 						path.push(line[i]);
 					}
-					points.push(new RoutePoint(point, path.getLength() - 1));
+					$timeout(function()
+					{
+						points.push(new RoutePoint(point, path.getLength() - 1));
+					});
 				}
 			});
 		}
