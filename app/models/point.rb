@@ -4,6 +4,19 @@ class Point < ApplicationRecord
 
 	DELTA = 0.00005 # Aprox. 5 metros de latitude
 
+	def lat_lng
+		Geokit::LatLng.new(position.lat, position.lon)
+	end
+
+	def update_name
+		res = Geokit::Geocoders::GoogleGeocoder.reverse_geocode(lat_lng)
+		if res.street_name && res.street_number
+			update(name: "#{res.street_name}, #{res.street_number}")
+		else
+			false
+		end
+	end
+
 	def rad_heading(dir = heading)
 		(dir * Math::PI)/180
 	end
@@ -29,5 +42,13 @@ class Point < ApplicationRecord
 		lat = self.position.lat + Math::cos(rad)*DELTA;
 
 		update(position: "POINT (#{lon} #{lat})")
+	end
+
+	def self.update_names
+		where(name: nil).each do |point|
+			puts "Ponto #{point.id}..."
+			point.update_name
+			puts ">> #{point.name}"
+		end
 	end
 end
