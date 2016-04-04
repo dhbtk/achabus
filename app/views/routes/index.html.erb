@@ -23,7 +23,7 @@
         <td><%= route.short_name %></td>
         <td><%= route.route_path_markers %></td>
         <td><%= route.route %></td>
-        <td><%= route.line %></td>
+        <td><%= route.line.short_name %> - <%= route.line.name %></td>
         <td><%= link_to 'Show', route %></td>
         <td><%= link_to 'Edit', edit_route_path(route) %></td>
         <td><%= link_to 'Destroy', route, method: :delete, data: { confirm: 'Are you sure?' } %></td>
