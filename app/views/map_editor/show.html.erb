@@ -26,7 +26,8 @@
 				<md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
 					<h3>Pontos</h3>
 					<ol>
-						<li ng-repeat="point in model.selectedRoute.points" ng-click="selectPoint(point)">{{point.point.waypoint ? 'Rota' : 'Parada'}}
+						<li ng-repeat="point in model.selectedRoute.points" ng-click="selectPoint(point)">
+							{{point.point.waypoint ? 'Rota' : 'Parada'}}
 							<br>
 							<small>{{point.point.name}}</small></li>
 					</ol>
