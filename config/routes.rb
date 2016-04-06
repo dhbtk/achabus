@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :route_points
   resources :points do
     member do
       post 'forward'

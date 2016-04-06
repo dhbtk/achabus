@@ -41,7 +41,7 @@ class RoutesController < ApplicationController
   # PATCH/PUT /routes/1.json
   def update
     respond_to do |format|
-      if @route.update(route_params)
+      if @route.update(route_params) && @route.route_points.destroy_all
         format.html { redirect_to @route, notice: 'Route was successfully updated.' }
         format.json { render :show, status: :ok, location: @route }
       else

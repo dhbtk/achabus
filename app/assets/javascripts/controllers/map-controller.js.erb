@@ -1,110 +1,6 @@
 mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleMapApi, $scope, $mdDialog, $mdMedia, $http, $timeout)
 {
 	/*
-	 * Classes
-	 */
-
-	var RoutePoint = function(point, pathIndex)
-	{
-		this.point = point;
-		this.pathIndex = pathIndex;
-	};
-	var Route = function(name, color)
-	{
-		var lineSymbol = { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW };
-		this.name = name;
-		this.color = color || '#000000';
-		this.path = new google.maps.MVCArray();
-		this.poly = new google.maps.Polyline({
-			map: $scope.map,
-			strokeColor: color,
-			strokeOpacity: 1.0,
-			strokeWeight: 5,
-		});
-		this.points = [];
-		this.poly.setPath(this.path);
-	};
-
-	Route.prototype._addPoint = function(point)
-	{
-		if(this.points.length < 1)
-		{
-			this.points.push(new RoutePoint(point, 0));
-		}
-		else
-		{
-			var svc = new google.maps.DirectionsService();
-			var path = this.path; // eu detesto JS
-			var points = this.points;
-			svc.route({
-				origin: this.points[this.points.length - 1].point.marker.getPosition(),
-				destination: point.marker.getPosition(),
-				travelMode: google.maps.DirectionsTravelMode.DRIVING
-			}, function(res, status)
-			{
-				if(status == google.maps.DirectionsStatus.OK)
-				{
-					var line = res.routes[0].overview_path;
-					for(var i = 0; i < line.length; i++)
-					{
-						path.push(line[i]);
-					}
-					$timeout(function()
-					{
-						points.push(new RoutePoint(point, path.getLength() - 1));
-					});
-				}
-			});
-		}
-	};
-
-	Route.prototype._removePoint = function(point)
-	{
-		var index;
-		var routePoint = this.points.find(function(el, i)
-		{
-			if(el.point.id == point.id)
-			{
-				index = i;
-				return true;
-			}
-			return false;
-		}, this);
-		console.log(routePoint);
-		console.log(index);
-
-		if(index == 0)
-		{
-			this.points.pop();
-			return;
-		}
-
-		var prevPoint = this.points[index - 1];
-		for(var i = this.path.getLength() - 1; i > prevPoint.pathIndex; i--)
-		{
-			this.path.removeAt(i);
-		}
-		this.points.pop();
-	};
-
-	Route.prototype.handleClick = function(point)
-	{
-		for(var i = 0; i < this.points.length; i++)
-		{
-			if(this.points[i].point.id == point.id)
-			{
-				// Só remover caso seja o último, senão não fazemos nada
-				if(this.points[i].point.id == this.points[this.points.length - 1].point.id)
-				{
-					this._removePoint(point);
-				}
-				return;
-			}
-		}
-		// Caso não achemos
-		this._addPoint(point);
-	};
-	/*
 	 * Modelo
 	 */
 
@@ -302,6 +198,39 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
 			if(line)
 			{
 				$scope.model.line = line;
+		    if(!google.maps) return;
+				if($scope.kmlLayer != null)
+				{
+					$scope.kmlLayer.setMap(null);
+				}
+				var url = new URL($scope.model.line.itinerary_link);
+				var kmlUrl;
+				if(url.host.match(/www\.google\.com/))
+				{
+					kmlUrl = "https://www.google.com/maps/d/kml?mid=" + url.search.match(/mid=([^&]+)/)[1] + "&nl=1";
+				}
+				else
+				{
+					kmlUrl = url.href + "&output=kml";
+				}
+
+				$scope.kmlLayer = new google.maps.KmlLayer({
+					url: kmlUrl,
+					map: $scope.map,
+					suppressInfoWindows: true,
+					clickable: false,
+					preserveViewport: false,
+				});
+
+				$scope.model.routes.forEach(r => r.unload());
+				$scope.model.routes = [];
+				$http.get('/lines/' + line.id + '.json').then(function(line)
+				{
+					line.data.routes.forEach(function(route)
+					{
+						$http.get('/routes/' + route.id + '.json').then(data => $scope.model.routes.push(new Route(data.data, $scope.map)));
+					});
+				});
 			}
 		});
 	};
@@ -418,8 +347,8 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
  		instances.forEach(function(inst) {
  			$scope.map = inst.map;
       $scope.downloadPoints();
-			$scope.model.routes.push(new Route("Rota de Teste", "#509900"));
-			$scope.model.selectedRoute = $scope.model.routes[0];
+			/*$scope.model.routes.push(new Route("Rota de Teste", "#509900"));
+			$scope.model.selectedRoute = $scope.model.routes[0];*/
 			// Handler do modo street view
 			google.maps.event.addListener(inst.map.getStreetView(), "visible_changed", function()
 			{
@@ -469,35 +398,6 @@ mapEditor.controller('MapEditorController',function(uiGmapIsReady, uiGmapGoogleM
    });
 
 	/** watches **/
-
-	// mudanças de linha
-	$scope.$watch('model.line',function(newVal, oldVal)
-	{
-    if(!google.maps) return;
-
-		if($scope.kmlLayer != null)
-		{
-			$scope.kmlLayer.setMap(null);
-		}
-		var url = new URL($scope.model.line.itinerary_link);
-		var kmlUrl;
-		if(url.host.match(/www\.google\.com/))
-		{
-			kmlUrl = "https://www.google.com/maps/d/kml?mid=" + url.search.match(/mid=([^&]+)/)[1] + "&nl=1";
-		}
-		else
-		{
-			kmlUrl = url.href + "&output=kml";
-		}
-
-		$scope.kmlLayer = new google.maps.KmlLayer({
-			url: kmlUrl,
-			map: $scope.map,
-			suppressInfoWindows: true,
-			clickable: false,
-			preserveViewport: false,
-		});
-	});
 
 	// mudanças de ponto selecionado
 	$scope.$watch('model.selectedPoint', function(oldVal, newVal)

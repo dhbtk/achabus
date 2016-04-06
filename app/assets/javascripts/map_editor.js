@@ -10,6 +10,7 @@
 //= require angular-rails-templates
 //= require_tree ./templates
 //= require_self
+//= require_tree ./classes
 //= require_tree ./controllers
 
 var mapEditor = angular.module('mapEditor',['ngMaterial', 'uiGmapgoogle-maps', 'templates'])
