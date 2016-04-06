@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160316161212) do
+ActiveRecord::Schema.define(version: 20160404152758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,9 +68,10 @@ ActiveRecord::Schema.define(version: 20160316161212) do
     t.integer  "route_id"
     t.integer  "point_id"
     t.integer  "order"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.boolean  "pass_through", default: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.boolean  "pass_through",   default: false
+    t.integer  "polyline_index"
   end
 
   add_index "route_points", ["point_id"], name: "index_route_points_on_point_id", using: :btree
