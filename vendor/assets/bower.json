@@ -6,6 +6,7 @@
     "angular-animate": "latest",
     "angular-bootstrap": "latest",
     "angular-google-maps": "latest",
-    "angular-material": "latest"
+    "angular-material": "latest",
+    "angular-ui-router": "latest"
   }
 }

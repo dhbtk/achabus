@@ -1,0 +1,14 @@
+<div id="home-container" layout="column" layout-align="center center">
+	<div layout="column" layout-align="center center">
+		<p>Onde você vai?</p>
+		<md-autocomplete
+			flex
+			ng-disabled="false"
+			md-selected-item="home.search.place"
+			md-search-text="home.search.text"
+			md-items="item in home.searchPlaces(home.search.text)"
+			md-min-length="0">
+			<md-item-template>oi</md-item-template>
+		</md-autocomplete>
+	</div>
+</div>

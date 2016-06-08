@@ -12,3 +12,28 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require lodash/lodash
+//= require angular/angular
+//= require angular-simple-logger/dist/angular-simple-logger
+//= require angular-google-maps/dist/angular-google-maps
+//= require angular-ui-router/release/angular-ui-router
+//= require angular-animate/angular-animate
+//= require angular-aria/angular-aria
+//= require angular-material/angular-material
+//= require angular-rails-templates
+//= require_tree ./templates
+//= require_tree ./frontend
+//= require_self
+
+angular.module('achaBus', ['ngMaterial', 'ui.router', 'templates'])
+	.config(function($stateProvider, $urlRouterProvider) {
+		$urlRouterProvider.otherwise('');
+
+		$stateProvider.state('home', {
+			url: '/',
+			controller: 'HomeController as home',
+			templateUrl: 'home.html'
+		});
+	})
+	.controller('MainController', MainController)
+	.controller('HomeController', HomeController);
