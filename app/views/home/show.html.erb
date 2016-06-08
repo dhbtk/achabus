@@ -1,2 +1,16 @@
-<h1>Home#show</h1>
-<p>Find me in app/views/home/show.html.erb</p>
+<!DOCTYPE html>
+<html lang="pt-br" ng-app="achaBus">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Cadê o Busão?</title>
+		<%= javascript_include_tag 'application' %>
+		<%= stylesheet_link_tag 'application' %>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+	</head>
+	<body ng-controller="MainController" ng-cloak>
+		<%= yield %>
+	</body>
+</html>
