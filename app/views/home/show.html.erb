@@ -10,7 +10,7 @@
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
 	</head>
-	<body ng-controller="MainController" ng-cloak>
-		<%= yield %>
+	<body ng-controller="MainController as main" ng-cloak>
+		<div ui-view/>
 	</body>
 </html>

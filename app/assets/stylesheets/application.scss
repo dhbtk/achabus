@@ -10,7 +10,27 @@
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *
+ *=require angular-material/angular-material
+ *=require home
  *= require_self
  */
-@import "bootstrap-sprockets";
-@import "bootstrap";
+ /*
+  *=
+  */
+
+// GAS Tecnologia sucks
+object[width="0"]
+{
+ display: none;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+}
+
+body > [ui-view] {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
