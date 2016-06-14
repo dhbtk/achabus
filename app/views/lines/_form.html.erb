@@ -1,42 +1,42 @@
 <%= form_for(line) do |f| %>
-  <% if line.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(line.errors.count, "error") %> prohibited this line from being saved:</h2>
+    <% if line.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(line.errors.count, "error") %> prohibited this line from being saved:</h2>
 
-      <ul>
-      <% line.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+          <ul>
+            <% line.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= f.label :short_name %>
+      <%= f.text_field :short_name, class: 'form-control' %>
     </div>
-  <% end %>
 
-  <div class="form-group">
-    <%= f.label :short_name %>
-    <%= f.text_field :short_name, class: 'form-control' %>
-  </div>
+    <div class="form-group">
+      <%= f.label :name %>
+      <%= f.text_field :name, class: 'form-control' %>
+    </div>
 
-  <div class="form-group">
-    <%= f.label :name %>
-    <%= f.text_field :name, class: 'form-control' %>
-  </div>
+    <div class="form-group">
+      <%= f.label :line_group_id %>
+      <%= f.collection_select :line_group_id, LineGroup.all, :id, :name, {}, {class: 'form-control'} %>
+    </div>
 
-  <div class="form-group">
-    <%= f.label :line_group_id %>
-    <%= f.collection_select :line_group_id, LineGroup.all, :id, :name, {}, {class: 'form-control'} %>
-  </div>
+    <div class="form-group">
+      <%= f.label :timetable_link %>
+      <%= f.text_field :timetable_link, class: 'form-control' %>
+    </div>
 
-  <div class="form-group">
-    <%= f.label :timetable_link %>
-    <%= f.text_field :timetable_link, class: 'form-control' %>
-  </div>
+    <div class="form-group">
+      <%= f.label :itinerary_link %>
+      <%= f.text_field :itinerary_link, class: 'form-control' %>
+    </div>
 
-  <div class="form-group">
-    <%= f.label :itinerary_link %>
-    <%= f.text_field :itinerary_link, class: 'form-control' %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+    <div class="actions">
+      <%= f.submit %>
+    </div>
 <% end %>

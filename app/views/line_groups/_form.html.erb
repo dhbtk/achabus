@@ -1,27 +1,27 @@
 <%= form_for(line_group) do |f| %>
-  <% if line_group.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(line_group.errors.count, "error") %> prohibited this line_group from being saved:</h2>
+    <% if line_group.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(line_group.errors.count, "error") %> prohibited this line_group from being saved:</h2>
 
-      <ul>
-      <% line_group.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+          <ul>
+            <% line_group.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :name %>
+      <%= f.text_field :name %>
     </div>
-  <% end %>
 
-  <div class="field">
-    <%= f.label :name %>
-    <%= f.text_field :name %>
-  </div>
+    <div class="field">
+      <%= f.label :city %>
+      <%= f.text_field :city %>
+    </div>
 
-  <div class="field">
-    <%= f.label :city %>
-    <%= f.text_field :city %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+    <div class="actions">
+      <%= f.submit %>
+    </div>
 <% end %>

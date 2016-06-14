@@ -17,7 +17,7 @@ class LinesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create line" do
     assert_difference('Line.count') do
-      post lines_url, params: { line: { line_group_id: @line.line_group_id, name: @line.name, short_name: @line.short_name } }
+      post lines_url, params: {line: {line_group_id: @line.line_group_id, name: @line.name, short_name: @line.short_name}}
     end
 
     assert_redirected_to line_path(Line.last)
@@ -34,7 +34,7 @@ class LinesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update line" do
-    patch line_url(@line), params: { line: { line_group_id: @line.line_group_id, name: @line.name, short_name: @line.short_name } }
+    patch line_url(@line), params: {line: {line_group_id: @line.line_group_id, name: @line.name, short_name: @line.short_name}}
     assert_redirected_to line_path(@line)
   end
 

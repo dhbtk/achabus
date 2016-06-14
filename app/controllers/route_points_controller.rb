@@ -62,13 +62,13 @@ class RoutePointsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_route_point
-      @route_point = RoutePoint.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_route_point
+    @route_point = RoutePoint.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def route_point_params
-      params.require(:route_point).permit(:route_id, :point_id, :order, :polyline_index)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def route_point_params
+    params.require(:route_point).permit(:route_id, :point_id, :order, :polyline_index)
+  end
 end

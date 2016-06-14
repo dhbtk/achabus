@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   before_action :auth_basic_temp
 
   def auth_basic_temp
-    unless authenticate_with_http_basic { |u,p| u == "achabus-dev" && p == ENV['TEMP_PASSWORD'] }
+    unless authenticate_with_http_basic { |u, p| u == "achabus-dev" && p == ENV['TEMP_PASSWORD'] }
       request_http_basic_authentication
     end
   end

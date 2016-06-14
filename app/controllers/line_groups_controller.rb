@@ -62,13 +62,13 @@ class LineGroupsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_line_group
-      @line_group = LineGroup.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_line_group
+    @line_group = LineGroup.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def line_group_params
-      params.require(:line_group).permit(:name, :city)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def line_group_params
+    params.require(:line_group).permit(:name, :city)
+  end
 end

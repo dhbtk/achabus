@@ -17,7 +17,7 @@ class RoutePointsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create route_point" do
     assert_difference('RoutePoint.count') do
-      post route_points_url, params: { route_point: { order: @route_point.order, point_id: @route_point.point_id, polyline_index: @route_point.polyline_index, route_id: @route_point.route_id } }
+      post route_points_url, params: {route_point: {order: @route_point.order, point_id: @route_point.point_id, polyline_index: @route_point.polyline_index, route_id: @route_point.route_id}}
     end
 
     assert_redirected_to route_point_path(RoutePoint.last)
@@ -34,7 +34,7 @@ class RoutePointsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update route_point" do
-    patch route_point_url(@route_point), params: { route_point: { order: @route_point.order, point_id: @route_point.point_id, polyline_index: @route_point.polyline_index, route_id: @route_point.route_id } }
+    patch route_point_url(@route_point), params: {route_point: {order: @route_point.order, point_id: @route_point.point_id, polyline_index: @route_point.polyline_index, route_id: @route_point.route_id}}
     assert_redirected_to route_point_path(@route_point)
   end
 

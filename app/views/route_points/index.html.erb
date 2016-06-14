@@ -4,17 +4,17 @@
 
 <table>
   <thead>
-    <tr>
-      <th>Route</th>
-      <th>Point</th>
-      <th>Order</th>
-      <th>Polyline index</th>
-      <th colspan="3"></th>
-    </tr>
+  <tr>
+    <th>Route</th>
+    <th>Point</th>
+    <th>Order</th>
+    <th>Polyline index</th>
+    <th colspan="3"></th>
+  </tr>
   </thead>
 
   <tbody>
-    <% @route_points.each do |route_point| %>
+  <% @route_points.each do |route_point| %>
       <tr>
         <td><%= route_point.route_id %></td>
         <td><%= route_point.point_id %></td>
@@ -22,9 +22,9 @@
         <td><%= route_point.polyline_index %></td>
         <td><%= link_to 'Show', route_point %></td>
         <td><%= link_to 'Edit', edit_route_point_path(route_point) %></td>
-        <td><%= link_to 'Destroy', route_point, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Destroy', route_point, method: :delete, data: {confirm: 'Are you sure?'} %></td>
       </tr>
-    <% end %>
+  <% end %>
   </tbody>
 </table>
 

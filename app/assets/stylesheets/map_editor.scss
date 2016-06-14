@@ -3,45 +3,36 @@
  */
 
 // GAS Tecnologia sucks
-object[width="0"]
-{
+object[width="0"] {
   display: none;
 }
 
-.first-row
-{
+.first-row {
   position: relative;
 }
 
-.first-row
-{
+.first-row {
   height: calc(100% - 64px);
 }
 
-.angular-google-map-container, .angular-google-map, .big-map-container, #street-view
-{
+.angular-google-map-container, .angular-google-map, .big-map-container, #street-view {
   height: 100%;
 }
 
-.big-map-container
-{
-  .md-button
-  {
+.big-map-container {
+  .md-button {
     position: absolute;
     bottom: 5px;
   }
-  .add-button
-  {
+  .add-button {
     right: 5px;
   }
-  .back-button
-  {
+  .back-button {
     left: 5px;
   }
 }
 
-.little-map-container
-{
+.little-map-container {
   position: absolute;
   width: 25%;
   height: 35%;
