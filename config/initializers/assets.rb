@@ -8,7 +8,7 @@ Rails.application.config.assets.version = '1.0'
 
 Rails.application.config.assets.paths << Rails.root.join("vendor", "assets", "bower_components")
 Rails.application.config.assets.precompile << %r(.*.(?:eot|svg|ttf|woff|woff2)$)
-Rails.application.config.assets.precompile += %w(map_editor.js map_editor.scss)
+Rails.application.config.assets.precompile += %w(map_editor.js map_editor.scss admin.js admin.scss)
 
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
