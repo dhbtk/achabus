@@ -5,27 +5,15 @@ function OpenLineController($scope, $mdDialog, $http) {
         lines: [],
         line: null
     };
-    $http.get('/line_groups.json')
-        .then(function (data) {
-            $scope.model.line_groups = data.data;
-        });
     $scope.cancel = function () {
         $mdDialog.cancel();
-    }
+    };
     $scope.confirm = function () {
-        $mdDialog.hide($scope.model.line);
-    }
+        $mdDialog.hide($scope.model.lines[$scope.model.line]);
+    };
 
-    $scope.$watch('model.line_group', function (newVal, oldVal) {
-        console.log('new');
-        console.log(newVal);
-        console.log('old');
-        console.log(oldVal);
-        if (newVal) {
-            $http.get('/line_groups/' + newVal.id + '.json')
-                .then(function (data) {
-                    $scope.model.lines = data.data.lines;
-                });
-        }
+    $http.get('/lines.json').then(function(data) {
+        console.log(data);
+        $scope.model.lines = data.data;
     });
 }

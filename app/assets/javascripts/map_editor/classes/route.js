@@ -19,6 +19,18 @@ var Route = function (nameOrObject, map) {
     });
     this.points = [];
     this.poly.setPath(this.path);
+    var self = this;
+    console.log(nameOrObject);
+    if(nameOrObject.route_lonlat) {
+        nameOrObject.route_lonlat.forEach(function(p) {
+           self.path.push(new google.maps.LatLng({lat: p.lat, lng: p.lon}));
+        });
+    }
+    // if(nameOrObject.route_points) {
+    //     nameOrObject.route_points.forEach(function(p) {
+    //         self._addPoint(p);
+    //     });
+    // }
 };
 
 Route.prototype._addPoint = function (point) {

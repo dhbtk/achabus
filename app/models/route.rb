@@ -5,4 +5,8 @@ class Route < ApplicationRecord
   has_many :times, class_name: 'Timetable'
   has_many :route_points, -> { order('"order" ASC') }
   has_many :points, through: :route_points
+
+  def route_lonlat
+    self.route.points.map{|x| {lat: x.x, lon: x.y}}
+  end
 end
