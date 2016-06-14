@@ -11,6 +11,15 @@
 
 <body>
 <div class="container">
+  <ul class="menu">
+    <li><%= link_to 'Grupos de Linhas', line_groups_path %></li>
+    <li><%= link_to 'Linhas', lines_path %></li>
+    <li><%= link_to 'Rotas', routes_path %></li>
+    <li><%= link_to 'Editor de Rotas', map_editor_path, target: '_blank' %></li>
+    <li></li>
+  </ul>
+</div>
+<div class="container">
   <%= yield %>
 </div>
 </body>

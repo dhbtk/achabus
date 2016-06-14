@@ -84,15 +84,11 @@ Route.prototype.handleClick = function (point) {
 };
 
 Route.prototype.serializePoints = function () {
-    return this.points.map((p, i) = > p.serialize(this, i)
-    )
-    ;
+    return this.points.map((p, i) => p.serialize(this, i));
 };
 
 Route.prototype._serializeRoute = function () {
-    return 'LINESTRING(' + this.path.getArray().map(p = > p.lng() + ' ' + p.lat()
-    ).
-    join(',') + ')';
+    return 'LINESTRING(' + this.path.getArray().map(p => p.lng() + ' ' + p.lat().join(',') + ')');
 };
 
 Route.prototype.serialize = function () {

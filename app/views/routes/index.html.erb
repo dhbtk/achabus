@@ -2,7 +2,7 @@
 
 <h1>Routes</h1>
 
-<table>
+<table class="table table-striped">
   <thead>
   <tr>
     <th>Parent route</th>
@@ -18,11 +18,11 @@
   <tbody>
   <% @routes.each do |route| %>
       <tr>
-        <td><%= route.parent_route_id %></td>
+        <td><%= route.parent_route&.name %></td>
         <td><%= route.name %></td>
         <td><%= route.short_name %></td>
         <td><%= route.route_path_markers %></td>
-        <td><%= route.route %></td>
+        <td><%= route.points.count %></td>
         <td><%= route.line.short_name %> - <%= route.line.name %></td>
         <td><%= link_to 'Show', route %></td>
         <td><%= link_to 'Edit', edit_route_path(route) %></td>

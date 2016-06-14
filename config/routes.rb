@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'admin', to: 'dashboard#show'
+
   resources :route_points
   resources :points do
     member do
