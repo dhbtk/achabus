@@ -172,7 +172,7 @@ mapEditor.controller('MapEditorController', function (uiGmapIsReady, uiGmapGoogl
         if ($scope.kmlLayer != null) {
           $scope.kmlLayer.setMap(null);
         }
-        var url = new URL($scope.model.line.itinerary_link);
+        var url = new URL(line.itinerary_link);
         var kmlUrl;
         if (url.host.match(/www\.google\.com/)) {
           kmlUrl = "https://www.google.com/maps/d/kml?mid=" + url.search.match(/mid=([^&]+)/)[1] + "&nl=1";
@@ -193,9 +193,7 @@ mapEditor.controller('MapEditorController', function (uiGmapIsReady, uiGmapGoogl
         $scope.model.routes = [];
         $http.get('/lines/' + line.id + '.json').then(function (line) {
           line.data.routes.forEach(function (route) {
-            $http.get('/routes/' + route.id + '.json').then(data => $scope.model.routes.push(new Route(data.data, $scope.map))
-            )
-            ;
+            $http.get('/routes/' + route.id + '.json').then(data => $scope.model.routes.push(new Route(data.data, $scope.map)));
           });
         });
       }

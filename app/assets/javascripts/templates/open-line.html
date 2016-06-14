@@ -12,17 +12,9 @@
         <md-dialog-content>
             <div class="md-dialog-content" layout="column">
                 <md-input-container>
-                    <label>Grupo de Linhas</label>
-                    <md-select ng-model="model.line_group">
-                        <md-option ng-repeat="group in model.line_groups" ng-value="{{group}}">{{group.name}} -
-                            {{group.city}}
-                        </md-option>
-                    </md-select>
-                </md-input-container>
-                <md-input-container ng-if="model.line_group && model.lines.length">
                     <label>Linha</label>
                     <md-select ng-model="model.line">
-                        <md-option ng-repeat="line in model.lines" ng-value="{{line}}">{{line.short_name}} -
+                        <md-option ng-repeat="line in model.lines" value="{{$index}}">{{line.short_name}} -
                             {{line.name}}
                         </md-option>
                     </md-select>
