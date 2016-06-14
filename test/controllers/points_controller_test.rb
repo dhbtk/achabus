@@ -17,7 +17,7 @@ class PointsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create point" do
     assert_difference('Point.count') do
-      post points_url, params: { point: { heading: @point.heading, name: @point.name, notable: @point.notable, notable_name: @point.notable_name, position: @point.position, waypoint: @point.waypoint } }
+      post points_url, params: {point: {heading: @point.heading, name: @point.name, notable: @point.notable, notable_name: @point.notable_name, position: @point.position, waypoint: @point.waypoint}}
     end
 
     assert_redirected_to point_path(Point.last)
@@ -34,7 +34,7 @@ class PointsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update point" do
-    patch point_url(@point), params: { point: { heading: @point.heading, name: @point.name, notable: @point.notable, notable_name: @point.notable_name, position: @point.position, waypoint: @point.waypoint } }
+    patch point_url(@point), params: {point: {heading: @point.heading, name: @point.name, notable: @point.notable, notable_name: @point.notable_name, position: @point.position, waypoint: @point.waypoint}}
     assert_redirected_to point_path(@point)
   end
 

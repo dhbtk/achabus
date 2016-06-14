@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Achabus</title>
-    <%= csrf_meta_tags %>
-    <%= action_cable_meta_tag %>
+<head>
+  <title>Achabus</title>
+  <%= csrf_meta_tags %>
+  <%= action_cable_meta_tag %>
 
-    <%= stylesheet_link_tag    'admin', media: 'all' %>
-    <%= javascript_include_tag 'admin' %>
-  </head>
+  <%= stylesheet_link_tag 'admin', media: 'all' %>
+  <%= javascript_include_tag 'admin' %>
+</head>
 
-  <body>
-    <div class="container">
-      <%= yield %>
-    </div>
-  </body>
+<body>
+<div class="container">
+  <%= yield %>
+</div>
+</body>
 </html>

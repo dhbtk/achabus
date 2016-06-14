@@ -17,7 +17,7 @@ class LineGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create line_group" do
     assert_difference('LineGroup.count') do
-      post line_groups_url, params: { line_group: { city: @line_group.city, name: @line_group.name } }
+      post line_groups_url, params: {line_group: {city: @line_group.city, name: @line_group.name}}
     end
 
     assert_redirected_to line_group_path(LineGroup.last)
@@ -34,7 +34,7 @@ class LineGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update line_group" do
-    patch line_group_url(@line_group), params: { line_group: { city: @line_group.city, name: @line_group.name } }
+    patch line_group_url(@line_group), params: {line_group: {city: @line_group.city, name: @line_group.name}}
     assert_redirected_to line_group_path(@line_group)
   end
 

@@ -1,79 +1,98 @@
 <md-toolbar>
-	<div layout="row" class="md-toolbar-tools">
-		<md-button ng-click="openLine()">Abrir linha</md-button>
-		<div ng-if="model.line" flex layout="row" layout-align="center center">
-			<h2><span>{{model.line.short_name}} - {{model.line.name}}</span></h2>
-			<span flex></span>
-			<md-button ng-href="{{model.line.itinerary_link}}" target="_blank" class="md-raised md-accent">Abrir Itinerário</md-button>
-			<md-button ng-href="{{model.line.timetable_link}}" target="_blank" class="md-raised md-accent">Abrir Horário</md-button>
-		</div>
-		<div ng-if="!model.line" layout="column">
-			Nenhuma linha selecionada
-		</div>
-	</div>
+  <div layout="row" class="md-toolbar-tools">
+    <md-button ng-click="openLine()">Abrir linha</md-button>
+    <div ng-if="model.line" flex layout="row" layout-align="center center">
+      <h2><span>{{model.line.short_name}} - {{model.line.name}}</span></h2>
+      <span flex></span>
+      <md-button ng-href="{{model.line.itinerary_link}}" target="_blank" class="md-raised md-accent">Abrir Itinerário
+      </md-button>
+      <md-button ng-href="{{model.line.timetable_link}}" target="_blank" class="md-raised md-accent">Abrir Horário
+      </md-button>
+    </div>
+    <div ng-if="!model.line" layout="column">
+      Nenhuma linha selecionada
+    </div>
+  </div>
 </md-toolbar>
 <div layout="row" class="first-row">
-	<div flex="15">
-		<div layout="column">
-			<div ng-if="model.selectedRoute" layout="column">
-				<md-toolbar>
-					<div class="md-toolbar-tools">
-						<h2 style="font-size: 14px"><span>{{model.selectedRoute.name || 'Rota'}}</span></h2>
-						<span flex></span>
-						<md-button ng-click="deleteRoute(model.selectedRoute)" class="md-icon-button"><md-icon>delete</md-icon></md-button>
-					</div>
-				</md-toolbar>
-				<md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
-					<h3>Pontos</h3>
-					<ol>
-						<li ng-repeat="point in model.selectedRoute.points" ng-click="selectPoint(point)">
-							{{point.point.waypoint ? 'Rota' : 'Parada'}}
-							<br>
-							<small>{{point.point.name}}</small></li>
-					</ol>
-				</md-content>
-				<p>Lat: {{model.selectedPoint.marker.position.lat()}}, lng: {{model.selectedPoint.marker.position.lng()}}, heading: {{model.selectedPoint.heading}}</p>
-			</div>
-			<md-content flex layout-padding>
-				<md-list class="md-dense" flex>
-					<md-subheader class="md-no-sticky">Rotas</md-subheader>
-					<md-list-item class="md-2-line" ng-repeat="route in model.routes" ng-click="selectRoute(route)">
-						<div class="md-list-item-text">
-							<h3>{{route.name}}</h3>
-							<p>{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
-						</div>
-					</md-list-item>
-				</md-list>
-			</md-content>
-		</div>
-		<p>Lat: {{map.streetView.position.lat()}}, lng: {{map.streetView.position.lng()}}, heading: {{map.streetView.pov.heading}}</p>
-	</div>
-	<div class="big-map-container" flex="70">
-		<ui-gmap-google-map id="map" center="mapOptions.center" zoom="mapOptions.zoom" options="mapOptions.options"></ui-gmap-google-map>
-		<div id="street-view" style="display: none"></div>
-		<md-button ng-show="streetView" ng-click="toggleStreetView()" class="md-primary md-raised back-button">Voltar</md-button>
-		<md-button ng-show="streetView" ng-click="addPoint()" class="md-primary md-raised add-button">Adicionar Ponto</md-button>
-	</div>
-	<div flex="15">
-		<div ng-if="model.selectedPoint" layout="column">
-			<md-toolbar>
-				<div class="md-toolbar-tools">
-					<h2 style="font-size: 14px"><span>{{model.selectedPoint.name || 'Ponto'}}</span></h2>
-					<span flex></span>
-					<md-button ng-click="deletePoint(model.selectedPoint)" class="md-icon-button"><md-icon>delete</md-icon></md-button>
-				</div>
-			</md-toolbar>
-			<md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
-				<section layout-align="center center" layout="row">
-					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'left')"><md-icon>keyboard_arrow_left</md-icon></md-button>
-					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'forward')"><md-icon>keyboard_arrow_up</md-icon></md-button>
-					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'backward')"><md-icon>keyboard_arrow_down</md-icon></md-button>
-					<md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'right')"><md-icon>keyboard_arrow_right</md-icon></md-button>
-				</section>
-			</md-content>
-			<p>Lat: {{model.selectedPoint.marker.position.lat()}}, lng: {{model.selectedPoint.marker.position.lng()}}, heading: {{model.selectedPoint.heading}}</p>
-		</div>
-	</div>
-	<div class="little-map-container">
-	</div>
+  <div flex="15">
+    <div layout="column">
+      <div ng-if="model.selectedRoute" layout="column">
+        <md-toolbar>
+          <div class="md-toolbar-tools">
+            <h2 style="font-size: 14px"><span>{{model.selectedRoute.name || 'Rota'}}</span></h2>
+            <span flex></span>
+            <md-button ng-click="deleteRoute(model.selectedRoute)" class="md-icon-button">
+              <md-icon>delete</md-icon>
+            </md-button>
+          </div>
+        </md-toolbar>
+        <md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
+          <h3>Pontos</h3>
+          <ol>
+            <li ng-repeat="point in model.selectedRoute.points" ng-click="selectPoint(point)">
+              {{point.point.waypoint ? 'Rota' : 'Parada'}}
+              <br>
+              <small>{{point.point.name}}</small>
+            </li>
+          </ol>
+        </md-content>
+        <p>Lat: {{model.selectedPoint.marker.position.lat()}}, lng: {{model.selectedPoint.marker.position.lng()}},
+          heading: {{model.selectedPoint.heading}}</p>
+      </div>
+      <md-content flex layout-padding>
+        <md-list class="md-dense" flex>
+          <md-subheader class="md-no-sticky">Rotas</md-subheader>
+          <md-list-item class="md-2-line" ng-repeat="route in model.routes" ng-click="selectRoute(route)">
+            <div class="md-list-item-text">
+              <h3>{{route.name}}</h3>
+              <p>{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
+            </div>
+          </md-list-item>
+        </md-list>
+      </md-content>
+    </div>
+    <p>Lat: {{map.streetView.position.lat()}}, lng: {{map.streetView.position.lng()}}, heading:
+      {{map.streetView.pov.heading}}</p>
+  </div>
+  <div class="big-map-container" flex="70">
+    <ui-gmap-google-map id="map" center="mapOptions.center" zoom="mapOptions.zoom" options="mapOptions.options"></ui-gmap-google-map>
+    <div id="street-view" style="display: none"></div>
+    <md-button ng-show="streetView" ng-click="toggleStreetView()" class="md-primary md-raised back-button">Voltar</md-button>
+    <md-button ng-show="streetView" ng-click="addPoint()" class="md-primary md-raised add-button">Adicionar Ponto
+    </md-button>
+  </div>
+  <div flex="15">
+    <div ng-if="model.selectedPoint" layout="column">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h2 style="font-size: 14px"><span>{{model.selectedPoint.name || 'Ponto'}}</span></h2>
+          <span flex></span>
+          <md-button ng-click="deletePoint(model.selectedPoint)" class="md-icon-button">
+            <md-icon>delete</md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+      <md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
+        <section layout-align="center center" layout="row">
+          <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'left')">
+            <md-icon>keyboard_arrow_left</md-icon>
+          </md-button>
+          <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'forward')">
+            <md-icon>keyboard_arrow_up</md-icon>
+          </md-button>
+          <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'backward')">
+            <md-icon>keyboard_arrow_down</md-icon>
+          </md-button>
+          <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'right')">
+            <md-icon>keyboard_arrow_right</md-icon>
+          </md-button>
+        </section>
+      </md-content>
+      <p>Lat: {{model.selectedPoint.marker.position.lat()}}, lng: {{model.selectedPoint.marker.position.lng()}},
+        heading: {{model.selectedPoint.heading}}</p>
+    </div>
+  </div>
+  <div class="little-map-container">
+  </div>
 </div>

@@ -21,3 +21,5 @@ vendor/assets/bower_components
 .env
 Gemfile.lock
 .tag*
+dump.sql
+.idea

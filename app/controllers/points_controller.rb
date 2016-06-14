@@ -82,13 +82,13 @@ class PointsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_point
-      @point = Point.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_point
+    @point = Point.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def point_params
-      params.require(:point).permit(:position, :heading, :name, :notable_name, :notable, :waypoint)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def point_params
+    params.require(:point).permit(:position, :heading, :name, :notable_name, :notable, :waypoint)
+  end
 end

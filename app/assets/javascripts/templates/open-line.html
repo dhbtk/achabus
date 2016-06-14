@@ -1,34 +1,38 @@
 <md-dialog ng-cloak>
-  <form>
-    <md-toolbar>
-      <div class="md-toolbar-tools">
-        <h2>Abrir Linha</h2>
-        <span flex></span>
-        <md-button class="md-icon-button" ng-click="cancel()">
-          &times;
-        </md-button>
-      </div>
-    </md-toolbar>
-    <md-dialog-content>
-      <div class="md-dialog-content" layout="column">
-        <md-input-container>
-          <label>Grupo de Linhas</label>
-          <md-select ng-model="model.line_group">
-            <md-option ng-repeat="group in model.line_groups" ng-value="{{group}}">{{group.name}} - {{group.city}}</md-option>
-          </md-select>
-        </md-input-container>
-        <md-input-container ng-if="model.line_group && model.lines.length">
-          <label>Linha</label>
-          <md-select ng-model="model.line">
-            <md-option ng-repeat="line in model.lines" ng-value="{{line}}">{{line.short_name}} - {{line.name}}</md-option>
-          </md-select>
-        </md-input-container>
-      </div>
-    </md-dialog-content>
-    <md-dialog-actions layout="row">
-      <span flex></span>
-      <md-button ng-click="cancel()">Cancelar</md-button>
-      <md-button ng-click="confirm()">Abrir</md-button>
-    </md-dialog-actions>
-  </form>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Abrir Linha</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    &times;
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content" layout="column">
+                <md-input-container>
+                    <label>Grupo de Linhas</label>
+                    <md-select ng-model="model.line_group">
+                        <md-option ng-repeat="group in model.line_groups" ng-value="{{group}}">{{group.name}} -
+                            {{group.city}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container ng-if="model.line_group && model.lines.length">
+                    <label>Linha</label>
+                    <md-select ng-model="model.line">
+                        <md-option ng-repeat="line in model.lines" ng-value="{{line}}">{{line.short_name}} -
+                            {{line.name}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="cancel()">Cancelar</md-button>
+            <md-button ng-click="confirm()">Abrir</md-button>
+        </md-dialog-actions>
+    </form>
 </md-dialog>

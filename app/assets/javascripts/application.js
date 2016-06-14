@@ -26,14 +26,14 @@
 //= require_self
 
 angular.module('achaBus', ['ngMaterial', 'ui.router', 'templates'])
-	.config(function($stateProvider, $urlRouterProvider) {
-		$urlRouterProvider.otherwise('');
+    .config(function ($stateProvider, $urlRouterProvider) {
+        $urlRouterProvider.otherwise('');
 
-		$stateProvider.state('home', {
-			url: '/',
-			controller: 'HomeController as home',
-			templateUrl: 'home.html'
-		});
-	})
-	.controller('MainController', MainController)
-	.controller('HomeController', HomeController);
+        $stateProvider.state('home', {
+            url: '/',
+            controller: 'HomeController as home',
+            templateUrl: 'home.html'
+        });
+    })
+    .controller('MainController', MainController)
+    .controller('HomeController', HomeController);

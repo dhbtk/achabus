@@ -13,10 +13,9 @@
 //= require_tree ./map_editor/classes
 //= require_tree ./map_editor/controllers
 
-var mapEditor = angular.module('mapEditor',['ngMaterial', 'uiGmapgoogle-maps', 'templates'])
-		.config(function(uiGmapGoogleMapApiProvider)
-		{
-			uiGmapGoogleMapApiProvider.configure({
-				libraries: 'drawing,geometry'
-			});
-		});
+var mapEditor = angular.module('mapEditor', ['ngMaterial', 'uiGmapgoogle-maps', 'templates'])
+    .config(function (uiGmapGoogleMapApiProvider) {
+        uiGmapGoogleMapApiProvider.configure({
+            libraries: 'drawing,geometry'
+        });
+    });
