@@ -22,12 +22,12 @@
           <div class="md-toolbar-tools">
             <h2 style="font-size: 14px"><span>{{model.selectedRoute.name || 'Rota'}}</span></h2>
             <span flex></span>
-            <md-button ng-click="deleteRoute(model.selectedRoute)" class="md-icon-button">
-              <md-icon>delete</md-icon>
+            <md-button ng-click="saveRoute(model.selectedRoute)" class="md-icon-button">
+              <md-icon>save</md-icon>
             </md-button>
           </div>
         </md-toolbar>
-        <md-content flex layout-padding layout="column" class="md-whiteframe-1dp">
+        <md-content flex layout-padding layout="column" class="md-whiteframe-1dp" style="max-height: 250px; overflow: scroll">
           <h3>Pontos</h3>
           <ol>
             <li ng-repeat="point in model.selectedRoute.points" ng-click="selectPoint(point)">

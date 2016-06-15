@@ -1,4 +1,4 @@
-mapEditor.controller('MapEditorController', function (uiGmapIsReady, uiGmapGoogleMapApi, $scope, $mdDialog, $mdMedia, $http, $timeout) {
+mapEditor.controller('MapEditorController', function (uiGmapIsReady, uiGmapGoogleMapApi, $scope, $mdDialog, $mdToast, $mdMedia, $http, $timeout) {
   /*
    * Modelo
    */
@@ -286,7 +286,16 @@ mapEditor.controller('MapEditorController', function (uiGmapIsReady, uiGmapGoogl
    */
 
   $scope.selectRoute = function (route) {
+    if($scope.model.selectedRoute) {
+      $scope.model.selectedRoute.hide();
+    }
+    route.show();
     $scope.model.selectedRoute = route;
+  };
+
+  $scope.saveRoute = function (route) {
+    route.save();
+    $mdToast.showSimple('Rota salva com sucesso.');
   };
 
   /*
@@ -298,8 +307,6 @@ mapEditor.controller('MapEditorController', function (uiGmapIsReady, uiGmapGoogl
     instances.forEach(function (inst) {
       $scope.map = inst.map;
       $scope.downloadPoints();
-      /*$scope.model.routes.push(new Route("Rota de Teste", "#509900"));
-       $scope.model.selectedRoute = $scope.model.routes[0];*/
       // Handler do modo street view
       google.maps.event.addListener(inst.map.getStreetView(), "visible_changed", function () {
         if (inst.map.getStreetView().getVisible() && $scope.streetView === null) {
