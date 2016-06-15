@@ -12,8 +12,8 @@
     <% end %>
 
     <div class="field">
-      <%= f.label :parent_route_id %>
-      <%= f.number_field :parent_route_id %>
+      <%= f.label :parent_route %>
+      <%= f.collection_select :parent_route_id, Route.all, :id, :name, {include_blank: true}, {class: 'form_control'} %>
     </div>
 
     <div class="field">
@@ -27,18 +27,8 @@
     </div>
 
     <div class="field">
-      <%= f.label :route_path_markers %>
-      <%= f.text_field :route_path_markers %>
-    </div>
-
-    <div class="field">
-      <%= f.label :route %>
-      <%= f.text_field :route %>
-    </div>
-
-    <div class="field">
       <%= f.label :line_id %>
-      <%= f.text_field :line_id %>
+      <%= f.collection_select :line_id, Line.all, :id, :name, {include_blank: false}, {class: 'form_control'} %>
     </div>
 
     <div class="actions">
