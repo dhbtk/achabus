@@ -11,12 +11,14 @@ var Route = function (nameOrObject, map) {
     }
     this.color = '#000000';
     this.path = new google.maps.MVCArray();
+    this.map = map;
     this.poly = new google.maps.Polyline({
-        map: map,
+        map: this.map,
         strokeColor: this.color,
         strokeOpacity: 1.0,
         strokeWeight: 5,
     });
+    this.poly.setVisible(false);
     this.points = [];
     this.poly.setPath(this.path);
     var self = this;
@@ -114,8 +116,12 @@ Route.prototype.serialize = function () {
     };
 };
 
-Route.prototype.unload = function () {
-    this.poly.setMap(null);
+Route.prototype.hide = function () {
+    this.poly.setVisible(false);
+};
+
+Route.prototype.show = function () {
+    this.poly.setVisible(true);
 };
 
 Route.prototype.save = function () {
@@ -123,4 +129,4 @@ Route.prototype.save = function () {
     this.serializePoints().forEach(function (p) {
         $.ajax({url: '/route_points.json', method: 'POST', data: p})
     });
-}
+};
