@@ -26,11 +26,11 @@ var Route = function (nameOrObject, map) {
            self.path.push(new google.maps.LatLng({lat: p.lat, lng: p.lon}));
         });
     }
-    // if(nameOrObject.route_points) {
-    //     nameOrObject.route_points.forEach(function(p) {
-    //         self._addPoint(p);
-    //     });
-    // }
+    if(nameOrObject.route_points) {
+        nameOrObject.route_points.forEach(function(p) {
+            self.points.push(new RoutePoint($(document.body).scope().model.points[p.point_id], p.polyline_index));
+        });
+    }
 };
 
 Route.prototype._addPoint = function (point) {
@@ -100,7 +100,7 @@ Route.prototype.serializePoints = function () {
 };
 
 Route.prototype._serializeRoute = function () {
-    return 'LINESTRING(' + this.path.getArray().map(p => p.lng() + ' ' + p.lat().join(',') + ')');
+    return 'LINESTRING(' + this.path.getArray().map(p => p.lng() + ' ' + p.lat()).join(',') + ')';
 };
 
 Route.prototype.serialize = function () {
