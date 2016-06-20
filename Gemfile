@@ -30,7 +30,7 @@ gem 'jbuilder', '~> 2.0'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
+  #gem 'byebug'
 end
 
 group :development do
@@ -45,6 +45,7 @@ gem 'dotenv-rails'
 
 gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
 gem 'geokit'
+gem 'PriorityQueue'
 
 gem 'bootstrap-sass'
 gem 'bower-rails', '~> 0.10.0'
