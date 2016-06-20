@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
   get 'admin', to: 'dashboard#show'
 
-  resources :route_points
+  resources :route_points do
+    member do
+      get 'to'
+    end
+  end
   resources :points do
     member do
       post 'forward'
