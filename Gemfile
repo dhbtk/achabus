@@ -50,3 +50,5 @@ gem 'bootstrap-sass'
 gem 'bower-rails', '~> 0.10.0'
 gem 'angular-rails-templates'
 gem 'angular_rails_csrf'
+
+gem 'browserify-rails'

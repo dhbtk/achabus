@@ -1,2 +1,1 @@
-function MainController() {
-}
+module.exports = function() {};
