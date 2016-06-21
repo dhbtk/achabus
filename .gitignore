@@ -22,4 +22,4 @@ vendor/assets/bower_components
 Gemfile.lock
 .tag*
 dump.sql
-.idea
+node_modules
