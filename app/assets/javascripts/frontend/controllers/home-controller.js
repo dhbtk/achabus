@@ -11,5 +11,7 @@ function HomeController($scope, $q) {
 
     $('<img />').attr('src', '/cataratas.jpg').load(function () {
         $('#home-picture').css('background-image', 'url(/cataratas.jpg)').css('opacity', '1');
-    })
+    });
+
+    navigator.geolocation.getCurrentPosition(function(pos) { console.log(pos); });
 }
