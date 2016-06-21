@@ -45,7 +45,6 @@ gem 'dotenv-rails'
 
 gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
 gem 'geokit'
-gem 'PriorityQueue'
 
 gem 'bootstrap-sass'
 gem 'bower-rails', '~> 0.10.0'

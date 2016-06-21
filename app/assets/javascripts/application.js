@@ -27,10 +27,10 @@
 
 angular.module('achaBus', ['ngMaterial', 'ui.router', 'templates'])
     .config(function ($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise('');
+        $urlRouterProvider.otherwise('home');
 
         $stateProvider.state('home', {
-            url: '/',
+            url: '/home',
             controller: 'HomeController as home',
             templateUrl: 'home.html'
         });
