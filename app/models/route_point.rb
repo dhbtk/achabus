@@ -80,7 +80,7 @@ FROM
   end
 
   def self.route_between(start, finish)
-    path = RoutePoint.find(dijkstra(start, finish)).group_by{|p| p.route_id}.map do |route_id, group|
+    path = RoutePoint.joins(:point).find(dijkstra(start, finish)).group_by{|p| p.route_id}.map do |route_id, group|
       sql = <<-EOF
 SELECT st_astext(st_makeline(geom)::geography) as route_line
 FROM
