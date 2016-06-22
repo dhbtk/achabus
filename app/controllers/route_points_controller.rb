@@ -63,7 +63,12 @@ class RoutePointsController < ApplicationController
 
   def to
     @other = RoutePoint.find(params[:other_id])
-    render json: RoutePoint.route_between(@route_point, @other)
+    @path = RoutePoint.route_between(@route_point, @other)
+  end
+
+  def closest_to
+    @route_point = RoutePoint.closest_to(params[:lng].to_f, params[:lat].to_f)
+    render :show
   end
 
   private

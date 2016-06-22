@@ -3,7 +3,7 @@ class RoutePoint < ApplicationRecord
   belongs_to :point
 
   def neighbors
-    RoutePoint.where('(route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position::geography) < 300) OR (route_id = ? AND "order" = ?)',
+    RoutePoint.where('(route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position::geography) < 500) OR (route_id = ? AND "order" = ?)',
                      self.route_id, self.point.position.lon, self.point.position.lat, self.route_id, self.order + 1).joins(:point)
   end
 
@@ -19,15 +19,15 @@ FROM
         EOF
         Route.connection.execute(sql).values[0][0]
       else
-        1000 + 100*self.point.position.distance(target.point.position)
+        raise ArgumentError, 'Não podemos voltar para trás'
       end
     else
-      200 + 20*self.point.position.distance(target.point.position)
+      50*self.point.position.distance(target.point.position)
     end
   end
 
   def self.closest_to lon, lat
-    joins(:point).where('st_distance(st_point(?, ?)::geography, points.position::geography) < 300', lon, lat)
+    joins(:point).where('st_distance(st_point(?, ?)::geography, points.position::geography) < 3000', lon, lat)
         .order(sanitize_sql("st_distance(st_point(#{lon}, #{lat})::geography, points.position::geography)"))
         .limit(1)&.first
   end
@@ -59,7 +59,7 @@ FROM
           path.unshift smallest
           smallest = previous[smallest]
         end
-        return path
+        return [start.id] + path
       end
 
       break if smallest.nil? || costs[smallest] == maxint
@@ -85,14 +85,19 @@ FROM
 SELECT st_astext(st_makeline(geom)::geography) as route_line
 FROM
 (
-  SELECT (st_dumppoints(route)).geom FROM routes WHERE id = #{route_id} LIMIT (#{group[-1].polyline_index} + 1) OFFSET #{group[0].polyline_index}
+  SELECT (st_dumppoints(route)).geom FROM routes WHERE id = #{route_id} LIMIT (#{group[-1].polyline_index - group[0].polyline_index} + 1) OFFSET #{group[0].polyline_index}
 ) foo
       EOF
+      puts "cara inicial" if group[0] == start
+      puts "cara final" if group[-1] == finish
       {
           start_point: group[0].point,
           end_point: group[-1].point,
           points: group.map(&:point),
-          route: RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(Route.connection.execute(sql).values[0][0])
+          route: RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(Route.connection.execute(sql).values[0][0])&.points&.map{|p|
+            p = RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(p.to_s)
+            {lat: p.lat, lng: p.lon}
+          }
       }
     end
   end

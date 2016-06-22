@@ -5,6 +5,9 @@ Rails.application.routes.draw do
     member do
       get 'to'
     end
+    collection do
+      get 'closest_to'
+    end
   end
   resources :points do
     member do
