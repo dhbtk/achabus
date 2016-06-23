@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'route_tracer/trace'
+
   get 'admin', to: 'dashboard#show'
 
   resources :route_points do
@@ -18,6 +20,8 @@ Rails.application.routes.draw do
     end
   end
   get 'map_editor', to: 'map_editor#show'
+
+  get 'trace_route', to: 'route_tracer#trace'
 
   resources :routes
   resources :lines
