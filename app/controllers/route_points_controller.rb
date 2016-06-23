@@ -1,5 +1,5 @@
 class RoutePointsController < ApplicationController
-  before_action :set_route_point, only: [:show, :edit, :update, :destroy, :to]
+  before_action :set_route_point, only: [:show, :edit, :update, :destroy]
 
   # GET /route_points
   # GET /route_points.json
@@ -59,11 +59,6 @@ class RoutePointsController < ApplicationController
       format.html { redirect_to route_points_url, notice: 'Route point was successfully destroyed.' }
       format.json { head :no_content }
     end
-  end
-
-  def to
-    @other = RoutePoint.find(params[:other_id])
-    @path = RoutePoint.route_between(@route_point, @other)
   end
 
   def closest_to
