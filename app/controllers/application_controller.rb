@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   before_action :auth_basic_temp
 
   def auth_basic_temp
-    unless request.remote_ip == '127.0.0.1' || authenticate_with_http_basic { |u, p| u == "achabus-dev" && p == ENV['TEMP_PASSWORD'] }
+    unless request.remote_ip == '127.0.0.1' || request.remote_ip == '::1' || authenticate_with_http_basic { |u, p| u == "achabus-dev" && p == ENV['TEMP_PASSWORD'] }
       request_http_basic_authentication
     end
   end
