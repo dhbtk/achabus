@@ -7,7 +7,7 @@ class VirtualPoint
 	end
 
 	def cost_to target
-		@point.distance(target.point.position)*5
+		@point.distance(target.point.position)*7
 	end
 
 	def point
