@@ -3,7 +3,7 @@ class RoutePoint < ApplicationRecord
   belongs_to :point
 
   def neighbors(destination = nil)
-    neighbors = RoutePoint.where('(route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 100) OR (route_id = ? AND "order" = ?)',
+    neighbors = RoutePoint.where('(route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 250) OR (route_id = ? AND "order" = ?)',
                      self.route_id, self.point.position.lon, self.point.position.lat, self.route_id, self.order + 1).joins(:point)
     neighbors += [destination] if destination && self.point.position.distance(destination.point.position) < 500
     neighbors
@@ -26,7 +26,7 @@ FROM
                    EOF
                    Route.connection.execute(sql).values[0][0]
                  end
-  		distance + 5*self.point.position.distance(target.point.position)
+  		distance + 7*self.point.position.distance(target.point.position)
     elsif target.route_id == self.route_id
       if target.order > self.order
         sql = <<-EOF

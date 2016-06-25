@@ -172,22 +172,24 @@ mapEditor.controller('MapEditorController', function (uiGmapIsReady, uiGmapGoogl
         if ($scope.kmlLayer != null) {
           $scope.kmlLayer.setMap(null);
         }
-        var url = new URL(line.itinerary_link);
-        var kmlUrl;
-        if (url.host.match(/www\.google\.com/)) {
-          kmlUrl = "https://www.google.com/maps/d/kml?mid=" + url.search.match(/mid=([^&]+)/)[1] + "&nl=1";
-        }
-        else {
-          kmlUrl = url.href + "&output=kml";
-        }
+        if(line.itinerary_link) {
+          var url = new URL(line.itinerary_link);
+          var kmlUrl;
+          if (url.host.match(/www\.google\.com/)) {
+            kmlUrl = "https://www.google.com/maps/d/kml?mid=" + url.search.match(/mid=([^&]+)/)[1] + "&nl=1";
+          }
+          else {
+            kmlUrl = url.href + "&output=kml";
+          }
 
-        $scope.kmlLayer = new google.maps.KmlLayer({
-          url: kmlUrl,
-          map: $scope.map,
-          suppressInfoWindows: true,
-          clickable: false,
-          preserveViewport: false,
-        });
+          $scope.kmlLayer = new google.maps.KmlLayer({
+            url: kmlUrl,
+            map: $scope.map,
+            suppressInfoWindows: true,
+            clickable: false,
+            preserveViewport: false,
+          });
+        }
 
         $scope.model.routes.forEach(r => r.unload());
         $scope.model.routes = [];

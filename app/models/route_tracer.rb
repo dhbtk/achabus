@@ -41,7 +41,7 @@ class RouteTracer
       end
     end
 
-    costs
+    []
   end
 
   def self.find_path(start, finish)
