@@ -1,0 +1,25 @@
+<block title="Linhas" width="12">
+    <table class="table-striped table jambo_table">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Grupo</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat-start="line in ctrl.lines">
+                <td>{{line.short_name}} - {{line.name}}</td>
+                <td>{{line.line_group.name}} - {{line.line_group.city}}</td>
+            </tr>
+            <tr ng-repeat-end>
+                <td colspan="2">
+                    <ul ng-show="line.routes.length > 0">
+                        <li ng-repeat="route in line.routes">
+                            {{route.name}} {{route.short_name ? '(' + route.short_name + ')' : ''}}
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</block>

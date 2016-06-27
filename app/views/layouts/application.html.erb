@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="admin">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <!-- Meta, title, CSS, favicons, etc. -->
@@ -14,7 +14,7 @@
 </head>
 
 <body class="nav-md">
-<div class="container body">
+<div class="container body" ng-controller="MainController">
   <div class="main_container">
     <div class="col-md-3 left_col">
       <div class="left_col scroll-view">
@@ -74,30 +74,16 @@
 
     <!-- page content -->
     <div class="right_col" role="main">
-      <div class="">
+      <div>
         <div class="page-title">
           <div class="title_left">
-            <h3>Plain Page</h3>
+            <h3>{{pageTitle}}</h3>
           </div>
         </div>
 
         <div class="clearfix"></div>
 
-        <div class="row">
-          <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="x_panel">
-              <div class="x_title">
-                <h2>Plain Page</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                </ul>
-                <div class="clearfix"></div>
-              </div>
-              <div class="x_content">
-                <%= yield %>
-              </div>
-            </div>
-          </div>
+        <div class="row" ui-view>
         </div>
       </div>
     </div>
