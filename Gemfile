@@ -47,6 +47,7 @@ gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
 gem 'geokit'
 
 gem 'bootstrap-sass'
+gem 'font-awesome-rails'
 gem 'bower-rails', '~> 0.10.0'
 gem 'angular-rails-templates'
 gem 'angular_rails_csrf'

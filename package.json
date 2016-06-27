@@ -19,7 +19,12 @@
     "babelify": "^7.2.0",
     "browserify": "~10.2.4",
     "browserify-incremental": "^3.0.1",
-    "jquery": "^1.12.4"
+    "jquery": "^1.12.4",
+    "bootstrap-sass": "^3.2.0"
+  },
+  "browser": {
+    "bootstrap": "./node_modules/bootstrap-sass/assets/javascripts/bootstrap.js",
+    "jQuery": "./node_modules/jquery/dist/jquery.min.js"
   },
   "engines": {
     "node": ">= 0.10"
