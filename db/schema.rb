@@ -16,7 +16,6 @@ ActiveRecord::Schema.define(version: 20160628155253) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
-  enable_extension "address_standardizer"
 
   create_table "line_groups", id: :integer, force: :cascade do |t|
     t.string   "name"
