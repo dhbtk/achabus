@@ -1,4 +1,5 @@
 'use strict';
 
 require('../module').controller('MainController', require('./main-controller.js'))
-.controller('LinesController', require('./lines-controller.js'));
+.controller('LineListController', require('./line-list-controller.js'))
+.controller('ShowLineController', require('./show-line-controller.js'));

@@ -4,6 +4,14 @@
 class MainController {
     constructor($scope) {
         $scope.pageTitle = 'Manutenção';
+
+        /**
+         * 
+         * @param title
+         */
+        $scope.setTitle = function(title) {
+            $scope.pageTitle = title;
+        }
     }
 }
 

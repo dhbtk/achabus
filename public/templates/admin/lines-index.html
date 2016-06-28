@@ -8,12 +8,12 @@
         </thead>
         <tbody>
             <tr ng-repeat-start="line in ctrl.lines">
-                <td>{{line.short_name}} - {{line.name}}</td>
+                <td><a ui-sref="lines.show({id: line.id})">{{line.short_name}} - {{line.name}}</a></td>
                 <td>{{line.line_group.name}} - {{line.line_group.city}}</td>
             </tr>
-            <tr ng-repeat-end>
+            <tr ng-repeat-end ng-show="line.routes.length > 0">
                 <td colspan="2">
-                    <ul ng-show="line.routes.length > 0">
+                    <ul>
                         <li ng-repeat="route in line.routes">
                             {{route.name}} {{route.short_name ? '(' + route.short_name + ')' : ''}}
                         </li>

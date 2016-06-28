@@ -9,4 +9,8 @@ class Route < ApplicationRecord
   def route_lonlat
     self.route&.points&.map{|x| {lat: x.y, lon: x.x}}
   end
+
+  def route_length
+    RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(self.route.to_s).length
+  end
 end

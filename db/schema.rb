@@ -11,11 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160615165136) do
+ActiveRecord::Schema.define(version: 20160628155253) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
+  enable_extension "address_standardizer"
 
   create_table "line_groups", id: :integer, force: :cascade do |t|
     t.string   "name"
@@ -79,10 +80,12 @@ ActiveRecord::Schema.define(version: 20160615165136) do
     t.string   "name"
     t.string   "short_name"
     t.geometry "route_path_markers", limit: {:srid=>0, :type=>"line_string"}
-    t.geometry "route",              limit: {:srid=>0, :type=>"line_string"}
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.geometry "route",              limit: {:srid=>4326, :type=>"line_string"}
+    t.datetime "created_at",                                                     null: false
+    t.datetime "updated_at",                                                     null: false
     t.integer  "line_id"
+    t.string   "origin"
+    t.string   "destination"
     t.index ["line_id"], name: "index_routes_on_line_id", using: :btree
   end
 
