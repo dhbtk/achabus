@@ -2,9 +2,10 @@
 require('angular').module('achaBus', [require('angular-material'), require('angular-ui-router')])
     .config(function ($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise('home');
+        $urlRouterProvider.when('','/');
 
         $stateProvider.state('home', {
-            url: '/home',
+            url: '/',
             controller: 'HomeController as home',
             templateUrl: '/templates/home.html'
         });

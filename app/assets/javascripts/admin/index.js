@@ -10,7 +10,6 @@ require('./controllers');
 require('./module').config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('home');
     $urlRouterProvider.when('', '/');
-    $urlRouterProvider.when('/lines','/lines/index');
 
     $stateProvider.state('home', {
         url: '/',
@@ -22,7 +21,7 @@ require('./module').config(function ($stateProvider, $urlRouterProvider) {
         template: '<div ui-view/>'
     });
     $stateProvider.state('lines.index', {
-        url: '/index',
+        url: '',
         controller: 'LineListController as ctrl',
         templateUrl: '/templates/admin/lines-index.html'
     });
