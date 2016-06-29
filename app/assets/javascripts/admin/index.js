@@ -18,16 +18,15 @@ require('./module').config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider.state('lines', {
         url: '/lines',
         abstract: true,
+        controller: 'LinesController as ctrl',
         template: '<div ui-view/>'
     });
     $stateProvider.state('lines.index', {
         url: '',
-        controller: 'LineListController as ctrl',
         templateUrl: '/templates/admin/lines-index.html'
     });
     $stateProvider.state('lines.show', {
         url: '/:id',
-        controller: 'ShowLineController as ctrl',
         templateUrl: '/templates/admin/lines-show.html'
     });
 });
