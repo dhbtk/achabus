@@ -9,13 +9,14 @@ class LinesController {
          */
         this.$http = $http;
         this.$scope = $scope;
+        this.$state = $state;
 
         /**
          * Estado
          */
         this.lines = [];
         this.line = null;
-
+        this.newRoute = null;
         /**
          * Detectando que estado estamos
          */
@@ -63,8 +64,32 @@ class LinesController {
     loadLine(id) {
         this.$http.get('/lines/' + id + '.json').then(data => {
             this.line = data.data;
+            this.newRoute = {
+                line_id: this.line.id
+            };
             this.$scope.setTitle(this.line.short_name + ' - ' + this.line.name);
         });
+    }
+
+    createRoute() {
+        if(this.line && this.newRoute && this.routeForm.$valid) {
+            this.$http.post('/routes.json', {route: this.newRoute}).then(() => {
+                alert('Deu certo!');
+                loadLine(this.line.id);
+            }, (data) => {
+                alert('Erro!');
+                console.log(data);
+            });
+        }
+    }
+    
+    deleteRoute(id) {
+        if(confirm('Excluir rota?')) {
+            this.$http.delete('/routes/' + id + '.json').then(() => {
+                alert('Rota excluída com sucesso.');
+                loadLine(this.line.id);
+            });
+        }
     }
 }
 

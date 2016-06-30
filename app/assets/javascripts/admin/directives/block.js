@@ -6,7 +6,7 @@ require('../module').directive('block', () => {
     return {
         restrict: 'E',
         scope: {
-            title: '@',
+            heading: '@',
             width: '='
         },
         transclude: true,

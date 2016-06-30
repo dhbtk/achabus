@@ -46,7 +46,7 @@
           <md-list-item class="md-2-line" ng-repeat="route in model.routes" ng-click="selectRoute(route)">
             <div class="md-list-item-text">
               <h3>{{route.name}}</h3>
-              <p>{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
+              <p>{{route.short_name ? route.short_name + ' - ' : ''}}{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
             </div>
           </md-list-item>
         </md-list>
