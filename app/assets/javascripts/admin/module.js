@@ -3,4 +3,4 @@
  */
 let angular = require('angular');
 
-module.exports = angular.module('admin', [require('angular-ui-router')]);
+module.exports = angular.module('admin', [require('angular-material'), require('angular-material-sidemenu'), require('angular-ui-router')]);
