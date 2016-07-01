@@ -25,3 +25,4 @@ dump.sql
 node_modules
 .idea
 public/js/*
+public/css/*

@@ -3,37 +3,65 @@
  */
 "use strict";
 var gulp = require('gulp');
-
-var browserify = require('browserify');
-var watchify = require('watchify');
-var babelify = require('babelify');
-
+var gutil = require('gulp-util');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 
 var sourcemaps = require('gulp-sourcemaps');
 
-var assign = require('lodash.assign');
-var gutil = require('gulp-util');
+var sass = require('gulp-sass');
 
-var opts = assign({}, watchify.args, {
-    entries: ['app/assets/javascripts/admin/index.js'],
-    debug: true
+var browserify = require('browserify');
+var watchify = require('watchify');
+var babelify = require('babelify');
+
+
+// JAVASCRIPT
+
+function rebundle(bundler) {
+    return function () {
+        return bundler.bundle()
+            .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+            .pipe(source('admin.js'))
+            .pipe(buffer())
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(sourcemaps.write('./'))
+            .pipe(gulp.dest('./public/js'));
+    }
+}
+
+gulp.task('js', () => {
+    const bundler = browserify('./app/assets/javascripts/admin/index.js');
+    bundler.transform(babelify);
+
+    return (rebundle(bundler))();
 });
 
-var bundler = watchify(browserify(opts));
-bundler.transform(babelify);
+gulp.task('watchjs', () => {
+    watchify.args.debug = true;
+    const bundler = watchify(browserify('./app/assets/javascripts/admin/index.js'), watchify.args);
+    bundler.transform(babelify);
 
-function bundle() {
-    return bundler.bundle()
-        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-        .pipe(source('admin.js'))
-        .pipe(buffer())
+    bundler.on('update', rebundle(bundler));
+    bundler.on('log', gutil.log.bind(gutil));
+
+    return (rebundle(bundler))();
+});
+
+// CSS
+
+gulp.task('css', () => {
+    return gulp.src('./app/assets/stylesheets/admin.scss')
         .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./public/js'));
-}
-bundler.on('update', bundle);
-bundler.on('log', gutil.log);
+        .pipe(sass({includePaths: ['node_modules/']}).on('error', sass.logError))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('./public/css'));
+});
 
-gulp.task('watch', bundle);
+gulp.task('watchcss', () => {
+    return gulp.watch('./app/assets/stylesheets/admin.scss', ['css']);
+});
+
+gulp.task('build', ['js', 'css']);
+
+gulp.task('default', ['watchjs', 'css', 'watchcss']);
