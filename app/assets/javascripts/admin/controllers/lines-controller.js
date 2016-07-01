@@ -3,13 +3,14 @@
  */
 'use strict';
 class LinesController {
-    constructor($state, $http, $scope, $rootScope) {
+    constructor($state, $http, $scope, $rootScope, $mdToast) {
         /**
          * Serviços
          */
         this.$http = $http;
         this.$scope = $scope;
         this.$state = $state;
+        this.$mdToast = $mdToast;
 
         /**
          * Estado
@@ -74,10 +75,10 @@ class LinesController {
     createRoute() {
         if(this.line && this.newRoute && this.routeForm.$valid) {
             this.$http.post('/routes.json', {route: this.newRoute}).then(() => {
-                alert('Deu certo!');
+                this.$mdToast.showSimple('Rota adicionada com sucesso.');
                 loadLine(this.line.id);
             }, (data) => {
-                alert('Erro!');
+                this.$mdToast.showSimple('Não foi possível adicionar a rota.');
                 console.log(data);
             });
         }
@@ -86,7 +87,7 @@ class LinesController {
     deleteRoute(id) {
         if(confirm('Excluir rota?')) {
             this.$http.delete('/routes/' + id + '.json').then(() => {
-                alert('Rota excluída com sucesso.');
+                this.$mdToast.showSimple('Rota excluída com sucesso.');
                 loadLine(this.line.id);
             });
         }
