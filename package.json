@@ -32,6 +32,10 @@
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
   },
+  "browser": {
+    "bootstrap": "./node_modules/bootstrap-sass/assets/javascripts/bootstrap.js",
+    "jQuery": "./node_modules/jquery/dist/jquery.min.js"
+  },
   "engines": {
     "node": ">= 0.10"
   },
