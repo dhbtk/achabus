@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
-  get 'route_tracer/trace'
+  get 'router/admin'
 
-  get 'admin', to: 'dashboard#show'
+  get 'router/frontend'
+
+  get 'route_tracer/trace'
 
   resources :route_points do
     member do
@@ -19,14 +21,14 @@ Rails.application.routes.draw do
       post 'right'
     end
   end
-  get 'map_editor', to: 'map_editor#show'
-
   get 'trace_route', to: 'route_tracer#trace'
 
   resources :routes
   resources :lines
   resources :line_groups
-  root to: 'home#show'
+
+  get 'admin', to: 'router#admin'
+  root to: 'router#frontend'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 

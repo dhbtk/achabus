@@ -9,7 +9,9 @@ RoutePoint.prototype.serialize = function (route, i) {
             route_id: route.id,
             point_id: this.point.id,
             order: i,
-            polyline_index: this.pathIndex,
+            polyline_index: this.pathIndex
         }
     };
 };
+
+module.exports = RoutePoint;

@@ -1,0 +1,18 @@
+@import "angular-material/angular-material.scss";
+@import "home";
+
+// GAS Tecnologia sucks
+object[width="0"] {
+  display: none;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+}
+
+body > [ui-view] {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}

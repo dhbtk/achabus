@@ -1,4 +1,7 @@
-var Route = function (nameOrObject, map) {
+import RoutePoint from './route_point';
+import $ from 'jquery';
+
+var Route = function (nameOrObject, map, points) {
     var lineSymbol = {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW};
     if (typeof nameOrObject === 'object') {
         this.name = nameOrObject.name;
@@ -16,7 +19,7 @@ var Route = function (nameOrObject, map) {
         map: this.map,
         strokeColor: this.color,
         strokeOpacity: 1.0,
-        strokeWeight: 5,
+        strokeWeight: 5
     });
     this.poly.setVisible(false);
     this.points = [];
@@ -30,7 +33,7 @@ var Route = function (nameOrObject, map) {
     }
     if(nameOrObject.route_points) {
         nameOrObject.route_points.forEach(function(p) {
-            self.points.push(new RoutePoint($(document.body).scope().model.points[p.point_id], p.polyline_index));
+            self.points.push(new RoutePoint(points[p.point_id], p.polyline_index));
         });
     }
 };
@@ -130,3 +133,5 @@ Route.prototype.save = function () {
         $.ajax({url: '/route_points.json', method: 'POST', data: p})
     });
 };
+
+module.exports = Route;

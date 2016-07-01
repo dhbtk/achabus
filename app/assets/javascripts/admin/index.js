@@ -14,6 +14,9 @@ require('./module').config(function ($stateProvider, $urlRouterProvider) {
         url: '/',
         templateUrl: '/templates/admin/home.html'
     });
+    /**
+     * Linhas
+     */
     $stateProvider.state('lines', {
         url: '/lines',
         abstract: true,
@@ -27,5 +30,13 @@ require('./module').config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider.state('lines.show', {
         url: '/:id',
         templateUrl: '/templates/admin/lines-show.html'
+    });
+    /**
+     * Editor de Rotas
+     */
+    $stateProvider.state('map', {
+        url: '/map',
+        controller: 'MapEditorController',
+        templateUrl: '/templates/admin/map-editor.html'
     });
 });
