@@ -18,7 +18,7 @@ var babelify = require('babelify');
 
 // JAVASCRIPT
 
-function rebundle(bundler) {
+function rebundleAdmin(bundler) {
     return function () {
         return bundler.bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
@@ -30,36 +30,79 @@ function rebundle(bundler) {
     }
 }
 
-gulp.task('js', () => {
+gulp.task('adminjs', () => {
     const bundler = browserify('./app/assets/javascripts/admin/index.js');
     bundler.transform(babelify);
 
-    return (rebundle(bundler))();
+    return (rebundleAdmin(bundler))();
 });
 
-gulp.task('watchjs', () => {
+gulp.task('watchadminjs', () => {
     watchify.args.debug = true;
     const bundler = watchify(browserify('./app/assets/javascripts/admin/index.js'), watchify.args);
     bundler.transform(babelify);
 
-    bundler.on('update', rebundle(bundler));
+    bundler.on('update', rebundleAdmin(bundler));
     bundler.on('log', gutil.log.bind(gutil));
 
-    return (rebundle(bundler))();
+    return (rebundleAdmin(bundler))();
 });
+
+function rebundleFrontend(bundler) {
+    return function () {
+        return bundler.bundle()
+            .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+            .pipe(source('frontend.js'))
+            .pipe(buffer())
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(sourcemaps.write('./'))
+            .pipe(gulp.dest('./public/js'));
+    }
+}
+
+gulp.task('frontendjs', () => {
+    const bundler = browserify('./app/assets/javascripts/frontend/index.js');
+    bundler.transform(babelify);
+
+    return (rebundleFrontend(bundler))();
+});
+
+gulp.task('watchfrontendjs', () => {
+    watchify.args.debug = true;
+    const bundler = watchify(browserify('./app/assets/javascripts/frontend/index.js'), watchify.args);
+    bundler.transform(babelify);
+
+    bundler.on('update', rebundleFrontend(bundler));
+    bundler.on('log', gutil.log.bind(gutil));
+
+    return (rebundleFrontend(bundler))();
+});
+
+gulp.task('js', ['frontendjs', 'adminjs']);
+gulp.task('watchjs',['watchadminjs', 'watchfrontendjs']);
 
 // CSS
 
-gulp.task('css', () => {
-    return gulp.src('./app/assets/stylesheets/admin.scss')
+gulp.task('admincss', () => {
+    return gulp.src('./app/assets/stylesheets/admin/admin.scss')
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sass({includePaths: ['node_modules/']}).on('error', sass.logError))
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('./public/css'));
 });
 
+gulp.task('frontendcss', () => {
+    return gulp.src('./app/assets/stylesheets/frontend/frontend.scss')
+        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(sass({includePaths: ['node_modules/']}).on('error', sass.logError))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('./public/css'));
+});
+
+gulp.task('css',['admincss','frontendcss']);
+
 gulp.task('watchcss', () => {
-    return gulp.watch('./app/assets/stylesheets/admin.scss', ['css']);
+    return gulp.watch('./app/assets/stylesheets/*.scss', ['admincss', 'frontendcss']);
 });
 
 gulp.task('build', ['js', 'css']);

@@ -15,6 +15,6 @@ require('angular').module('achaBus', [require('angular-material'), require('angu
             templateUrl: '/templates/map.html'
         });
     })
-    .controller('MainController', require('frontend/controllers/main-controller'))
-    .controller('HomeController', require('frontend/controllers/home-controller'))
-    .controller('MapController', require('frontend/controllers/map-controller'));
+    .controller('MainController', require('./controllers/main-controller'))
+    .controller('HomeController', require('./controllers/home-controller'))
+    .controller('MapController', require('./controllers/map-controller'));

@@ -11,14 +11,16 @@
         </md-toolbar>
         <md-dialog-content>
             <div class="md-dialog-content" layout="column">
-                <md-input-container>
-                    <label>Linha</label>
-                    <md-select ng-model="model.line">
-                        <md-option ng-repeat="line in model.lines" value="{{$index}}">{{line.short_name}} -
-                            {{line.name}}
-                        </md-option>
-                    </md-select>
-                </md-input-container>
+                <md-autocomplete md-selected-item="model.line"
+                                 md-search-text="model.text"
+                                 md-items="line in findLine(model.text)"
+                                 md-item-text="line.name"
+                                 md-floating-label="Linha"
+                                 md-min-length="0">
+                    <md-item-template>
+                        {{line.short_name}} - {{line.name}}
+                    </md-item-template>
+                </md-autocomplete>
             </div>
         </md-dialog-content>
         <md-dialog-actions layout="row">
