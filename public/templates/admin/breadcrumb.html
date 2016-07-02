@@ -1,0 +1,13 @@
+<div class="breadcrumbs">
+    <span ng-repeat="step in steps" ng-class="{active: $last}" ng-switch="$last || !!step.abstract">
+		<a ng-switch-when="false" ng-href="{{step.ncyBreadcrumbLink}}">
+			{{step.ncyBreadcrumbLabel}}
+		</a>
+		<span ng-switch-when="false">
+			 <md-icon class="material-icons">keyboard_arrow_right</md-icon>
+		</span>
+		<span ng-switch-when="true">
+			{{step.ncyBreadcrumbLabel}}
+		</span>
+	</span>
+</div>

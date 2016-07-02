@@ -33,6 +33,7 @@ function rebundleAdmin(bundler) {
 gulp.task('adminjs', () => {
     const bundler = browserify('./app/assets/javascripts/admin/index.js');
     bundler.transform(babelify);
+    bundler.transform('browserify-shim');
 
     return (rebundleAdmin(bundler))();
 });
@@ -41,6 +42,7 @@ gulp.task('watchadminjs', () => {
     watchify.args.debug = true;
     const bundler = watchify(browserify('./app/assets/javascripts/admin/index.js'), watchify.args);
     bundler.transform(babelify);
+    bundler.transform('browserify-shim');
 
     bundler.on('update', rebundleAdmin(bundler));
     bundler.on('log', gutil.log.bind(gutil));
@@ -63,6 +65,7 @@ function rebundleFrontend(bundler) {
 gulp.task('frontendjs', () => {
     const bundler = browserify('./app/assets/javascripts/frontend/index.js');
     bundler.transform(babelify);
+    bundler.transform('browserify-shim');
 
     return (rebundleFrontend(bundler))();
 });
@@ -71,6 +74,7 @@ gulp.task('watchfrontendjs', () => {
     watchify.args.debug = true;
     const bundler = watchify(browserify('./app/assets/javascripts/frontend/index.js'), watchify.args);
     bundler.transform(babelify);
+    bundler.transform('browserify-shim');
 
     bundler.on('update', rebundleFrontend(bundler));
     bundler.on('log', gutil.log.bind(gutil));

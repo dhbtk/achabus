@@ -6,13 +6,21 @@
 require('./directives/block.js');
 require('./controllers');
 
-require('./module').config(function ($stateProvider, $urlRouterProvider) {
+require('./module').config(function ($stateProvider, $urlRouterProvider, $breadcrumbProvider) {
+    $breadcrumbProvider.setOptions({
+        prefixStateName: 'home',
+        templateUrl: '/templates/admin/breadcrumb.html'
+    });
+    /**
+     * ESTADOS
+     */
     $urlRouterProvider.otherwise('home');
     $urlRouterProvider.when('', '/');
 
     $stateProvider.state('home', {
         url: '/',
-        templateUrl: '/templates/admin/home.html'
+        templateUrl: '/templates/admin/home.html',
+        ncyBreadcrumb: {label: 'Home'}
     });
     /**
      * Linhas
@@ -25,11 +33,16 @@ require('./module').config(function ($stateProvider, $urlRouterProvider) {
     });
     $stateProvider.state('lines.index', {
         url: '',
-        templateUrl: '/templates/admin/lines-index.html'
+        templateUrl: '/templates/admin/lines-index.html',
+        ncyBreadcrumb: {label: 'Linhas'}
     });
     $stateProvider.state('lines.show', {
         url: '/:id',
-        templateUrl: '/templates/admin/lines-show.html'
+        templateUrl: '/templates/admin/lines-show.html',
+        ncyBreadcrumb: {
+            label: '{{ctrl.line.short_name}} - {{ctrl.line.name}}',
+            parent: 'lines.index'
+        }
     });
     /**
      * Editor de Rotas
