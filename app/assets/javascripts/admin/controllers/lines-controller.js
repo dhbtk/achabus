@@ -29,6 +29,7 @@ class LinesController {
         // Show
         this.line = null;
         this.times = {};
+        this.newTimes = {};
 
         /**
          * Buga buga ES5!!!
@@ -120,6 +121,42 @@ class LinesController {
         this.$http.get(`/lines/${id}/timetables.json`).then(data => {
             console.log(data);
             this.times = data.data;
+            this.newTimes = {};
+            Object.keys(this.times).forEach(k => {
+                this.newTimes[k] = {
+                    routeOptions: {}
+                };
+                Object.keys(this.times[k]).forEach(od => {
+                    this.$http.get(`/lines/${id}/routes.json`, {params: {origin: od.split(', ')[0], destination: od.split(', ')[1]}}).then(data => {
+                        this.newTimes[k].routeOptions[od] = {time: {}, routes: data.data};
+                    });
+                });
+            });
+        });
+    }
+
+    /**
+     * Adiciona um horário a uma linha.
+     *
+     * @param time Objeto do horário
+     * @param period mon_fri, saturday ou sunday
+     */
+    addTime(time, period) {
+        time.sunday = time.monday = time.tuesday = time.wednesday = time.thursday = time.friday = time.saturday = false;
+        if(period == 'mon_fri') {
+            time.monday = time.tuesday = time.wednesday = time.thursday = time.friday = true;
+        } else if(period == 'saturday') {
+            time.saturday = true;
+        } else if(period == 'sunday') {
+            time.sunday = true;
+        }
+        this.$http.post(`/lines/${this.line.id}/timetables.json`, {timetable: time}).then(() => {
+            this.$mdToast.showSimple('Horário adicionado com sucesso.');
+            this.loadLine(this.line.id);
+            time.time = '';
+            time.route_id = null;
+        }, data => {
+            console.log(data);
         });
     }
 

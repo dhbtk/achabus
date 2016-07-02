@@ -37,13 +37,15 @@
                 <strong>Caminho</strong><br>
                 {{ctrl.line.path.join(' → ')}}
             </div>
+
+
             <div layout="row">
                 <h2>Rotas</h2>
                 <span flex></span>
                 <md-button class="md-raised md-primary" ng-click="ctrl.createRoute($event)">Adicionar Rota</md-button>
             </div>
             <div layout="row">
-                <div flex="{{100/Object.keys(ctrl.line.grouped_routes}.length}" layout-padding ng-repeat="(course, routes) in ctrl.line.grouped_routes">
+                <div flex layout-padding ng-repeat="(course, routes) in ctrl.line.grouped_routes">
                     <h4>{{course}}</h4>
                     <md-table-container>
                         <table md-table>
@@ -72,6 +74,49 @@
                             </tbody>
                         </table>
                     </md-table-container>
+                </div>
+            </div>
+
+
+            <h2>Horários</h2>
+            <div ng-repeat="(period, routes) in ctrl.times">
+                <h3>{{period == 'mon_fri' ? 'Segunda a Sexta' : period == 'saturday' ? 'Sábado' : 'Domingo'}}</h3>
+                <div layout="row">
+                    <div flex layout-padding ng-repeat="(route, times) in routes">
+                        <h4>{{route.split(', ').join(' → ')}}</h4>
+                        <div layout="row" class="add-time">
+                            <md-input-container>
+                                <label>Horário</label>
+                                <input type="time" ng-model="ctrl.newTimes[period].routeOptions[route].time.time">
+                            </md-input-container>
+                            <md-input-container flex>
+                                <md-select ng-model="ctrl.newTimes[period].routeOptions[route].time.route_id" placeholder="Observação">
+                                    <md-option ng-value="route.id" ng-repeat="route in ctrl.newTimes[period].routeOptions[route].routes">
+                                        {{route.observation ? route.observation : '-'}}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-button ng-click="ctrl.addTime(ctrl.newTimes[period].routeOptions[route].time, period)">
+                                <md-icon>add</md-icon>
+                            </md-button>
+                        </div>
+                        <md-table-container>
+                            <table md-table>
+                                <thead md-head>
+                                <tr md-row>
+                                    <th md-column>Horário</th>
+                                    <th md-column style="width: 100%">Observação</th>
+                                </tr>
+                                </thead>
+                                <tbody md-body>
+                                <tr md-row ng-repeat="time in times">
+                                    <td md-cell>{{time.time | date: 'HH:mm'}}</td>
+                                    <td md-cell>{{time.observation}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
+                    </div>
                 </div>
             </div>
         </div>

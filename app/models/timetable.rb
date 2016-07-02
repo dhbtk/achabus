@@ -1,6 +1,12 @@
 class Timetable < ApplicationRecord
   belongs_to :route
 
+  # O Rails é bestão e carrega isso como um DateTime em 01-01-2001, no horário de verão, então temos que corrigir
+  # isso de alguma maneira. Isso aqui vai dar pau, eu acho. FIXME
+  def time
+    super - 1.hour
+  end
+
   def self.by_line(line)
     {
         mon_fri: where(sunday: false, monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: false),
