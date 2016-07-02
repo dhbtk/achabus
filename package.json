@@ -22,6 +22,7 @@
     "babelify": "^7.2.0",
     "browserify": "~10.2.4",
     "browserify-incremental": "^3.0.1",
+    "gulp-livereload": "^3.8.1",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^1.6.0",
     "jquery": "^1.12.4",

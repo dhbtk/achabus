@@ -5,6 +5,9 @@ class LinesController < ApplicationController
   # GET /lines.json
   def index
     @lines = Line.filter(params[:filter])
+    if params[:page]
+      @lines = @lines.page(params[:page]).per(params[:size])
+    end
   end
 
   # GET /lines/1

@@ -35,3 +35,4 @@ gem 'dotenv-rails'
 
 gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
 gem 'geokit'
+gem 'kaminari'
