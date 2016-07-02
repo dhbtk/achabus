@@ -4,7 +4,7 @@ class TimetablesController < ApplicationController
   # GET /timetables
   # GET /timetables.json
   def index
-    @timetables = Timetable.by_line(Line.find(params[:id]))
+    @timetables = Timetable.by_line(Line.find(params[:line_id]))
   end
 
   # GET /timetables/1
