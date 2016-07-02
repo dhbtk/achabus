@@ -1,5 +1,6 @@
 @import "angular-material/angular-material.scss";
 @import "angular-material-sidemenu/dest/angular-material-sidemenu";
+@import "angular-material-data-table/dist/md-data-table";
 @import "map_editor";
 
 /**
@@ -48,6 +49,10 @@
   flex-direction: column;
 }
 
+[ui-view] > md-content {
+  background-color: #F5F5F5;
+}
+
 /**
  * Main toolbar
  */
@@ -93,4 +98,11 @@
 
 .white-bg {
   background-color: #FFF !important;
+}
+
+/**
+ * Tabelas
+ */
+tr[ng-click] {
+  cursor: pointer;
 }

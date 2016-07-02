@@ -7,29 +7,31 @@
     <div class="content">
         <div ncy-breadcrumb></div>
         <div class="white-bg md-whiteframe-4dp">
-            <table class="table-striped table jambo_table">
-                <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Grupo</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat-start="line in ctrl.lines">
-                    <td><a ui-sref="lines.show({id: line.id})">{{line.short_name}} - {{line.name}}</a></td>
-                    <td>{{line.line_group.name}} - {{line.line_group.city}}</td>
-                </tr>
-                <tr ng-repeat-end ng-show="line.routes.length > 0">
-                    <td colspan="2">
-                        <ul>
-                            <li ng-repeat="route in line.routes">
-                                {{route.name}} {{route.short_name ? '(' + route.short_name + ')' : ''}}
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <md-table-container>
+                <table md-table>
+                    <thead md-head>
+                    <tr md-row>
+                        <th md-column>Nome</th>
+                        <th md-column>Grupo</th>
+                    </tr>
+                    </thead>
+                    <tbody md-body>
+                    <tr ng-click="ctrl.$state.go('lines.show', {id: line.id})" md-row ng-repeat-start="line in ctrl.lines">
+                        <td md-cell>{{line.short_name}} - {{line.name}}</td>
+                        <td md-cell>{{line.line_group.name}} - {{line.line_group.city}}</td>
+                    </tr>
+                    <tr md-row ng-repeat-end ng-show="line.routes.length > 0">
+                        <td colspan="2">
+                            <ul>
+                                <li ng-repeat="route in line.routes">
+                                    {{route.name}} {{route.short_name ? '(' + route.short_name + ')' : ''}}
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
         </div>
     </div>
 </md-content>
