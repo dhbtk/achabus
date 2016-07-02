@@ -40,7 +40,7 @@ require('./module').config(function ($stateProvider, $urlRouterProvider, $breadc
         url: '/:id',
         templateUrl: '/templates/admin/lines-show.html',
         ncyBreadcrumb: {
-            label: '{{ctrl.line.short_name}} - {{ctrl.line.name}}',
+            label: '{{ctrl.line.identifier}} - {{ctrl.line.name}}',
             parent: 'lines.index'
         }
     });

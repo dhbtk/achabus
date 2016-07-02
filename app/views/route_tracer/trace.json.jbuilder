@@ -7,9 +7,9 @@ json.array!(@path) do |step|
 
   json.route do
     json.line do
-      json.extract! step[:route].line, :short_name, :name
+      json.extract! step[:route].line, :identifier, :name
     end
-    json.extract! step[:route], :name, :short_name
+    json.extract! step[:route], :name
   end
 
   json.route_path step[:route_path]

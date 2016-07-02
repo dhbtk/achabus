@@ -97,7 +97,7 @@ class LinesController {
             this.newRoute = {
                 line_id: this.line.id
             };
-            this.$scope.setTitle(this.line.short_name + ' - ' + this.line.name);
+            this.$scope.setTitle(this.line.identifier + ' - ' + this.line.name);
         });
     }
 

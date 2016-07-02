@@ -6,10 +6,14 @@ class Route < ApplicationRecord
   has_many :route_points, -> { order('"order" ASC') }, dependent: :destroy
   has_many :points, through: :route_points
 
-  validates :origin, :destination, :name, presence: true
+  validates :origin, :destination, presence: true
 
   def route_lonlat
     self.route&.points&.map{|x| {lat: x.y, lon: x.x}}
+  end
+
+  def name
+    "#{self.origin} - #{self.destination}" + (self.observation ? " (#{self.observation})" : '')
   end
 
   def route_length

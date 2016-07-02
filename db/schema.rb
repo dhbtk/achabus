@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160628155253) do
+ActiveRecord::Schema.define(version: 20160702131027) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,13 +25,14 @@ ActiveRecord::Schema.define(version: 20160628155253) do
   end
 
   create_table "lines", id: :integer, force: :cascade do |t|
-    t.string   "short_name"
+    t.string   "identifier"
     t.string   "name"
     t.integer  "line_group_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.string   "timetable_link"
     t.string   "itinerary_link"
+    t.string   "path",           default: [],              array: true
     t.index ["line_group_id"], name: "index_lines_on_line_group_id", using: :btree
   end
 
@@ -75,13 +76,10 @@ ActiveRecord::Schema.define(version: 20160628155253) do
   end
 
   create_table "routes", id: :integer, force: :cascade do |t|
-    t.integer  "parent_route_id"
-    t.string   "name"
-    t.string   "short_name"
-    t.geometry "route_path_markers", limit: {:srid=>0, :type=>"line_string"}
-    t.geometry "route",              limit: {:srid=>4326, :type=>"line_string"}
-    t.datetime "created_at",                                                     null: false
-    t.datetime "updated_at",                                                     null: false
+    t.string   "observation"
+    t.geometry "route",       limit: {:srid=>4326, :type=>"line_string"}
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
     t.integer  "line_id"
     t.string   "origin"
     t.string   "destination"
@@ -89,8 +87,8 @@ ActiveRecord::Schema.define(version: 20160628155253) do
   end
 
   create_table "timetables", id: :integer, force: :cascade do |t|
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.boolean  "sunday"
     t.boolean  "monday"
     t.boolean  "tuesday"
@@ -98,9 +96,8 @@ ActiveRecord::Schema.define(version: 20160628155253) do
     t.boolean  "thursday"
     t.boolean  "friday"
     t.boolean  "saturday"
-    t.integer  "start_place_id"
-    t.integer  "end_place_id"
     t.integer  "line_id"
+    t.time     "time",       null: false
     t.index ["line_id"], name: "index_timetables_on_line_id", using: :btree
   end
 
@@ -110,8 +107,5 @@ ActiveRecord::Schema.define(version: 20160628155253) do
   add_foreign_key "route_points", "points"
   add_foreign_key "route_points", "routes"
   add_foreign_key "routes", "lines"
-  add_foreign_key "routes", "routes", column: "parent_route_id"
   add_foreign_key "timetables", "lines"
-  add_foreign_key "timetables", "places", column: "end_place_id"
-  add_foreign_key "timetables", "places", column: "start_place_id"
 end
