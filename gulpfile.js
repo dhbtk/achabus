@@ -8,6 +8,7 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 
 var sourcemaps = require('gulp-sourcemaps');
+var livereload = require('gulp-livereload');
 
 var sass = require('gulp-sass');
 
@@ -92,7 +93,8 @@ gulp.task('admincss', () => {
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sass({includePaths: ['node_modules/']}).on('error', sass.logError))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./public/css'));
+        .pipe(gulp.dest('./public/css'))
+        .pipe(livereload());
 });
 
 gulp.task('frontendcss', () => {
@@ -100,13 +102,15 @@ gulp.task('frontendcss', () => {
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sass({includePaths: ['node_modules/']}).on('error', sass.logError))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./public/css'));
+        .pipe(gulp.dest('./public/css'))
+        .pipe(livereload());
 });
 
 gulp.task('css',['admincss','frontendcss']);
 
 gulp.task('watchcss', () => {
-    return gulp.watch('./app/assets/stylesheets/*.scss', ['admincss', 'frontendcss']);
+    livereload.listen();
+    return gulp.watch('./app/assets/stylesheets/**/*.scss', ['admincss', 'frontendcss']);
 });
 
 gulp.task('build', ['js', 'css']);
