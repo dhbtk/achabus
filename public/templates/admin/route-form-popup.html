@@ -1,0 +1,32 @@
+<md-dialog style="width: 600px; max-width: 600px;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2><span>{{ctrl.route.id ? 'Editar Rota' : 'Adicionar Rota'}}</span></h2>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <form name="ctrl.form" layout="column">
+                <md-input-container>
+                    <md-select ng-model="ctrl.route.origin" placeholder="Origem" required>
+                        <md-option ng-value="point" ng-repeat="point in ctrl.line.path">{{point}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <md-select ng-model="ctrl.route.destination" placeholder="Destino" required>
+                        <md-option ng-value="point" ng-repeat="point in ctrl.line.path">{{point}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <label>Observação</label>
+                    <input ng-model="ctrl.route.observation" type="text">
+                </md-input-container>
+            </form>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="ctrl.cancel()" class="md-raised">Cancelar</md-button>
+        <md-button ng-click="ctrl.confirm()" class="md-primary md-raised" ng-disabled="!ctrl.form.$valid">Salvar</md-button>
+    </md-dialog-actions>
+</md-dialog>

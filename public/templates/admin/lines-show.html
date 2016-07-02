@@ -37,7 +37,11 @@
                 <strong>Caminho</strong><br>
                 {{ctrl.line.path.join(' → ')}}
             </div>
-            <h2>Rotas</h2>
+            <div layout="row">
+                <h2>Rotas</h2>
+                <span flex></span>
+                <md-button class="md-raised md-primary" ng-click="ctrl.createRoute($event)">Adicionar Rota</md-button>
+            </div>
             <div layout="row">
                 <div flex="{{100/Object.keys(ctrl.line.grouped_routes}.length}" layout-padding ng-repeat="(course, routes) in ctrl.line.grouped_routes">
                     <h4>{{course}}</h4>
@@ -57,7 +61,7 @@
                                 <td md-cell>{{route.observation ? route.observation : '-'}}</td>
                                 <td md-cell>{{route.route_length/1000 | number: 2}} km</td>
                                 <td md-cell>
-                                    <md-button class="md-icon-button">
+                                    <md-button class="md-icon-button" ng-click="ctrl.editRoute(route, $event)">
                                         <md-icon>edit</md-icon>
                                     </md-button>
                                     <md-button class="md-icon-button" ng-click="ctrl.deleteRoute(route.id)">
@@ -70,65 +74,6 @@
                     </md-table-container>
                 </div>
             </div>
-            <block heading="Rotas" width="12">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <div class="row">
-                            <div class="col-sm-6" ng-repeat="(course, routes) in ctrl.line.grouped_routes">
-                                <h4>{{course}}</h4>
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Distância</th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="route in routes">
-                                        <td>{{route.observation}}</td>
-                                        <td>{{route.route_length/1000 | number: 2}} km</td>
-                                        <td><button type="button" class="btn btn-xs btn-danger" ng-click="ctrl.deleteRoute(route.id)"><i class="fa fa-fw fa-close"></i></button></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <h3>Nova Rota</h3>
-                                <form ng-submit="ctrl.createRoute()" name="ctrl.routeForm" class="form-horizontal">
-                                    <div class="form-group">
-                                        <label for="route_origin" class="col-sm-3 control-label">Origem</label>
-                                        <div class="col-sm-9">
-                                            <input ng-model="ctrl.newRoute.origin" class="form-control" id="route_origin" type="text" name="origin" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="route_destination" class="col-sm-3 control-label">Destino</label>
-                                        <div class="col-sm-9">
-                                            <input ng-model="ctrl.newRoute.destination" class="form-control" id="route_destination" type="text" name="destination" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="route_observation" class="col-sm-3 control-label">Observação</label>
-                                        <div class="col-sm-9">
-                                            <input ng-model="ctrl.newRoute.observation" class="form-control" id="route_observation" type="text" name="observation">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-9 col-sm-offset-3">
-                                            <button ng-disabled="!ctrl.routeForm.$valid" type="submit" class="btn btn-default">Salvar</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </block>
         </div>
     </div>
 </md-content>

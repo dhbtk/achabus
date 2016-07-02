@@ -84,6 +84,8 @@ class LinesController {
     loadLines() {
         this.$scope.setTitle('Linhas');
         this.filters = '';
+        this.query.limit = 15;
+        this.query.page = 1;
         this.$scope.getLines();
     }
 
@@ -108,16 +110,48 @@ class LinesController {
         });
     }
 
-    createRoute() {
-        if(this.line && this.newRoute && this.routeForm.$valid) {
-            this.$http.post('/routes.json', {route: this.newRoute}).then(() => {
-                this.$mdToast.showSimple('Rota adicionada com sucesso.');
-                loadLine(this.line.id);
-            }, (data) => {
-                this.$mdToast.showSimple('Não foi possível adicionar a rota.');
-                console.log(data);
-            });
-        }
+    /**
+     * Abre a popup de criação de rota.
+     * 
+     * @param event evento originador
+     */
+    createRoute(event) {
+        var route = {
+            line_id: this.line.id
+        };
+        this.$mdDialog.show({
+            templateUrl: '/templates/admin/route-form-popup.html',
+            controller: 'RoutePopupController as ctrl',
+            targetEvent: event,
+            locals: {
+                line: this.line,
+                route: route
+            }
+        }).then(() => this.loadLine(this.line.id));
+    }
+
+    /**
+     * Abre a popup de edição de rota para a rota selecionada.
+     * 
+     * @param route a rota
+     * @param event evento originador
+     */
+    editRoute(route, event) {
+        route = {
+            line_id: this.line.id,
+            origin: route.origin,
+            destination: route.destination,
+            observation: route.observation
+        };
+        this.$mdDialog.show({
+            templateUrl: '/templates/admin/route-form-popup.html',
+            controller: 'RoutePopupController as ctrl',
+            targetEvent: event,
+            locals: {
+                line: this.line,
+                route: route
+            }
+        }).then(() => this.loadLine(this.line.id));
     }
     
     deleteRoute(id) {
