@@ -139,3 +139,28 @@ table[md-table] thead tr th, table[md-table] tbody tr td {
   white-space: nowrap;
   width: 1em;
 }
+
+/**
+ * Tela das Linhas
+ */
+
+h3, h4 {
+  margin: 5px 0;
+}
+
+/**
+ * Formulário dos horários
+ */
+
+.add-time {
+  md-input-container {
+    margin: 0;
+  }
+  .md-button {
+    min-width: 24px;
+    min-height: 24px;
+    line-height: 24px;
+    max-height: 28px;
+    max-width: 30px;
+  }
+}
