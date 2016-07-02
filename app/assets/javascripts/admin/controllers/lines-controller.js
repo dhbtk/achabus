@@ -17,14 +17,18 @@ class LinesController {
         /**
          * Estado
          */
+
+        // Index
         this.lines = [];
-        this.line = null;
-        this.newRoute = null;
         this.filters = '';
         this.query = {
             limit: 15,
             page: 1
         };
+
+        // Show
+        this.line = null;
+        this.times = {};
 
         /**
          * Buga buga ES5!!!
@@ -81,6 +85,10 @@ class LinesController {
      * LISTA DE LINHAS
      *
      */
+
+    /**
+     * Carrega a lista de linhas quando mudamos de estado.
+     */
     loadLines() {
         this.$scope.setTitle('Linhas');
         this.filters = '';
@@ -103,10 +111,15 @@ class LinesController {
     loadLine(id) {
         this.$http.get('/lines/' + id + '.json').then(data => {
             this.line = data.data;
-            this.newRoute = {
-                line_id: this.line.id
-            };
             this.$scope.setTitle(this.line.identifier + ' - ' + this.line.name);
+        }, data => {
+            console.log(data);
+            this.$mdToast.showSimple(`Erro ${data.status}: ${data.statusText}`);
+            this.$state.go('lines.index');
+        });
+        this.$http.get(`/lines/${id}/timetables.json`).then(data => {
+            console.log(data);
+            this.times = data.data;
         });
     }
 
