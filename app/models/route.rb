@@ -1,7 +1,5 @@
 class Route < ApplicationRecord
-  belongs_to :parent_route, class_name: 'Route', required: false
   belongs_to :line
-  has_many :child_routes, class_name: 'Route', foreign_key: :parent_route_id
   has_many :timetables
   has_many :route_points, -> { order('"order" ASC') }, dependent: :destroy
   has_many :points, through: :route_points
