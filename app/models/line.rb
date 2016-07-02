@@ -1,6 +1,7 @@
 class Line < ApplicationRecord
   belongs_to :line_group
   has_many :routes
+  has_many :timetables, through: :routes
 
   default_scope { order('identifier ASC') }
 

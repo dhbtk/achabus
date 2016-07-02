@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :timetables
   get 'router/admin'
 
   get 'router/frontend'
