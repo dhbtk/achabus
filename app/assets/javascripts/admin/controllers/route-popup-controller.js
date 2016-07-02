@@ -25,7 +25,7 @@ class RoutePopupController {
         if(this.route.id) {
             this.$http.patch(`/routes/${this.route.id}.json`, {route: this.route}).then(action, error);
         } else {
-            this.$http.post('/routes.json', {route: this.route}).then(action, error);
+            this.$http.post(`/lines/${this.route.line_id}/routes.json`, {route: this.route}).then(action, error);
         }
     }
 }
