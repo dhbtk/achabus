@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160702131027) do
+ActiveRecord::Schema.define(version: 20160702180707) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -96,9 +96,9 @@ ActiveRecord::Schema.define(version: 20160702131027) do
     t.boolean  "thursday"
     t.boolean  "friday"
     t.boolean  "saturday"
-    t.integer  "line_id"
     t.time     "time",       null: false
-    t.index ["line_id"], name: "index_timetables_on_line_id", using: :btree
+    t.integer  "route_id"
+    t.index ["route_id"], name: "index_timetables_on_route_id", using: :btree
   end
 
   add_foreign_key "lines", "line_groups"
@@ -107,5 +107,5 @@ ActiveRecord::Schema.define(version: 20160702131027) do
   add_foreign_key "route_points", "points"
   add_foreign_key "route_points", "routes"
   add_foreign_key "routes", "lines"
-  add_foreign_key "timetables", "lines"
+  add_foreign_key "timetables", "routes"
 end

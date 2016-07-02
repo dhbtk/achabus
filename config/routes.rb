@@ -1,9 +1,4 @@
 Rails.application.routes.draw do
-  resources :timetables
-  get 'router/admin'
-
-  get 'router/frontend'
-
   get 'route_tracer/trace'
 
   resources :route_points do
@@ -25,7 +20,9 @@ Rails.application.routes.draw do
   get 'trace_route', to: 'route_tracer#trace'
 
   resources :routes
-  resources :lines
+  resources :lines do
+    resources :timetables, shallow: true
+  end
   resources :line_groups
 
   get 'admin', to: 'router#admin'
