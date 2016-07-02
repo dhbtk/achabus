@@ -1,5 +1,5 @@
 json.content(@lines) do |line|
-  json.extract! line, :id, :identifier, :name, :line_group_id, :itinerary_link, :timetable_link
+  json.extract! line, :id, :identifier, :name, :path, :line_group_id, :itinerary_link, :timetable_link
   json.line_group do
     json.extract! line.line_group, :name, :city
   end

@@ -130,3 +130,8 @@ md-toolbar .search {
 tr[ng-click] {
   cursor: pointer;
 }
+
+table[md-table] thead tr th, table[md-table] tbody tr td {
+  white-space: nowrap;
+  width: 1em;
+}
