@@ -9,4 +9,4 @@ json.content(@lines) do |line|
   json.url line_url(line, format: :json)
 end
 json.page params[:page]
-json.total @lines.total_count
+json.total params[:page] ? @lines.total_count : @lines.count
