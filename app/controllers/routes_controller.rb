@@ -1,24 +1,16 @@
 class RoutesController < ApplicationController
-  before_action :set_route, only: [:show, :edit, :update, :destroy]
+  before_action :set_route, only: [:show, :update, :destroy]
 
-  # GET /routes
-  # GET /routes.json
+  # GET /lines/:line_id/routes.json
   def index
-    @routes = Route.all
+    @routes = Line.find(params[:line_id]).routes
+    if params[:origin] && params[:destination]
+      @routes = Line.find(params[:line_id]).routes.where(origin: params[:origin], destination: params[:destination])
+    end
   end
 
-  # GET /routes/1
   # GET /routes/1.json
   def show
-  end
-
-  # GET /routes/new
-  def new
-    @route = Route.new
-  end
-
-  # GET /routes/1/edit
-  def edit
   end
 
   # POST /routes
@@ -28,10 +20,8 @@ class RoutesController < ApplicationController
 
     respond_to do |format|
       if @route.save
-        format.html { redirect_to @route, notice: 'Route was successfully created.' }
         format.json { render :show, status: :created, location: @route }
       else
-        format.html { render :new }
         format.json { render json: @route.errors, status: :unprocessable_entity }
       end
     end
@@ -42,10 +32,8 @@ class RoutesController < ApplicationController
   def update
     respond_to do |format|
       if @route.update(route_params) && @route.route_points.destroy_all
-        format.html { redirect_to @route, notice: 'Route was successfully updated.' }
         format.json { render :show, status: :ok, location: @route }
       else
-        format.html { render :edit }
         format.json { render json: @route.errors, status: :unprocessable_entity }
       end
     end
@@ -56,7 +44,6 @@ class RoutesController < ApplicationController
   def destroy
     @route.destroy
     respond_to do |format|
-      format.html { redirect_to routes_url, notice: 'Route was successfully destroyed.' }
       format.json { head :no_content }
     end
   end

@@ -19,9 +19,10 @@ Rails.application.routes.draw do
   end
   get 'trace_route', to: 'route_tracer#trace'
 
-  resources :routes
+
   resources :lines do
     resources :timetables, shallow: true
+    resources :routes, shallow: true
   end
   resources :line_groups
 
