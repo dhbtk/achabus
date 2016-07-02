@@ -21,7 +21,7 @@ class LinesController {
         this.newRoute = null;
         this.filters = '';
         this.query = {
-            limit: 10,
+            limit: 15,
             page: 1
         };
 
@@ -44,7 +44,7 @@ class LinesController {
          * @param limit
          * @returns {*}
          */
-        this.$scope.getLines = function(page = 1, limit = 10) {
+        this.$scope.getLines = function(page = 1, limit = 15) {
             let def = $q.defer();
             $http.get('/lines.json', {params: {filter: self.filters, page: page, size: limit}}).then(data => {
                 def.resolve(data.data.content);
@@ -55,7 +55,7 @@ class LinesController {
 
         this.checkState($state.current, $state.params);
 
-        $scope.$watch('ctrl.filters', () => this.$scope.getLines(1, 10));
+        $scope.$watch('ctrl.filters', () => this.$scope.getLines(1, 15));
     }
 
     /**
