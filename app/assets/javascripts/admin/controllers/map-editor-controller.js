@@ -182,7 +182,7 @@ class MapEditorController {
 
                     $scope.findLine = function(text) {
                         let def = $q.defer();
-                        $http.get('/lines.json', {filter: text}).then(data => def.resolve(data.data), a => def.reject(a));
+                        $http.get('/lines.json', {params: {filter: text}}).then(data => def.resolve(data.data), a => def.reject(a));
                         return def.promise;
                     };
                 },
