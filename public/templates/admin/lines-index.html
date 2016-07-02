@@ -7,6 +7,10 @@
             <md-icon>search</md-icon>
             <input placeholder="Busca" type="text" ng-model="ctrl.filters" ng-model-options="{debounce: 125}">
         </div>
+        <div class="divider"></div>
+        <md-button ng-click="ctrl.openNewLine($event)">
+            Adicionar Nova
+        </md-button>
     </div>
 </md-toolbar>
 <md-content flex layout="column" md-scroll-y>
