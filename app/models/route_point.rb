@@ -3,8 +3,8 @@ class RoutePoint < ApplicationRecord
   belongs_to :point
 
   def neighbors(destination = nil)
-    neighbors = RoutePoint.where('(route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 250) OR (route_id = ? AND "order" = ?)',
-                     self.route_id, self.point.position.lon, self.point.position.lat, self.route_id, self.order + 1).joins(:point)
+    neighbors = RoutePoint.joins(:point).where(points: {waypoint: false}).where('(route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 250) OR (route_id = ? AND "order" = ?)',
+                     self.route_id, self.point.position.lon, self.point.position.lat, self.route_id, self.order + 1)
     neighbors += [destination] if destination && self.point.position.distance(destination.point.position) < 500
     neighbors
   end
@@ -13,7 +13,7 @@ class RoutePoint < ApplicationRecord
   	if target.class == VirtualPoint
       # para evitar que pulemos adiante, precisamos saber qual o RoutePoint atual ou seguinte que está mais próximo do
       # VirtualPoint. Daí a distância é a distância até o tal RoutePoint + a distância caminhando
-      rp = RoutePoint.where(route: self.route).where('"order" >= ?', self.order).sort_by{|rp| rp.point.position.distance(target.point.position)}.first
+      rp = RoutePoint.joins(:point).where(points: {waypoint: false}, route: self.route).where('"order" >= ?', self.order).sort_by{|rp| rp.point.position.distance(target.point.position)}.first
       distance = if rp.id == self.id
                    0
                  else
@@ -46,7 +46,7 @@ FROM
   end
 
   def self.closest_to lon, lat
-    joins(:point).where('st_distance(st_point(?, ?)::geography, points.position::geography) < 3000', lon, lat)
+    joins(:point).where(points: {waypoint: false}).where('st_distance(st_point(?, ?)::geography, points.position::geography) < 3000', lon, lat)
         .order(sanitize_sql("st_distance(st_point(#{lon}, #{lat})::geography, points.position::geography)"))
         .limit(1)&.first
   end

@@ -44,17 +44,6 @@ class RouteTracer
     []
   end
 
-  def self.find_path(start, finish)
-    if start.position.point.distance(finish.position.point) < 500
-      # Vá caminhando!
-      []
-    else
-      paths = {}
-      path = []
-
-    end
-  end
-
   def self.route_between(start, finish)
     dijkstra(start, finish).group_by{|p| p.route_id}.map do |route_id, group|
       group = group.sort_by { |rp| rp.order } # ????
