@@ -60,8 +60,11 @@
   background-color: #ffffff;
   color: #000000;
   font-size: 16px;
-  & h2 > span {
+  h2 > span {
     font-size: 16px;
+  }
+  md-icon, .md-button {
+    color: rgba(0, 0, 0, 0.54);
   }
 }
 
@@ -72,6 +75,7 @@ md-toolbar .divider {
 }
 
 md-toolbar .search {
+  padding: 0 6px;
   md-icon {
     color: rgba(0, 0, 0, 0.54);
   }

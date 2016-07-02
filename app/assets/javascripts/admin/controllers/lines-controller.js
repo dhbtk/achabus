@@ -3,7 +3,7 @@
  */
 'use strict';
 class LinesController {
-    constructor($state, $http, $scope, $rootScope, $mdToast, $q) {
+    constructor($state, $http, $scope, $rootScope, $mdToast, $mdDialog, $q) {
         /**
          * Serviços
          */
@@ -11,6 +11,7 @@ class LinesController {
         this.$scope = $scope;
         this.$state = $state;
         this.$mdToast = $mdToast;
+        this.$mdDialog = $mdDialog;
         this.$q = $q;
 
         /**
@@ -91,6 +92,12 @@ class LinesController {
      * VISUALIZAR LINHA
      *
      */
+
+    /**
+     * Carrega a linha a partir do $http.
+     *
+     * @param id id da linha
+     */
     loadLine(id) {
         this.$http.get('/lines/' + id + '.json').then(data => {
             this.line = data.data;
@@ -120,6 +127,68 @@ class LinesController {
                 loadLine(this.line.id);
             });
         }
+    }
+
+    /**
+     *
+     * POPUPS
+     *
+     */
+
+    /**
+     * Abre a popup de edição de linha.
+     *
+     * @param id id da linha
+     * @param event evento originador
+     */
+    openEditLine(id, event) {
+        this.$http.get(`/lines/${id}.json`).then(data => {
+            let line = {
+                id: data.data.id,
+                identifier: data.data.identifier,
+                name: data.data.name,
+                path: data.data.path ? data.data.path.join(', ') : '',
+                line_group_id: data.data.line_group_id,
+                itinerary_link: data.data.itinerary_link,
+                timetable_link: data.data.timetable_link
+            };
+            this.$mdDialog.show({
+                templateUrl: '/templates/admin/line-form-popup.html',
+                controller: 'LinePopupController as ctrl',
+                targetEvent: event,
+                locals: {
+                    line: line
+                }
+            }).then(() => {
+                if(this.$state.current.name == 'lines.show') {
+                    this.loadLine(id);
+                } else {
+                    this.loadLines();
+                }
+            });
+        });
+    }
+
+    openNewLine(event) {
+        let line = {
+            id: null,
+            identifier: '',
+            name: '',
+            path: '',
+            line_group_id: null,
+            itinerary_link: '',
+            timetable_link: ''
+        };
+        this.$mdDialog.show({
+            templateUrl: '/templates/admin/line-form-popup.html',
+            controller: 'LinePopupController as ctrl',
+            targetEvent: event,
+            locals: {
+                line: line
+            }
+        }).then(() => {
+            this.loadLines();
+        });
     }
 }
 

@@ -72,6 +72,6 @@ class LinesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def line_params
-    params.require(:line).permit(:identifier, :name, :line_group_id, :timetable_link, :itinerary_link)
+    params.require(:line).permit(:identifier, :name, :line_group_id, :timetable_link, :itinerary_link, path: [])
   end
 end

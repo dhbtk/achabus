@@ -1,0 +1,43 @@
+<md-dialog style="width: 600px; max-width: 600px;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2><span>{{ctrl.line.id ? 'Editar Linha' : 'Adicionar Linha'}}</span></h2>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <form name="ctrl.form" layout="column">
+                <md-input-container>
+                    <label>Identificador</label>
+                    <input ng-model="ctrl.line.identifier" type="text" required>
+                </md-input-container>
+                <md-input-container>
+                    <label>Nome</label>
+                    <input ng-model="ctrl.line.name" type="text" required>
+                </md-input-container>
+                <md-input-container>
+                    <md-select ng-model="ctrl.line.line_group_id" placeholder="Grupo de Linha" required>
+                        <md-option ng-value="group.id" ng-repeat="group in ctrl.line_groups">{{group.name}} - {{group.city}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <label>Caminho</label>
+                    <input ng-model="ctrl.line.path" type="text" required>
+                </md-input-container>
+                <md-input-container>
+                    <label>Link do Itinerário</label>
+                    <input ng-model="ctrl.line.itinerary_link" type="text">
+                </md-input-container>
+                <md-input-container>
+                    <label>Link do Horário</label>
+                    <input ng-model="ctrl.line.timetable_link" type="text" required>
+                </md-input-container>
+            </form>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="ctrl.cancel()" class="md-raised">Cancelar</md-button>
+        <md-button ng-click="ctrl.confirm()" class="md-primary md-raised" ng-disabled="!ctrl.form.$valid">Salvar</md-button>
+    </md-dialog-actions>
+</md-dialog>
