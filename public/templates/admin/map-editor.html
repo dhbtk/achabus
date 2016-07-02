@@ -2,7 +2,7 @@
     <div layout="row" class="md-toolbar-tools">
         <md-button ng-click="openLine()">Abrir linha</md-button>
         <div ng-if="model.line" flex layout="row" layout-align="center center">
-            <h2><span>{{model.line.short_name}} - {{model.line.name}}</span></h2>
+            <h2><span>{{model.line.identifier}} - {{model.line.name}}</span></h2>
             <span flex></span>
             <md-button ng-href="{{model.line.itinerary_link}}" target="_blank" class="md-raised md-accent">Abrir Itinerário
             </md-button>
@@ -46,7 +46,7 @@
                     <md-list-item class="md-2-line" ng-repeat="route in model.routes" ng-click="selectRoute(route)">
                         <div class="md-list-item-text">
                             <h3>{{route.name}}</h3>
-                            <p>{{route.short_name ? route.short_name + ' - ' : ''}}{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
+                            <p>{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
                         </div>
                     </md-list-item>
                 </md-list>

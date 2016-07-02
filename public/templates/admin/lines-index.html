@@ -23,14 +23,14 @@
                     </thead>
                     <tbody md-body>
                     <tr ng-click="ctrl.$state.go('lines.show', {id: line.id})" md-row ng-repeat-start="line in ctrl.lines.content">
-                        <td md-cell>{{line.short_name}} - {{line.name}}</td>
+                        <td md-cell>{{line.identifier}} - {{line.name}}</td>
                         <td md-cell>{{line.line_group.name}} - {{line.line_group.city}}</td>
                     </tr>
                     <tr md-row ng-repeat-end ng-show="line.routes.length > 0">
                         <td colspan="2">
                             <ul>
                                 <li ng-repeat="route in line.routes">
-                                    {{route.name}} {{route.short_name ? '(' + route.short_name + ')' : ''}}
+                                    {{route.name}}
                                 </li>
                             </ul>
                         </td>
