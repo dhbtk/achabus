@@ -1,25 +1,35 @@
-<block heading="Linhas" width="12">
-    <table class="table-striped table jambo_table">
-        <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Grupo</th>
-        </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat-start="line in ctrl.lines">
-                <td><a ui-sref="lines.show({id: line.id})">{{line.short_name}} - {{line.name}}</a></td>
-                <td>{{line.line_group.name}} - {{line.line_group.city}}</td>
-            </tr>
-            <tr ng-repeat-end ng-show="line.routes.length > 0">
-                <td colspan="2">
-                    <ul>
-                        <li ng-repeat="route in line.routes">
-                            {{route.name}} {{route.short_name ? '(' + route.short_name + ')' : ''}}
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</block>
+<md-toolbar class="md-whiteframe-1dp">
+    <div class="md-toolbar-tools">
+        <h2><span>Linhas</span></h2>
+    </div>
+</md-toolbar>
+<md-content flex layout="column" md-scroll-y>
+    <div class="content">
+        <div ncy-breadcrumb></div>
+        <div class="white-bg md-whiteframe-4dp">
+            <table class="table-striped table jambo_table">
+                <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Grupo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat-start="line in ctrl.lines">
+                    <td><a ui-sref="lines.show({id: line.id})">{{line.short_name}} - {{line.name}}</a></td>
+                    <td>{{line.line_group.name}} - {{line.line_group.city}}</td>
+                </tr>
+                <tr ng-repeat-end ng-show="line.routes.length > 0">
+                    <td colspan="2">
+                        <ul>
+                            <li ng-repeat="route in line.routes">
+                                {{route.name}} {{route.short_name ? '(' + route.short_name + ')' : ''}}
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</md-content>

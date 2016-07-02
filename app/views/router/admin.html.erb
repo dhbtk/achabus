@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="admin">
+<html lang="en" ng-app="admin" ng-controller="MainController">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <!-- Meta, title, CSS, favicons, etc. -->
@@ -8,15 +8,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <%= csrf_meta_tags %>
 
-  <title>Cadê o Busão? - Manutenção</title>
+  <title>Cadê o Busão? - {{pageTitle}}</title>
 
   <link rel="stylesheet" type="text/css" href="/css/admin.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<body layout="row" ng-controller="MainController">
-<md-sidenav layout="column" md-component-id="left" class="md-sidenav-left" md-is-locked-open="$mdMedia('gt-sm')" md-disable-backdrop md-whiteframe="4" style="position: static">
-  <md-toolbar>
+<body layout="row">
+<md-sidenav id="sidenav" layout="column" md-component-id="left" class="md-sidenav-left" md-is-locked-open="$mdMedia('gt-sm')" md-disable-backdrop md-whiteframe="4">
+  <md-toolbar class="md-whiteframe-1dp">
     <div class="md-toolbar-tools">
       <h2><span>Cadê o Busão?</span></h2>
     </div>
@@ -32,14 +32,7 @@
     </md-sidemenu-group>
   </md-sidemenu>
 </md-sidenav>
-<div flex layout="column">
-  <md-toolbar>
-    <div class="md-toolbar-tools">
-      <h2><span>{{pageTitle}}</span></h2>
-    </div>
-  </md-toolbar>
-  <md-content flex ui-view layout="column">
-  </md-content>
+<div id="main-view" ui-view flex layout="column">
 </div>
 </body>
 <script type="application/javascript" src="/js/admin.js"></script>

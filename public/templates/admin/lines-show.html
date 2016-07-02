@@ -1,105 +1,117 @@
-<block heading="Linha" width="12">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="form-horizontal">
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Número</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static">{{ctrl.line.short_name}}</p>
+<md-toolbar class="md-whiteframe-1dp">
+    <div class="md-toolbar-tools">
+        <h2><span>{{ctrl.line.short_name}} - {{ctrl.line.name}}</span></h2>
+    </div>
+</md-toolbar>
+<md-content flex layout="column" md-scroll-y>
+    <div class="content">
+        <div ncy-breadcrumb></div>
+        <div class="white-bg md-whiteframe-4dp">
+            <block heading="Linha" width="12">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Número</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">{{ctrl.line.short_name}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Nome</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">{{ctrl.line.name}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Grupo de Linhas</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">{{ctrl.line.line_group.name}} - {{ctrl.line.line_group.city}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Itinerário de Referência</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static"><a ng-href="{{ctrl.line.itinerary_link}}" target="_blank">Link</a></p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Horários de Referência</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static"><a ng-href="{{ctrl.line.timetable_link}}" target="_blank">Link</a></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Nome</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static">{{ctrl.line.name}}</p>
+            </block>
+            <block heading="Rotas" width="12">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col-sm-6" ng-repeat="(course, routes) in ctrl.line.grouped_routes">
+                                <h4>{{course}}</h4>
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Observação</th>
+                                        <th>Distância</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="route in routes">
+                                        <td>{{route.name}}</td>
+                                        <td>{{route.short_name}}</td>
+                                        <td>{{route.route_length/1000 | number: 2}} km</td>
+                                        <td><button type="button" class="btn btn-xs btn-danger" ng-click="ctrl.deleteRoute(route.id)"><i class="fa fa-fw fa-close"></i></button></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3>Nova Rota</h3>
+                                <form ng-submit="ctrl.createRoute()" name="ctrl.routeForm" class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="route_origin" class="col-sm-3 control-label">Origem</label>
+                                        <div class="col-sm-9">
+                                            <input ng-model="ctrl.newRoute.origin" class="form-control" id="route_origin" type="text" name="origin" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="route_destination" class="col-sm-3 control-label">Destino</label>
+                                        <div class="col-sm-9">
+                                            <input ng-model="ctrl.newRoute.destination" class="form-control" id="route_destination" type="text" name="destination" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="route_name" class="col-sm-3 control-label">Nome</label>
+                                        <div class="col-sm-9">
+                                            <input ng-model="ctrl.newRoute.name" class="form-control" id="route_name" type="text" name="name" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="route_observation" class="col-sm-3 control-label">Observação</label>
+                                        <div class="col-sm-9">
+                                            <input ng-model="ctrl.newRoute.short_name" class="form-control" id="route_observation" type="text" name="observation">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-9 col-sm-offset-3">
+                                            <button ng-disabled="!ctrl.routeForm.$valid" type="submit" class="btn btn-default">Salvar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Grupo de Linhas</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static">{{ctrl.line.line_group.name}} - {{ctrl.line.line_group.city}}</p>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Itinerário de Referência</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static"><a ng-href="{{ctrl.line.itinerary_link}}" target="_blank">Link</a></p>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Horários de Referência</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static"><a ng-href="{{ctrl.line.timetable_link}}" target="_blank">Link</a></p>
-                    </div>
-                </div>
-            </div>
+            </block>
         </div>
     </div>
-</block>
-<block heading="Rotas" width="12">
-    <div class="row">
-        <div class="col-sm-8">
-            <div class="row">
-                <div class="col-sm-6" ng-repeat="(course, routes) in ctrl.line.grouped_routes">
-                    <h4>{{course}}</h4>
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Observação</th>
-                            <th>Distância</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="route in routes">
-                            <td>{{route.name}}</td>
-                            <td>{{route.short_name}}</td>
-                            <td>{{route.route_length/1000 | number: 2}} km</td>
-                            <td><button type="button" class="btn btn-xs btn-danger" ng-click="ctrl.deleteRoute(route.id)"><i class="fa fa-fw fa-close"></i></button></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3>Nova Rota</h3>
-                    <form ng-submit="ctrl.createRoute()" name="ctrl.routeForm" class="form-horizontal">
-                        <div class="form-group">
-                            <label for="route_origin" class="col-sm-3 control-label">Origem</label>
-                            <div class="col-sm-9">
-                                <input ng-model="ctrl.newRoute.origin" class="form-control" id="route_origin" type="text" name="origin" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="route_destination" class="col-sm-3 control-label">Destino</label>
-                            <div class="col-sm-9">
-                                <input ng-model="ctrl.newRoute.destination" class="form-control" id="route_destination" type="text" name="destination" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="route_name" class="col-sm-3 control-label">Nome</label>
-                            <div class="col-sm-9">
-                                <input ng-model="ctrl.newRoute.name" class="form-control" id="route_name" type="text" name="name" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="route_observation" class="col-sm-3 control-label">Observação</label>
-                            <div class="col-sm-9">
-                                <input ng-model="ctrl.newRoute.short_name" class="form-control" id="route_observation" type="text" name="observation">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-9 col-sm-offset-3">
-                                <button ng-disabled="!ctrl.routeForm.$valid" type="submit" class="btn btn-default">Salvar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</block>
+</md-content>
