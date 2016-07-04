@@ -207,6 +207,7 @@ class LinesController {
      */
     editRoute(route, event) {
         route = {
+            id: route.id,
             line_id: this.line.id,
             origin: route.origin,
             destination: route.destination,
