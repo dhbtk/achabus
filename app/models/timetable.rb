@@ -23,7 +23,8 @@ class Timetable < ApplicationRecord
       entries = []
       origin_dests.each do |origin, destination|
         route_ids = line.routes.where(origin: origin, destination: destination).pluck(:id)
-        entries << ["#{origin}, #{destination}", cond.where('route_id IN (?)', route_ids)]
+        entries << ["#{origin}, #{destination}", cond.where('route_id IN (?)', route_ids).order(
+            "CASE date_part('hour', \"time\") WHEN 0 THEN 24 ELSE date_part('hour', \"time\") END, date_part('minute', \"time\")")]
       end
       [key, entries.to_h]
     end.to_h
