@@ -1,0 +1,31 @@
+<md-dialog>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2><span>Editar Horário</span></h2>
+            <span flex></span>
+            <md-button ng-click="ctrl.destroy()">
+                <md-icon>delete</md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <form name="ctrl.form" layout="column">
+                <md-input-container>
+                    <label>Horário</label>
+                    <input ng-model="ctrl.time.time" type="text">
+                </md-input-container>
+                <md-input-container>
+                    <md-select ng-model="ctrl.time.route_id" placeholder="Observação" required>
+                        <md-option ng-value="route.id" ng-repeat="route in ctrl.routes">{{route.observation ? route.observation : '-'}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </form>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="ctrl.cancel()" class="md-raised">Cancelar</md-button>
+        <md-button ng-click="ctrl.confirm()" class="md-primary md-raised" ng-disabled="!ctrl.form.$valid">Salvar</md-button>
+    </md-dialog-actions>
+</md-dialog>

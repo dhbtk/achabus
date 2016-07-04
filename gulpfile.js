@@ -32,7 +32,7 @@ function rebundleAdmin(bundler) {
 }
 
 gulp.task('adminjs', () => {
-    const bundler = browserify('./app/assets/javascripts/admin/index.js');
+    const bundler = browserify('./app/assets/javascripts/admin/index.js', {debug: true});
     bundler.transform(babelify);
     bundler.transform('browserify-shim');
 
@@ -64,7 +64,7 @@ function rebundleFrontend(bundler) {
 }
 
 gulp.task('frontendjs', () => {
-    const bundler = browserify('./app/assets/javascripts/frontend/index.js');
+    const bundler = browserify('./app/assets/javascripts/frontend/index.js', {debug: true});
     bundler.transform(babelify);
     bundler.transform('browserify-shim');
 

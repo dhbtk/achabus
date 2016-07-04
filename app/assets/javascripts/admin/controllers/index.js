@@ -5,4 +5,5 @@ require('../module')
     .controller('LinesController', require('./lines-controller.js'))
     .controller('LinePopupController', require('./line-popup-controller.js'))
     .controller('RoutePopupController', require('./route-popup-controller.js'))
+    .controller('TimePopupController', require('./time-popup-controller.js'))
     .controller('MapEditorController', require('./map-editor-controller'));
