@@ -101,17 +101,23 @@
                             </md-button>
                         </div>
                         <md-table-container>
-                            <table md-table>
+                            <table md-table class="timetable">
                                 <thead md-head>
                                 <tr md-row>
                                     <th md-column>Horário</th>
                                     <th md-column style="width: 100%">Observação</th>
+                                    <th md-column></th>
                                 </tr>
                                 </thead>
                                 <tbody md-body>
                                 <tr md-row ng-repeat="time in times">
                                     <td md-cell>{{time.time | date: 'HH:mm'}}</td>
                                     <td md-cell>{{time.observation}}</td>
+                                    <td md-cell>
+                                        <md-button ng-click="ctrl.editTime(time, ctrl.newTimes[period].routeOptions[route].routes, $event)">
+                                            <md-icon>edit</md-icon>
+                                        </md-button>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

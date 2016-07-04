@@ -164,3 +164,16 @@ h3, h4 {
     max-width: 30px;
   }
 }
+
+table.timetable {
+  td.md-cell:last-child, th.md-column:last-child {
+    padding: 0;
+  }
+  .md-button {
+    min-width: 24px;
+    min-height: 24px;
+    line-height: 24px;
+    max-height: 28px;
+    max-width: 30px;
+  }
+}

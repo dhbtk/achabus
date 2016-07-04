@@ -161,6 +161,25 @@ class LinesController {
     }
 
     /**
+     * Abre a popup de edição de horário.
+     *
+     * @param time O horário
+     * @param routes As rotas disponíveis para ele
+     * @param event Evento originador
+     */
+    editTime(time, routes, event) {
+        this.$mdDialog.show({
+            templateUrl: '/templates/admin/time-form-popup.html',
+            controller: 'TimePopupController as ctrl',
+            targetEvent: event,
+            locals: {
+                time: time,
+                routes: routes
+            }
+        }).then(() => this.loadLine(this.line.id));
+    }
+
+    /**
      * Abre a popup de criação de rota.
      * 
      * @param event evento originador
