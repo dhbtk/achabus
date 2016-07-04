@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 json.extract! @line, :id, :identifier, :name, :line_group_id, :created_at, :updated_at, :itinerary_link, :timetable_link, :path
 
 json.line_group do
