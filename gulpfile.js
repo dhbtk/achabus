@@ -39,18 +39,6 @@ gulp.task('adminjs', () => {
     return (rebundleAdmin(bundler))();
 });
 
-gulp.task('watchadminjs', () => {
-    watchify.args.debug = true;
-    const bundler = watchify(browserify('./app/assets/javascripts/admin/index.js'), {debug: true});
-    bundler.transform(babelify);
-    bundler.transform('browserify-shim');
-
-    bundler.on('update', rebundleAdmin(bundler));
-    bundler.on('log', gutil.log.bind(gutil));
-
-    return (rebundleAdmin(bundler))();
-});
-
 function rebundleFrontend(bundler) {
     return function () {
         return bundler.bundle()
@@ -71,20 +59,16 @@ gulp.task('frontendjs', () => {
     return (rebundleFrontend(bundler))();
 });
 
+gulp.task('js', ['frontendjs', 'adminjs']);
+
+gulp.task('watchadminjs', () => {
+    return gulp.watch('./app/assets/javascripts/admin/**/*.js', ['adminjs']);
+});
 gulp.task('watchfrontendjs', () => {
-    watchify.args.debug = true;
-    const bundler = watchify(browserify('./app/assets/javascripts/frontend/index.js'), {debug: true});
-    bundler.transform(babelify);
-    bundler.transform('browserify-shim');
-
-    bundler.on('update', rebundleFrontend(bundler));
-    bundler.on('log', gutil.log.bind(gutil));
-
-    return (rebundleFrontend(bundler))();
+    return gulp.watch('./app/assets/javascripts/frontend/**/*.js', ['frontendjs']);
 });
 
-gulp.task('js', ['frontendjs', 'adminjs']);
-gulp.task('watchjs',['watchadminjs', 'watchfrontendjs']);
+gulp.task('watchjs', ['watchfrontendjs', 'watchadminjs']);
 
 // CSS
 
@@ -110,9 +94,9 @@ gulp.task('css',['admincss','frontendcss']);
 
 gulp.task('watchcss', () => {
     livereload.listen();
-    return gulp.watch('./app/assets/stylesheets/**/*.scss', ['admincss', 'frontendcss']);
+    return gulp.watch('./app/assets/stylesheets/**/*.scss', ['css']);
 });
 
 gulp.task('build', ['js', 'css']);
 
-gulp.task('default', ['watchjs', 'css', 'watchcss']);
+gulp.task('default', ['js', 'watchjs', 'css', 'watchcss']);
