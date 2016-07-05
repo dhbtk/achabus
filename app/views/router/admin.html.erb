@@ -15,7 +15,7 @@
 </head>
 
 <body layout="row">
-  <md-progress-linear style="position: absolute; top: 0; left: 0; width: 100%" md-mode="indeterminate" ng-style="{'visibility': !(loading || transitioning) ? 'hidden' : 'visible'}"></md-progress-linear>
+  <md-progress-linear style="position: absolute; top: 0; left: 0; width: 100%; z-index: 300" md-mode="indeterminate" ng-style="{'visibility': (loading || transitioning) ? 'visible' : 'hidden'}"></md-progress-linear>
   <md-sidenav id="sidenav" layout="column" md-component-id="left" class="md-sidenav-left" md-is-locked-open="$mdMedia('gt-sm')" md-disable-backdrop md-whiteframe="4">
     <md-toolbar class="md-whiteframe-1dp">
       <div class="md-toolbar-tools">

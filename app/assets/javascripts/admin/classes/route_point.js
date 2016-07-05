@@ -4,7 +4,7 @@ class RoutePoint {
         this.pathIndex = pathIndex;
     }
 
-    serialize(route, order) {
+    _serialize(route, order) {
         return {
             route_point: {
                 route_id: route.id,
