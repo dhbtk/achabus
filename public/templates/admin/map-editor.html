@@ -16,7 +16,7 @@
 </md-toolbar>
 <div flex layout="row">
     <div flex="15">
-        <div layout="column">
+        <div flex layout="column">
             <div ng-if="model.selectedRoute" layout="column">
                 <md-toolbar>
                     <div class="md-toolbar-tools">
@@ -40,20 +40,18 @@
                 <p>Lat: {{model.selectedPoint.marker.position.lat()}}, lng: {{model.selectedPoint.marker.position.lng()}},
                     heading: {{model.selectedPoint.heading}}</p>
             </div>
-            <md-content flex layout-padding>
+            <md-content flex layout-padding md-scroll-y>
                 <md-list class="md-dense" flex>
                     <md-subheader class="md-no-sticky">Rotas</md-subheader>
                     <md-list-item class="md-2-line" ng-repeat="route in model.routes" ng-click="selectRoute(route)">
                         <div class="md-list-item-text">
-                            <h3>{{route.name}}</h3>
+                            <h4>{{route.name}}</h4>
                             <p>{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
                         </div>
                     </md-list-item>
                 </md-list>
             </md-content>
         </div>
-        <p>Lat: {{map.streetView.position.lat()}}, lng: {{map.streetView.position.lng()}}, heading:
-            {{map.streetView.pov.heading}}</p>
     </div>
     <div class="big-map-container" flex="70" layout="column">
         <div id="map" flex></div>

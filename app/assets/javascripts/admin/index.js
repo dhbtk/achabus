@@ -5,17 +5,27 @@
 
 require('./controllers');
 
-require('./module').config(function ($stateProvider, $urlRouterProvider, $breadcrumbProvider) {
+require('./module').config(function ($stateProvider, $urlRouterProvider, $breadcrumbProvider, $httpProvider) {
+    /**
+     * Hook do $http para exibir/ocultar a barrinha de progresso.
+     */
+    $httpProvider.interceptors.push('progressInterceptor');
+    /**
+     * Breadcrumb mais legalzinha
+     */
     $breadcrumbProvider.setOptions({
         prefixStateName: 'home',
         templateUrl: '/templates/admin/breadcrumb.html'
     });
+
     /**
      * ESTADOS
      */
     $urlRouterProvider.otherwise('home');
     $urlRouterProvider.when('', '/');
-
+    /**
+     * Home
+     */
     $stateProvider.state('home', {
         url: '/',
         templateUrl: '/templates/admin/home.html',
@@ -51,4 +61,35 @@ require('./module').config(function ($stateProvider, $urlRouterProvider, $breadc
         controller: 'MapEditorController',
         templateUrl: '/templates/admin/map-editor.html'
     });
+})
+.factory('progressInterceptor', ($q, $rootScope) => {
+    let xhr = 0;
+
+    function updateStatus() {
+        $rootScope.loading = xhr !== 0;
+    }
+
+    return {
+        request(config) {
+            xhr++;
+            updateStatus();
+            return config;
+        },
+        requestError(config) {
+            xhr--;
+            updateStatus();
+            return $q.reject(config);
+        },
+        response(data) {
+            xhr--;
+            updateStatus();
+            return data;
+        },
+        responseError(data) {
+            xhr--;
+            updateStatus();
+            $rootScope.$broadcast('networkError', data);
+            return $q.reject(data);
+        }
+    };
 });
