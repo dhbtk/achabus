@@ -2,6 +2,7 @@
  * Created by eduardo on 01/07/16.
  */
 import $ from 'jquery';
+import angular from 'angular';
 import Route from '../classes/route';
 
 class MapEditorController {
@@ -76,10 +77,10 @@ class MapEditorController {
                         }
                     });
                 }
-                var nums = point.position.split('(')[1].split(' ');
-                var lon = parseFloat(nums[0]);
-                var lat = parseFloat(nums[1]);
-                var color, anchor, path;
+                const nums = point.position.split('(')[1].split(' ');
+                const lon = parseFloat(nums[0]);
+                const lat = parseFloat(nums[1]);
+                let color, anchor, path;
                 if (point.waypoint) {
                     path = $scope.icons.waypoint.path;
                     anchor = $scope.icons.waypoint.anchor;
@@ -116,7 +117,7 @@ class MapEditorController {
         };
 
         $scope.updatePointIcon = function (point) {
-            var color, anchor, path;
+            let color, anchor, path;
             if (point.waypoint) {
                 path = $scope.icons.waypoint.path;
                 anchor = $scope.icons.waypoint.anchor;
@@ -193,13 +194,15 @@ class MapEditorController {
             }).then(function (line) {
                 if (line) {
                     $scope.model.line = line;
-                    if (!google.maps) return;
-                    if ($scope.kmlLayer != null) {
+                    if (!google.maps) {
+                        return;
+                    }
+                    if ($scope.kmlLayer !== null) {
                         $scope.kmlLayer.setMap(null);
                     }
                     if(line.itinerary_link) {
-                        var url = new URL(line.itinerary_link);
-                        var kmlUrl;
+                        let url = new URL(line.itinerary_link);
+                        let kmlUrl;
                         if (url.host.match(/www\.google\.com/)) {
                             kmlUrl = "https://www.google.com/maps/d/kml?mid=" + url.search.match(/mid=([^&]+)/)[1] + "&nl=1";
                         }
@@ -229,8 +232,8 @@ class MapEditorController {
 
         // Troca de modo de visualização
         $scope.toggleStreetView = function () {
-            if ($scope.streetView == null) {
-                var pov = $scope.map.getStreetView().getPov();
+            if ($scope.streetView === null) {
+                const pov = $scope.map.getStreetView().getPov();
                 // Jogando o mapa pro canto
                 $('#map').detach().appendTo('.little-map-container');
                 google.maps.event.trigger($scope.map, 'resize');
@@ -263,10 +266,10 @@ class MapEditorController {
         /** Adicionar Ponto **/
         $scope.addPoint = function () {
             if ($scope.streetView) {
-                var position = $scope.streetView.getPosition();
+                let position = $scope.streetView.getPosition();
                 position = 'POINT(' + position.lng() + ' ' + position.lat() + ')';
-                var heading = $scope.streetView.getPov().heading;
-                var point = {};
+                const heading = $scope.streetView.getPov().heading;
+                const point = {};
                 point["point[position]"] = position;
                 point["point[heading]"] = heading;
                 point["point[notable]"] = false;
@@ -286,7 +289,7 @@ class MapEditorController {
         };
 
         $scope.addWaypoint = function (position) {
-            var point = {
+            const point = {
                 point: {
                     position: 'POINT(' + position.lng() + ' ' + position.lat() + ')',
                     waypoint: true,
@@ -367,7 +370,7 @@ class MapEditorController {
 
                 google.maps.event.addListener($scope.map, "click", function (e) {
                     // Clicar no mapa para ir para lá no modo street view
-                    if ($scope.streetView != null) {
+                    if ($scope.streetView !== null) {
                         $scope.streetView.setPosition(e.latLng);
                     }
                     else {

@@ -41,7 +41,7 @@ gulp.task('adminjs', () => {
 
 gulp.task('watchadminjs', () => {
     watchify.args.debug = true;
-    const bundler = watchify(browserify('./app/assets/javascripts/admin/index.js'), watchify.args);
+    const bundler = watchify(browserify('./app/assets/javascripts/admin/index.js'), {debug: true});
     bundler.transform(babelify);
     bundler.transform('browserify-shim');
 
@@ -73,7 +73,7 @@ gulp.task('frontendjs', () => {
 
 gulp.task('watchfrontendjs', () => {
     watchify.args.debug = true;
-    const bundler = watchify(browserify('./app/assets/javascripts/frontend/index.js'), watchify.args);
+    const bundler = watchify(browserify('./app/assets/javascripts/frontend/index.js'), {debug: true});
     bundler.transform(babelify);
     bundler.transform('browserify-shim');
 

@@ -1,137 +1,133 @@
 import RoutePoint from './route_point';
 import $ from 'jquery';
 
-var Route = function (nameOrObject, map, points) {
-    var lineSymbol = {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW};
-    if (typeof nameOrObject === 'object') {
-        this.name = nameOrObject.name;
-        this.id = nameOrObject.id;
-        this.line_id = nameOrObject.line_id;
-        this.parent_route_id = nameOrObject.parent_route_id;
-    }
-    else {
-        this.name = nameOrObject;
-    }
-    this.color = '#000000';
-    this.path = new google.maps.MVCArray();
-    this.map = map;
-    this.poly = new google.maps.Polyline({
-        map: this.map,
-        strokeColor: this.color,
-        strokeOpacity: 1.0,
-        strokeWeight: 5
-    });
-    this.poly.setVisible(false);
-    this.points = [];
-    this.poly.setPath(this.path);
-    var self = this;
-    console.log(nameOrObject);
-    if(nameOrObject.route_lonlat) {
-        nameOrObject.route_lonlat.forEach(function(p) {
-           self.path.push(new google.maps.LatLng({lat: p.lat, lng: p.lon}));
-        });
-    }
-    if(nameOrObject.route_points) {
-        nameOrObject.route_points.forEach(function(p) {
-            self.points.push(new RoutePoint(points[p.point_id], p.polyline_index));
-        });
-    }
-};
-
-Route.prototype._addPoint = function (point) {
-    if (this.points.length < 1) {
-        this.points.push(new RoutePoint(point, 0));
-    }
-    else {
-        var svc = new google.maps.DirectionsService();
-        var path = this.path; // eu detesto JS
-        var points = this.points;
-        svc.route({
-            origin: this.points[this.points.length - 1].point.marker.getPosition(),
-            destination: point.marker.getPosition(),
-            travelMode: google.maps.DirectionsTravelMode.DRIVING
-        }, function (res, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                var line = res.routes[0].overview_path;
-                for (var i = 0; i < line.length; i++) {
-                    path.push(line[i]);
-                }
-                points.push(new RoutePoint(point, path.getLength() - 1));
-            }
-        });
-    }
-};
-
-Route.prototype._removePoint = function (point) {
-    var index;
-    var routePoint = this.points.find(function (el, i) {
-        if (el.point.id == point.id) {
-            index = i;
-            return true;
+class Route {
+    constructor(nameOrObject, map, points) {
+        if (typeof nameOrObject === 'object') {
+            this.name = nameOrObject.name;
+            this.id = nameOrObject.id;
+            this.line_id = nameOrObject.line_id;
+            this.parent_route_id = nameOrObject.parent_route_id;
         }
-        return false;
-    }, this);
-    console.log(routePoint);
-    console.log(index);
-
-    if (index == 0) {
-        this.points.pop();
-        return;
+        else {
+            this.name = nameOrObject;
+        }
+        this.color = '#000000';
+        this.path = new google.maps.MVCArray();
+        this.map = map;
+        this.poly = new google.maps.Polyline({
+            map: this.map,
+            strokeColor: this.color,
+            strokeOpacity: 1.0,
+            strokeWeight: 5
+        });
+        this.poly.setVisible(false);
+        this.points = [];
+        this.poly.setPath(this.path);
+        console.log(nameOrObject);
+        if(nameOrObject.route_lonlat) {
+            nameOrObject.route_lonlat.forEach(p => this.path.push(new google.maps.LatLng({lat: p.lat, lng: p.lon})));
+        }
+        if(nameOrObject.route_points) {
+            nameOrObject.route_points.forEach(p => this.points.push(new RoutePoint(points[p.point_id], p.polyline_index)));
+        }
     }
 
-    var prevPoint = this.points[index - 1];
-    for (var i = this.path.getLength() - 1; i > prevPoint.pathIndex; i--) {
-        this.path.removeAt(i);
-    }
-    this.points.pop();
-};
-
-Route.prototype.handleClick = function (point) {
-    for (var i = 0; i < this.points.length; i++) {
-        if (this.points[i].point.id == point.id) {
-            // Só remover caso seja o último, senão não fazemos nada
-            if (this.points[i].point.id == this.points[this.points.length - 1].point.id) {
-                this._removePoint(point);
+    handleClick(point) {
+        for (let i = 0; i < this.points.length; i++) {
+            if (this.points[i].point.id == point.id) {
+                // Só remover caso seja o último, senão não fazemos nada
+                if (this.points[i].point.id == this.points[this.points.length - 1].point.id) {
+                    this._removePoint(point);
+                }
+                return;
             }
+        }
+        // Caso não achemos
+        this._addPoint(point);
+    }
+
+    hide() {
+        this.poly.setVisible(false);
+    }
+
+    show() {
+        this.poly.setVisible(true);
+    }
+
+    save() {
+        $.ajax({url: '/routes/' + this.id + '.json', method: 'PATCH', data: this._serialize()});
+        this._serializePoints().forEach(p => $.ajax({url: '/route_points.json', method: 'POST', data: p}));
+    }
+    
+    _addPoint(point) {
+        if (this.points.length < 1) {
+            this.points.push(new RoutePoint(point, 0));
+        }
+        else {
+            const svc = new google.maps.DirectionsService();
+            svc.route({
+                origin: this.points[this.points.length - 1].point.marker.getPosition(),
+                destination: point.marker.getPosition(),
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            }, (res, status) => {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    const line = res.routes[0].overview_path;
+                    for (let i = 0; i < line.length; i++) {
+                        this.path.push(line[i]);
+                    }
+                    this.points.push(new RoutePoint(point, this.path.getLength() - 1));
+                }
+            });
+        }
+    }
+    
+    _removePoint(point) {
+        let index = -1;
+        const routePoint = this.points.find(function (el, i) {
+            if (el.point.id == point.id) {
+                index = i;
+                return true;
+            }
+            return false;
+        }, this);
+        console.log(routePoint);
+        console.log(index);
+
+        if (index === 0) {
+            this.points.pop();
             return;
         }
+
+        const prevPoint = this.points[index - 1];
+        for (let i = this.path.getLength() - 1; i > prevPoint.pathIndex; i--) {
+            this.path.removeAt(i);
+        }
+        this.points.pop();
     }
-    // Caso não achemos
-    this._addPoint(point);
-};
+    
 
-Route.prototype.serializePoints = function () {
-    return this.points.map((p, i) => p.serialize(this, i));
-};
+    
+    _serializePoints() {
+        return this.points.map((p, i) => p._serialize(this, i));
+    }
+    
+    _serializeRoute() {
+        return 'LINESTRING(' + this.path.getArray().map(p => p.lng() + ' ' + p.lat()).join(',') + ')';
+    }
+    
+    _serialize() {
+        return {
+            route: {
+                name: this.name,
+                line_id: this.line_id,
+                parent_route_id: this.parent_route_id,
+                route: this._serializeRoute()
+            }
+        };
+    }
+    
 
-Route.prototype._serializeRoute = function () {
-    return 'LINESTRING(' + this.path.getArray().map(p => p.lng() + ' ' + p.lat()).join(',') + ')';
-};
-
-Route.prototype.serialize = function () {
-    return {
-        route: {
-            name: this.name,
-            line_id: this.line_id,
-            parent_route_id: this.parent_route_id,
-            route: this._serializeRoute(),
-        },
-    };
-};
-
-Route.prototype.hide = function () {
-    this.poly.setVisible(false);
-};
-
-Route.prototype.show = function () {
-    this.poly.setVisible(true);
-};
-
-Route.prototype.save = function () {
-    $.ajax({url: '/routes/' + this.id + '.json', method: 'PATCH', data: this.serialize()});
-    this.serializePoints().forEach(function (p) {
-        $.ajax({url: '/route_points.json', method: 'POST', data: p})
-    });
-};
+}
 
 module.exports = Route;

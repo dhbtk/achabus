@@ -3,7 +3,6 @@
  */
 'use strict';
 
-require('./directives/block.js');
 require('./controllers');
 
 require('./module').config(function ($stateProvider, $urlRouterProvider, $breadcrumbProvider) {
