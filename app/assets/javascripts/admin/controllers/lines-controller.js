@@ -143,11 +143,11 @@ class LinesController {
      */
     addTime(time, period) {
         time.sunday = time.monday = time.tuesday = time.wednesday = time.thursday = time.friday = time.saturday = false;
-        if(period == 'mon_fri') {
+        if(period === 'mon_fri') {
             time.monday = time.tuesday = time.wednesday = time.thursday = time.friday = true;
-        } else if(period == 'saturday') {
+        } else if(period === 'saturday') {
             time.saturday = true;
-        } else if(period == 'sunday') {
+        } else if(period === 'sunday') {
             time.sunday = true;
         }
         this.$http.post(`/lines/${this.line.id}/timetables.json`, {timetable: time}).then(() => {
@@ -185,7 +185,7 @@ class LinesController {
      * @param event evento originador
      */
     createRoute(event) {
-        var route = {
+        const route = {
             line_id: this.line.id
         };
         this.$mdDialog.show({
@@ -228,7 +228,7 @@ class LinesController {
         if(confirm('Excluir rota?')) {
             this.$http.delete('/routes/' + id + '.json').then(() => {
                 this.$mdToast.showSimple('Rota excluída com sucesso.');
-                loadLine(this.line.id);
+                this.loadLine(this.line.id);
             });
         }
     }
@@ -264,7 +264,7 @@ class LinesController {
                     line: line
                 }
             }).then(() => {
-                if(this.$state.current.name == 'lines.show') {
+                if(this.$state.current.name === 'lines.show') {
                     this.loadLine(id);
                 } else {
                     this.loadLines();
@@ -274,7 +274,7 @@ class LinesController {
     }
 
     openNewLine(event) {
-        let line = {
+        const line = {
             id: null,
             identifier: '',
             name: '',

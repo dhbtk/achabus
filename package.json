@@ -32,6 +32,9 @@
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
   },
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  },
   "browser": {
     "jQuery": "./node_modules/jquery/dist/jquery.min.js"
   },
@@ -41,7 +44,21 @@
   "engines": {
     "node": ">= 0.10"
   },
-  "devDependencies": {
-    "gulp": "^3.9.1"
+  "jshintConfig": {
+    "esversion": 6,
+    "browser": "true",
+    "devel": "true",
+    "browserify": "true",
+    "curly": "true",
+    "eqeqeq": "true",
+    "forin": "true",
+    "globals": {
+      "google": false
+    },
+    "nocomma": "true",
+    "shadow": "true",
+    "undef": "true",
+    "unused": "true",
+    "varstmt": "true"
   }
 }

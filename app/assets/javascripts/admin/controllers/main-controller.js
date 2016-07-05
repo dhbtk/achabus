@@ -23,7 +23,7 @@ class MainController {
          */
         $scope.setTitle = function(title) {
             $scope.pageTitle = title;
-        }
+        };
     }
 }
 
