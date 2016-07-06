@@ -6,6 +6,6 @@
             <md-button ng-click="ctrl.traceRoute()">Traçar Rota</md-button>
         </div>
     </md-toolbar>
-    <md-progress-linear md-mode="indeterminate" ng-hide="ctrl.loading"></md-progress-linear>
+    <md-progress-linear md-mode="indeterminate" ng-hide="!ctrl.loading"></md-progress-linear>
     <div id="map" flex></div>
 </div>
