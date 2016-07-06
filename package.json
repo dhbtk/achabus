@@ -23,6 +23,8 @@
     "browserify": "~10.2.4",
     "browserify-incremental": "^3.0.1",
     "browserify-shim": "^3.8.12",
+    "del": "^2.2.1",
+    "event-stream": "^3.3.3",
     "gulp-livereload": "^3.8.1",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^1.6.0",
