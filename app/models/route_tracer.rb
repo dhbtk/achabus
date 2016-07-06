@@ -31,7 +31,7 @@ class RouteTracer
 
       break if smallest.nil? || costs[smallest] == maxint
 
-      smallest.neighbors(finish).each do |n|
+      smallest.neighbors(finish, previous[smallest]).each do |n|
         alt = costs[smallest] + smallest.cost_to(n)
         if alt < costs[n]
           costs[n] = alt
@@ -44,8 +44,41 @@ class RouteTracer
     []
   end
 
+  def self.trace_route(start, finish)
+    routes = Route.find_by_sql(['
+SELECT
+  r.*,
+  rp1.order as rp1_order,
+  rp2.order as rp2_order
+FROM routes r
+
+JOIN route_points rp1 ON rp1.route_id = r.id
+JOIN points p1 ON rp1.point_id = p1.id
+
+JOIN route_points rp2 ON rp2.route_id = r.id
+JOIN points p2 ON rp2.point_id = p2.id
+
+WHERE
+rp2.order > rp1.order AND
+p1.waypoint = FALSE AND p2.waypoint = FALSE AND
+st_distance(p1.position, st_point(?, ?)) < 500 AND
+st_distance(p2.position, st_point(?, ?)) < 500
+
+ORDER BY st_distance(p1.position, st_point(?, ?)) + st_distance(p2.position, st_point(?, ?))
+',
+        start.point.position.lon, start.point.position.lat, finish.point.position.lon, finish.point.position.lat,
+        start.point.position.lon, start.point.position.lat, finish.point.position.lon, finish.point.position.lat
+    ])
+    if routes.count > 0
+      route = routes[0]
+      RoutePoint.where(route: route).where('"order" >= ? AND "order" <= ?', route.rp1_order, route.rp2_order).order('"order" ASC')
+    else
+      dijkstra(start, finish)
+    end
+  end
+
   def self.route_between(start, finish)
-    dijkstra(start, finish).group_by{|p| p.route_id}.map do |route_id, group|
+    trace_route(start, finish).group_by{|p| p.route_id}.map do |route_id, group|
       group = group.sort_by { |rp| rp.order } # ????
       sql = <<-EOF
 SELECT st_astext(st_makeline(geom)::geography) as route_line
