@@ -51,7 +51,7 @@ FROM
         raise ArgumentError, 'Não podemos voltar para trás'
       end
     else
-      500 + 5*self.point.position.distance(target.point.position)
+      500 + 5*RouteTracer.walking_distance(self, target)
     end
   end
 
