@@ -1,11 +1,15 @@
 class RouteTracer
+	def self.walking_distance(a, b)
+
+	end
+
   def self.dijkstra(start, finish)
     maxint = (2**(0.size * 8 -2) -1)
     costs = {}
     previous = {}
     nodes = {}
 
-    ([start, finish] + RoutePoint.all).each do |rp|
+    ([start, finish] + RoutePoint.all.includes(:point)).each do |rp|
       if rp == start
         costs[rp] = 0
         nodes[rp] = 0
