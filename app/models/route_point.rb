@@ -4,19 +4,15 @@ class RoutePoint < ApplicationRecord
 
   # TODO: não deixar como vizinho um ponto que parta da mesma origem
   def neighbors(destination, previous)
+    neighbors = RoutePoint
+                    .joins(:point)
+                    .joins(:route)
+                    .where('routes.destination <> ?', self.route.origin)
     if previous && previous.class == RoutePoint && previous.route_id != self.route_id
-      neighbors = RoutePoint
-                      .joins(:point)
-                      .joins(:route)
-                      .where('routes.destination <> ?', self.route.origin)
-                      .where('(route_id = ? AND "order" = ?)', self.route_id, self.order + 1)
+    	neighbors = neighbors.where('(route_id = ? AND "order" = ?)', self.route_id, self.order + 1)
     else
-      neighbors = RoutePoint
-                      .joins(:point)
-                      .joins(:route)
-                      .where('routes.destination <> ?', self.route.origin)
-                      .where('(route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 250) OR (route_id = ? AND "order" = ?)',
-                             self.route_id, self.point.position.lon, self.point.position.lat, self.route_id, self.order + 1)
+      neighbors = neighbors.where('(routes.origin <> ? AND route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 250) OR (route_id = ? AND "order" = ?)',
+                             self.route.origin, self.route_id, self.point.position.lon, self.point.position.lat, self.route_id, self.order + 1)
     end
 
     neighbors += [destination] if destination && !self.point.waypoint && self.point.position.distance(destination.point.position) < 500
