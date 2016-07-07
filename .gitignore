@@ -26,3 +26,4 @@ node_modules
 .idea
 public/js/*
 public/css/*
+browserify-cache.json
