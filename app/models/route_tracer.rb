@@ -1,7 +1,13 @@
-class RouteTracer
-	def self.walking_distance(a, b)
+require 'open-uri'
 
-	end
+class RouteTracer
+  def self.walking_distance(a, b)
+    uri = URI("http://router.project-osrm.org/route/v1/foot/#{a.point.position.lon},#{a.point.position.lat};#{b.point.position.lon},#{b.point.position.lat}?geometries=geojson")
+
+    JSON.parse(uri.read)['routes'][0]['distance']
+  rescue
+    nil
+  end
 
   def self.dijkstra(start, finish)
     maxint = (2**(0.size * 8 -2) -1)
@@ -82,7 +88,13 @@ ORDER BY st_distance(p1.position, st_point(?, ?)) + st_distance(p2.position, st_
   end
 
   def self.route_between(start, finish)
-    trace_route(start, finish).group_by{|p| p.route_id}.map do |route_id, group|
+    old_level = ActiveRecord::Base.logger.level
+    ActiveRecord::Base.logger.level = 1
+
+    route = trace_route(start, finish)
+
+    ActiveRecord::Base.logger.level = old_level
+    route.group_by{|p| p.route_id}.map do |route_id, group|
       group = group.sort_by { |rp| rp.order } # ????
       sql = <<-EOF
 SELECT st_astext(st_makeline(geom)::geography) as route_line
@@ -108,6 +120,6 @@ FROM
   def self.test_route
     boicy = VirtualPoint.new -54.577825, -25.546901
     rodo  = VirtualPoint.new -54.562939, -25.520758
-    route_between boicy, rodo
+    walking_distance boicy, rodo
   end
 end
