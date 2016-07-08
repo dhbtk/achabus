@@ -33,6 +33,7 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'dotenv-rails'
 
+gem 'PriorityQueue'
 gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
 gem 'geokit'
 gem 'kaminari'

@@ -1,14 +1,15 @@
 require 'open-uri'
 require 'ruby-prof'
+require 'priority_queue'
 
 class RouteTracer
   def self.walking_distance(a, b)
     #start = closest_street_vertex(a.point.position)
     #dest = closest_street_vertex(b.point.position)
-    #p1 = a.point.position
-    #p2 = b.point.position
+    p1 = a.point.position
+    p2 = b.point.position
 
-    return a.point.position.distance(b.point.position)# if start == dest
+    #return a.point.position.distance(b.point.position) if start == dest
 
     sql = <<-EOF
 SELECT walking_route_path(#{p1.lon}, #{p1.lat}, #{p2.lon}, #{p2.lat})
@@ -40,7 +41,7 @@ EOF
     maxint = (2**(0.size * 8 -2) -1)
     costs = {}
     previous = {}
-    nodes = {}
+    nodes = PriorityQueue.new
 
     ([source, target] + RoutePoint.all.includes(:point)).each do |rp|
       if rp == source
@@ -54,8 +55,7 @@ EOF
     end
 
     while nodes.length > 0
-      current = nodes.select{|_, x| x == nodes.values.min}.keys[0]
-      nodes.delete(current)
+      current = nodes.delete_min_return_key
 
       if current == target
         path = []
