@@ -1,22 +1,49 @@
 require 'open-uri'
+require 'ruby-prof'
 
 class RouteTracer
   def self.walking_distance(a, b)
-    uri = URI("http://router.project-osrm.org/route/v1/foot/#{a.point.position.lon},#{a.point.position.lat};#{b.point.position.lon},#{b.point.position.lat}?geometries=geojson")
+    #start = closest_street_vertex(a.point.position)
+    #dest = closest_street_vertex(b.point.position)
+    #p1 = a.point.position
+    #p2 = b.point.position
 
-    JSON.parse(uri.read)['routes'][0]['distance']
-  rescue
-    nil
+    return a.point.position.distance(b.point.position)# if start == dest
+
+    sql = <<-EOF
+SELECT walking_route_path(#{p1.lon}, #{p1.lat}, #{p2.lon}, #{p2.lat})
+EOF
+    res = ApplicationRecord.connection.execute(sql).values[0][0]
+    puts sql if res.nil?
+    res
   end
 
-  def self.dijkstra(start, finish)
+  def self.closest_street_vertex(point)
+    sql = <<-EOF
+SELECT id FROM routing.ways_vertices_pgr
+WHERE the_geom::geography <-> st_point(#{point.lon}, #{point.lat})::geography < 300
+ORDER BY the_geom <-> st_point(#{point.lon}, #{point.lat})::geography
+LIMIT 1
+EOF
+    ApplicationRecord.connection.execute(sql).values[0][0]
+  end
+
+  def self.heuristic(a, b)
+    if a == RoutePoint && b == RoutePoint && a.route_id == b.route_id
+      a.point.position.distance(b.point.position)
+    else
+      5*a.point.position.distance(b.point.position)
+    end
+  end
+
+  def self.dijkstra(source, target)
     maxint = (2**(0.size * 8 -2) -1)
     costs = {}
     previous = {}
     nodes = {}
 
-    ([start, finish] + RoutePoint.all.includes(:point)).each do |rp|
-      if rp == start
+    ([source, target] + RoutePoint.all.includes(:point)).each do |rp|
+      if rp == source
         costs[rp] = 0
         nodes[rp] = 0
       else
@@ -27,26 +54,26 @@ class RouteTracer
     end
 
     while nodes.length > 0
-      smallest = nodes.select{|_, x| x == nodes.values.min}.keys[0]
-      nodes.delete(smallest)
+      current = nodes.select{|_, x| x == nodes.values.min}.keys[0]
+      nodes.delete(current)
 
-      if smallest == finish
+      if current == target
         path = []
-        while previous[smallest]
-          path.unshift smallest
-          smallest = previous[smallest]
+        while previous[current]
+          path.unshift current
+          current = previous[current]
         end
         return path[0..-2]
       end
 
-      break if smallest.nil? || costs[smallest] == maxint
+      break if current.nil? || costs[current] == maxint
 
-      smallest.neighbors(finish, previous[smallest]).each do |n|
-        alt = costs[smallest] + smallest.cost_to(n)
-        if alt < costs[n]
-          costs[n] = alt
-          previous[n] = smallest
-          nodes[n] = alt
+      current.neighbors(target, previous[current]).each do |new|
+        alt = costs[current] + current.cost_to(new)
+        if alt < costs[new]
+          costs[new] = alt + heuristic(target, new)
+          previous[new] = current
+          nodes[new] = alt
         end
       end
     end
@@ -88,12 +115,18 @@ ORDER BY st_distance(p1.position, st_point(?, ?)) + st_distance(p2.position, st_
   end
 
   def self.route_between(start, finish)
-    old_level = ActiveRecord::Base.logger.level
-    ActiveRecord::Base.logger.level = 1
+    begin
+      RubyProf.start
+      old_level = ActiveRecord::Base.logger.level
+      ActiveRecord::Base.logger.level = 1
 
-    route = trace_route(start, finish)
+      route = trace_route(start, finish)
 
-    ActiveRecord::Base.logger.level = old_level
+      ActiveRecord::Base.logger.level = old_level
+    ensure
+      res = RubyProf.stop
+      RubyProf::GraphHtmlPrinter.new(res).print(File.open("/tmp/report.html", "w"), min_percent: 1)
+    end
     route.group_by{|p| p.route_id}.map do |route_id, group|
       group = group.sort_by { |rp| rp.order } # ????
       sql = <<-EOF

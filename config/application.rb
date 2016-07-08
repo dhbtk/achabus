@@ -18,5 +18,7 @@ module Achabus
       g.helper false
       g.test_framework nil
     end
+
+    config.active_record.schema_format = :sql
   end
 end
