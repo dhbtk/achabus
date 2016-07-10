@@ -4,7 +4,7 @@ require 'priority_queue'
 class RouteTracer
   @point_cache = []
 
-  def self.cache_points
+  def self.calculate_point_cache
     @point_cache.clear
     old_level = ActiveRecord::Base.logger.level
     i = 1
@@ -23,6 +23,27 @@ class RouteTracer
       i += 1
     end
     ActiveRecord::Base.logger.level = old_level
+    save_point_cache
+  end
+
+  def self.save_point_cache
+    serialized = @point_cache.map{|rp| [rp.id, rp.cached_costs.map{|n,c| [n.id, c]}.to_h]}.to_h
+    File.write('/tmp/achabus-point-cache.json', serialized.to_json)
+  end
+
+  def self.load_point_cache
+    puts "Carregando..."
+    id_hash = JSON.parse(File.read('/tmp/achabus-point-cache.json'))
+    @point_cache = RoutePoint.find(id_hash.keys)
+    @point_cache.each do |rp|
+      print " -> "
+      rp.calculate_nearest_ways_point
+      rp.cached_costs = id_hash[rp.id.to_s].map do |k, v|
+        print "*"
+        [RoutePoint.find(k), v]
+      end.to_h
+    end
+    puts ""
   end
 
   def self.walking_distance(a, b)
@@ -148,6 +169,7 @@ ORDER BY st_distance(p1.position, st_point(?, ?)) + st_distance(p2.position, st_
       RubyProf.start
       old_level = ActiveRecord::Base.logger.level
       ActiveRecord::Base.logger.level = 1
+      load_point_cache if @point_cache.empty?
 
       route = trace_route(start, finish)
 
