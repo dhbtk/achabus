@@ -3,39 +3,87 @@
  */
 'use strict';
 
+import $ from 'jquery';
+
 class MapController {
-    constructor($scope, $http, $interval) {
+    constructor($scope, $q, $http, $interval, $timeout) {
         this.$http = $http;
+        this.$q = $q;
         this.loading = true;
         this.map = null;
         this.origin = null;
+        this.originText = null;
         this.destination = null;
         this.originMarker = null;
         this.destinationMarker = null;
+        this.destinationText = null;
         this.polylines = [];
         this.markers = [];
         this.walkingPolylines = [];
 
-        let self = this;
         let mapWatch = $interval(() => {
             if(window.google !== undefined) {
-                self.map = new google.maps.Map(document.getElementById('map'), {
-                    center: {lat: -25.53413, lng: -54.56901},
-                    zoom: 14,
-                    options: {
-                        disableDoubleClickZoom: true,
-                        disableDefaultUI: false,
-                        styles: [{
-                            featureType: "poi",
-                            elementType: "labels",
-                            stylers: [{visibility: "off"}]
-                        }]
-                    }
-                });
-                self.loading = false;
                 $interval.cancel(mapWatch);
+                $timeout(() => {
+                    this.map = new google.maps.Map(document.getElementById('map'), {
+                        center: {lat: -25.53413, lng: -54.56901},
+                        zoom: 14,
+                        options: {
+                            disableDoubleClickZoom: true,
+                            disableDefaultUI: true,
+                            styles: [{
+                                featureType: "poi",
+                                elementType: "labels",
+                                stylers: [{visibility: "off"}]
+                            }]
+                        }
+                    });
+                    this.loading = false;
+                    navigator.geolocation.getCurrentPosition(pos => {
+                        const coords = new google.maps.LatLng({lat: pos.coords.latitude, lng: pos.coords.longitude});
+                        this.origin = coords;
+                        this.originMarker = new google.maps.Marker({
+                            clickable: false,
+                            map: this.map,
+                            position: coords,
+                            label: 'S'
+                        });
+                        this.reverseGeocodeCoords(coords).then(address => this.originText = address);
+                    });
+                }, 0);
             }
         }, 500);
+    }
+
+    /**
+     * Abre e fecha a caixinha de origem
+     */
+    toggleOrigin() {
+        $('#origin-container').toggleClass('show');
+    }
+
+    /**
+     * Faz o geocoding reverso de uma coordenada.
+     *
+     * @param latLng
+     * @returns {Promise} O endereço
+     */
+    reverseGeocodeCoords(latLng) {
+        const geocoder = new google.maps.Geocoder();
+        const def = this.$q.defer();
+        geocoder.geocode({location: latLng}, (res, status) => {
+            if(status === google.maps.GeocoderStatus.OK) {
+                if(res[1]) {
+                    console.log(res[1]);
+                    def.resolve(res[1].formatted_address);
+                } else {
+                    def.reject();
+                }
+            } else {
+                def.reject();
+            }
+        });
+        return def.promise;
     }
 
     setOriginPoint() {
@@ -53,6 +101,7 @@ class MapController {
                 label: 'S'
             });
             ev.remove();
+            this.reverseGeocodeCoords(event.latLng).then(address => this.originText = address);
         });
     }
 
@@ -71,6 +120,7 @@ class MapController {
                 label: 'F'
             });
             ev.remove();
+            this.reverseGeocodeCoords(event.latLng).then(address => this.destinationText = address);
         });
     }
 

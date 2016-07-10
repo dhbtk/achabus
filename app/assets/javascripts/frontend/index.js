@@ -1,4 +1,5 @@
 'use strict';
+
 require('angular').module('achaBus', [require('angular-material'), require('angular-ui-router')])
     .config(function ($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise('home');

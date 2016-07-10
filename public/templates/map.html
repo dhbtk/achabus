@@ -1,11 +1,32 @@
-<div flex layout="column">
-    <md-toolbar>
-        <div class="md-toolbar-tools" layout="row">
-            <md-button ng-click="ctrl.setOriginPoint()">Definir Ponto 1</md-button>
-            <md-button ng-click="ctrl.setDestinationPoint()">Definir Ponto 2</md-button>
-            <md-button ng-click="ctrl.traceRoute()">Traçar Rota</md-button>
+<div id="map" style="height: 100%"></div>
+<md-progress-linear md-mode="indeterminate" ng-show="ctrl.loading" style="position: absolute; top: 0; width: 100%"></md-progress-linear>
+<div id="searchbox-container">
+    <div id="searchbox">
+        <md-button id="menu-button">
+            <md-icon>menu</md-icon>
+        </md-button>
+        <div id="inputs-container">
+            <div id="origin-container">
+                <md-button title="Localização Atual">
+                    <md-icon>my_location</md-icon>
+                </md-button>
+                <input type="text" placeholder="Ponto de Partida" ng-model="ctrl.originText">
+                <md-button ng-click="ctrl.setOriginPoint()" title="Selecionar no Mapa">
+                    <md-icon>place</md-icon>
+                </md-button>
+            </div>
+            <div id="destination-container">
+                <md-button ng-click="ctrl.toggleOrigin()">
+                    <md-icon>arrow_drop_down</md-icon>
+                </md-button>
+                <input type="text" placeholder="Destino" ng-model="ctrl.destinationText">
+                <md-button ng-click="ctrl.setDestinationPoint()" title="Selecionar no Mapa">
+                    <md-icon>place</md-icon>
+                </md-button>
+            </div>
         </div>
-    </md-toolbar>
-    <md-progress-linear md-mode="indeterminate" ng-hide="!ctrl.loading"></md-progress-linear>
-    <div id="map" flex></div>
+        <md-button ng-click="ctrl.traceRoute()" id="search-button" title="Pesquisar Rota">
+            <md-icon>search</md-icon>
+        </md-button>
+    </div>
 </div>
