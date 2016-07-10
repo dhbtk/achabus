@@ -42,12 +42,12 @@ require('./module').config(function ($stateProvider, $urlRouterProvider, $breadc
     });
     $stateProvider.state('lines.index', {
         url: '',
-        templateUrl: '/templates/admin/lines-index.html',
+        templateUrl: '/templates/admin/lines/lines-index.html',
         ncyBreadcrumb: {label: 'Linhas'}
     });
     $stateProvider.state('lines.show', {
         url: '/:id',
-        templateUrl: '/templates/admin/lines-show.html',
+        templateUrl: '/templates/admin/lines/lines-show.html',
         ncyBreadcrumb: {
             label: '{{ctrl.line.identifier}} - {{ctrl.line.name}}',
             parent: 'lines.index'
@@ -59,7 +59,7 @@ require('./module').config(function ($stateProvider, $urlRouterProvider, $breadc
     $stateProvider.state('map', {
         url: '/map',
         controller: 'MapEditorController',
-        templateUrl: '/templates/admin/map-editor.html'
+        templateUrl: '/templates/admin/map-editor/map-editor.html'
     });
 
 

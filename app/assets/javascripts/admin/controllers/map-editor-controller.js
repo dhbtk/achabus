@@ -187,7 +187,7 @@ class MapEditorController {
                         return def.promise;
                     };
                 },
-                templateUrl: '/templates/admin/map-editor-open-line.html',
+                templateUrl: '/templates/admin/map-editor/map-editor-open-line.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: true

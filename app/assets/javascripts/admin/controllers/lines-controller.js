@@ -169,7 +169,7 @@ class LinesController {
      */
     editTime(time, routes, event) {
         this.$mdDialog.show({
-            templateUrl: '/templates/admin/time-form-popup.html',
+            templateUrl: '/templates/admin/lines/time-form-popup.html',
             controller: 'TimePopupController as ctrl',
             targetEvent: event,
             locals: {
@@ -189,7 +189,7 @@ class LinesController {
             line_id: this.line.id
         };
         this.$mdDialog.show({
-            templateUrl: '/templates/admin/route-form-popup.html',
+            templateUrl: '/templates/admin/lines/route-form-popup.html',
             controller: 'RoutePopupController as ctrl',
             targetEvent: event,
             locals: {
@@ -214,7 +214,7 @@ class LinesController {
             observation: route.observation
         };
         this.$mdDialog.show({
-            templateUrl: '/templates/admin/route-form-popup.html',
+            templateUrl: '/templates/admin/lines/route-form-popup.html',
             controller: 'RoutePopupController as ctrl',
             targetEvent: event,
             locals: {
@@ -257,7 +257,7 @@ class LinesController {
                 timetable_link: data.data.timetable_link
             };
             this.$mdDialog.show({
-                templateUrl: '/templates/admin/line-form-popup.html',
+                templateUrl: '/templates/admin/lines/line-form-popup.html',
                 controller: 'LinePopupController as ctrl',
                 targetEvent: event,
                 locals: {
@@ -284,7 +284,7 @@ class LinesController {
             timetable_link: ''
         };
         this.$mdDialog.show({
-            templateUrl: '/templates/admin/line-form-popup.html',
+            templateUrl: '/templates/admin/lines/line-form-popup.html',
             controller: 'LinePopupController as ctrl',
             targetEvent: event,
             locals: {

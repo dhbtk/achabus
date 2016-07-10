@@ -8,7 +8,7 @@ class RoutePoint < ApplicationRecord
   def neighbors(destination, previous)
     if cached_costs && !cached_costs.empty?
       neighbors = cached_costs.keys
-      if previous && previous.class == RoutePoint && previous.route_id != self.route_id
+      if self.point.waypoint || (previous && previous.class == RoutePoint && previous.route_id != self.route_id)
         neighbors = neighbors.select do |neighbor|
           neighbor.route_id == self.route_id
         end
@@ -18,12 +18,10 @@ class RoutePoint < ApplicationRecord
                       .joins(:point)
                       .joins(:route)
                       .where('routes.destination <> ?', self.route.origin)
-      if previous && previous.class == RoutePoint && previous.route_id != self.route_id
-        neighbors = neighbors.where('(route_id = ? AND "order" = ?)', self.route_id, self.order + 1)
-      else
-        neighbors = neighbors.where('(routes.origin <> ? AND route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 250) OR (route_id = ? AND "order" = ?)',
-                                    self.route.origin, self.route_id, self.point.position.lon, self.point.position.lat, self.route_id, self.order + 1)
-      end
+                      .where(points: {waypoint: false})
+                      .where('(routes.origin <> ? AND route_id <> ? AND st_distance(st_point(?, ?)::geography, points.position) < 250)',
+                                    self.route.origin, self.route_id, self.point.position.lon, self.point.position.lat)
+      neighbors += RoutePoint.joins(:point).where(route: self.route, points: {waypoint: false}).where('"order" > ?', self.order).order('"order" ASC').limit(1)
     end
     neighbors += [destination] if destination && !self.point.waypoint && self.point.position.distance(destination.point.position) < 500
     neighbors
