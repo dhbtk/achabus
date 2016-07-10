@@ -1,31 +1,52 @@
-require 'open-uri'
 require 'ruby-prof'
 require 'priority_queue'
 
 class RouteTracer
+  @point_cache = []
+
+  def self.cache_points
+    @point_cache.clear
+    old_level = ActiveRecord::Base.logger.level
+    i = 1
+    count = RoutePoint.count
+    ActiveRecord::Base.logger.level = 1
+    RoutePoint.all.includes(:point).each do |rp|
+      puts "#{i}/#{count}..."
+      rp.calculate_nearest_ways_point
+      rp.cached_costs = {}
+      rp.neighbors(nil, nil).each do |neighbor|
+        print "*"
+        rp.cached_costs[neighbor] = rp.cost_to neighbor
+      end
+      puts ""
+      @point_cache << rp
+      i += 1
+    end
+    ActiveRecord::Base.logger.level = old_level
+  end
+
   def self.walking_distance(a, b)
-    #start = closest_street_vertex(a.point.position)
-    #dest = closest_street_vertex(b.point.position)
-    p1 = a.point.position
-    p2 = b.point.position
+    id1 = a.nearest_ways_point
+    id2 = b.nearest_ways_point
 
-    #return a.point.position.distance(b.point.position) if start == dest
-
-    sql = <<-EOF
-SELECT walking_route_path(#{p1.lon}, #{p1.lat}, #{p2.lon}, #{p2.lat})
-EOF
+    sql = "
+    SELECT SUM(ST_Length(the_geom::geography))
+    FROM pgr_dijkstra('
+      SELECT gid as id, source, target, cost, reverse_cost FROM routing.ways
+      WHERE the_geom && ST_Expand(
+      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{id1}, #{id2})), 0.007)'
+    , #{id1}, #{id2}, false) dij
+    LEFT JOIN routing.ways ON dij.node = gid"
     res = ApplicationRecord.connection.execute(sql).values[0][0]
-    puts sql if res.nil?
-    res
+    res || a.point.position.distance(b.point.position)
   end
 
   def self.closest_street_vertex(point)
-    sql = <<-EOF
+    sql = "
 SELECT id FROM routing.ways_vertices_pgr
 WHERE the_geom::geography <-> st_point(#{point.lon}, #{point.lat})::geography < 300
 ORDER BY the_geom <-> st_point(#{point.lon}, #{point.lat})::geography
-LIMIT 1
-EOF
+LIMIT 1"
     ApplicationRecord.connection.execute(sql).values[0][0]
   end
 
@@ -37,13 +58,13 @@ EOF
     end
   end
 
-  def self.dijkstra(source, target)
+  def self.a_star(source, target)
     maxint = (2**(0.size * 8 -2) -1)
     costs = {}
     previous = {}
     nodes = PriorityQueue.new
 
-    ([source, target] + RoutePoint.all.includes(:point)).each do |rp|
+    ([source, target] + @point_cache).each do |rp|
       if rp == source
         costs[rp] = 0
         nodes[rp] = 0
@@ -68,6 +89,13 @@ EOF
 
       break if current.nil? || costs[current] == maxint
 
+      if current == source
+        puts "start"
+      elsif current == target
+        puts "finish"
+      else
+        puts "#{current.id}"
+      end
       current.neighbors(target, previous[current]).each do |new|
         alt = costs[current] + current.cost_to(new)
         if alt < costs[new]
@@ -76,6 +104,7 @@ EOF
           nodes[new] = alt
         end
       end
+      puts ""
     end
 
     []
@@ -110,7 +139,7 @@ ORDER BY st_distance(p1.position, st_point(?, ?)) + st_distance(p2.position, st_
       route = routes[0]
       RoutePoint.where(route: route).where('"order" >= ? AND "order" <= ?', route.rp1_order, route.rp2_order).order('"order" ASC')
     else
-      dijkstra(start, finish)
+      a_star(start, finish)
     end
   end
 
@@ -153,6 +182,6 @@ FROM
   def self.test_route
     boicy = VirtualPoint.new -54.577825, -25.546901
     rodo  = VirtualPoint.new -54.562939, -25.520758
-    walking_distance boicy, rodo
+    route_between boicy, rodo
   end
 end
