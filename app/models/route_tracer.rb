@@ -6,13 +6,10 @@ class RouteTracer
 
   def self.calculate_point_cache
     @point_cache.clear
-    old_level = ActiveRecord::Base.logger.level
     i = 1
     count = RoutePoint.count
-    ActiveRecord::Base.logger.level = 1
     RoutePoint.all.includes(:point).each do |rp|
       puts "#{i}/#{count}..."
-      rp.calculate_nearest_ways_point
       rp.cached_costs = {}
       rp.neighbors(nil, nil).each do |neighbor|
         print "*"
@@ -22,7 +19,6 @@ class RouteTracer
       @point_cache << rp
       i += 1
     end
-    ActiveRecord::Base.logger.level = old_level
     save_point_cache
   end
 
@@ -36,14 +32,15 @@ class RouteTracer
     id_hash = JSON.parse(File.read('/tmp/achabus-point-cache.json'))
     @point_cache = RoutePoint.find(id_hash.keys)
     @point_cache.each do |rp|
-      print " -> "
-      rp.calculate_nearest_ways_point
+      print "-> "
       rp.cached_costs = id_hash[rp.id.to_s].map do |k, v|
         print "*"
         [RoutePoint.find(k), v]
       end.to_h
+      puts ""
     end
-    puts ""
+  rescue
+    calculate_point_cache && save_point_cache && load_point_cache
   end
 
   def self.walking_distance(a, b)
@@ -110,13 +107,6 @@ LIMIT 1"
 
       break if current.nil? || costs[current] == maxint
 
-      if current == source
-        puts "start"
-      elsif current == target
-        puts "finish"
-      else
-        puts "#{current.id}"
-      end
       current.neighbors(target, previous[current]).each do |new|
         alt = costs[current] + current.cost_to(new)
         if alt < costs[new]
@@ -125,7 +115,6 @@ LIMIT 1"
           nodes[new] = alt
         end
       end
-      puts ""
     end
 
     []
@@ -202,8 +191,11 @@ FROM
   end
 
   def self.test_route
+    old_level = ActiveRecord::Base.logger.level
+    ActiveRecord::Base.logger.level = 1
     boicy = VirtualPoint.new -54.577825, -25.546901
     rodo  = VirtualPoint.new -54.562939, -25.520758
+    ActiveRecord::Base.logger.level = old_level
     route_between boicy, rodo
   end
 end

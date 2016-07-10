@@ -14,10 +14,8 @@ class VirtualPoint
   end
   def neighbors(destination, previous)
     if !@cached_costs.empty?
-      print ">>"
       @cached_costs.keys
     else
-      print "=="
       RoutePoint.joins(:point).where(points: {waypoint: false}).where('st_distance(st_point(?, ?)::geography, points.position) < 500', @point.lon, @point.lat)
     end
   end
@@ -27,7 +25,6 @@ class VirtualPoint
   end
 
   def cost_to target
-    print "!"
     RouteTracer.walking_distance(self, target)*7
   end
 

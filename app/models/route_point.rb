@@ -31,10 +31,8 @@ class RoutePoint < ApplicationRecord
 
   def cost_to target
     if cached_costs && target.class != VirtualPoint && cached_costs[target]
-      print "+"
       cached_costs[target]
     else
-      print "*"
       if target.class == VirtualPoint
         # para evitar que pulemos adiante, precisamos saber qual o RoutePoint atual ou seguinte que está mais próximo do
         # VirtualPoint. Daí a distância é a distância até o tal RoutePoint + a distância caminhando
@@ -72,16 +70,17 @@ FROM
   end
 
   def nearest_ways_point
-    @nearest_ways_point || calculate_nearest_ways_point
+    super || calculate_nearest_ways_point
   end
 
   def calculate_nearest_ways_point
-    puts ">>"
     lon = point.position.lon
     lat = point.position.lat
     sql ="SELECT id FROM routing.ways_vertices_pgr WHERE the_geom::geography <-> ST_Point(#{lon}, #{lat})::geography < 300
 	ORDER BY the_geom::geography <-> ST_Point(#{lon}, #{lat})::geography LIMIT 1"
-    @nearest_ways_point = ApplicationRecord.connection.execute(sql).values[0][0]
+    id = ApplicationRecord.connection.execute(sql).values[0][0]
+    self.update(nearest_ways_point: id)
+    id
   end
 
   def self.closest_to lon, lat
