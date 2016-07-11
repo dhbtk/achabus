@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'route_tracer/trace'
 
   resources :route_points do
     member do
@@ -18,6 +17,7 @@ Rails.application.routes.draw do
     end
   end
   get 'trace_route', to: 'route_tracer#trace'
+  get 'walking_path', to: 'route_tracer#walking_path'
 
 
   resources :lines do
