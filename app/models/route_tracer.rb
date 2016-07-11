@@ -28,19 +28,22 @@ class RouteTracer
   end
 
   def self.load_point_cache
+    begin
+      id_hash = JSON.parse(File.read('/tmp/achabus-point-cache.json'))
+    rescue
+      calculate_point_cache && save_point_cache && load_point_cache
+      return
+    end
     puts "Carregando..."
-    id_hash = JSON.parse(File.read('/tmp/achabus-point-cache.json'))
-    @point_cache = RoutePoint.find(id_hash.keys)
+    @point_cache = RoutePoint.includes(:route).find(id_hash.keys)
     @point_cache.each do |rp|
       print "-> "
       rp.cached_costs = id_hash[rp.id.to_s].map do |k, v|
         print "*"
-        [RoutePoint.find(k), v]
+        [RoutePoint.includes(:route).find(k), v]
       end.to_h
       puts ""
     end
-  rescue
-    calculate_point_cache && save_point_cache && load_point_cache
   end
 
   def self.walking_distance(a, b)
@@ -68,12 +71,51 @@ LIMIT 1"
     ApplicationRecord.connection.execute(sql).values[0][0]
   end
 
+  def self.walking_path(a, b)
+    id1 = closest_street_vertex a
+    id2 = closest_street_vertex b
+
+    sql = "
+    SELECT st_asText(the_geom::geography), st_asText(st_reverse(the_geom)::geography) as flip_geom, source, target
+    FROM pgr_dijkstra('
+      SELECT gid as id, source, target, cost, reverse_cost FROM routing.ways
+      WHERE the_geom && ST_Expand(
+      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{id1}, #{id2})), 0.007)'
+    , #{id1}, #{id2}, false) dij
+    LEFT JOIN routing.ways ON dij.node = gid"
+    source = id1
+    points = []
+    ApplicationRecord.connection.execute(sql).values.each do |row|
+      line = row[0]
+      if source != row[2]
+        line = row[1]
+        source = row[2]
+      else
+        source = row[3]
+      end
+      points += RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(line).points
+    end
+    ls = "LINESTRING (#{points.uniq.map{|p| "#{p.lon} #{p.lat}"}.join(',')})"
+    puts ls
+    points.empty? ? OpenStruct.new({points: []}) : RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(ls)
+  end
+
   def self.heuristic(a, b)
     if a == RoutePoint && b == RoutePoint && a.route_id == b.route_id
       a.point.position.distance(b.point.position)
     else
       5*a.point.position.distance(b.point.position)
     end
+  end
+
+  def self.antecessors_to(target, previous)
+    path = []
+    current = target
+    while previous[current]
+      path.unshift current
+      current = previous[current]
+    end
+    path
   end
 
   def self.a_star(source, target)
@@ -97,17 +139,12 @@ LIMIT 1"
       current = nodes.delete_min_return_key
 
       if current == target
-        path = []
-        while previous[current]
-          path.unshift current
-          current = previous[current]
-        end
-        return path[0..-2]
+        return antecessors_to(current, previous)[0..-2]
       end
 
       break if current.nil? || costs[current] == maxint
 
-      current.neighbors(target, previous[current]).each do |new|
+      current.neighbors(target, antecessors_to(current, previous)).each do |new|
         alt = costs[current] + current.cost_to(new)
         if alt < costs[new]
           costs[new] = alt + heuristic(target, new)
@@ -166,6 +203,12 @@ ORDER BY st_distance(p1.position, st_point(?, ?)) + st_distance(p2.position, st_
     ensure
       res = RubyProf.stop
       RubyProf::GraphHtmlPrinter.new(res).print(File.open("/tmp/report.html", "w"), min_percent: 1)
+    end
+    File.open('/tmp/route-trace.txt', 'w') do |f|
+      f << "DISCRIMINAÇÃO DOS PONTOS\n\n"
+      route.each do |rp|
+        f << "%s - %s/%s\n  %s\n" % [rp.route.line.identifier, rp.route.origin, rp.route.destination, rp.point.name]
+      end
     end
     route.group_by{|p| p.route_id}.map do |route_id, group|
       group = group.sort_by { |rp| rp.order } # ????

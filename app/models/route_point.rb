@@ -5,12 +5,18 @@ class RoutePoint < ApplicationRecord
   attr_accessor :cached_costs
 
   # TODO: não deixar como vizinho um ponto que parta da mesma origem
-  def neighbors(destination, previous)
+  def neighbors(destination, antecessors)
     if cached_costs && !cached_costs.empty?
       neighbors = cached_costs.keys
+      previous = antecessors[-1]
       if self.point.waypoint || (previous && previous.class == RoutePoint && previous.route_id != self.route_id)
         neighbors = neighbors.select do |neighbor|
           neighbor.route_id == self.route_id
+        end
+      else
+        antecessor_route_ids = antecessors.map{|x| x.route.origin + x.route.destination}.uniq - [self.route.origin + self.route.destination]
+        neighbors = neighbors.select do |neighbor|
+          !antecessor_route_ids.include?(neighbor.route.origin + neighbor.route.destination)
         end
       end
     else
