@@ -129,7 +129,7 @@ class MapController {
             this.loading = true;
             this.$http({
                 method: 'GET',
-                url: '/route_tracer/trace.json',
+                url: '/trace_route.json',
                 params: {
                     src_lat: this.origin.lat(),
                     src_lon: this.origin.lng(),
@@ -141,7 +141,7 @@ class MapController {
                 this.polylines.forEach((p) => p.setMap(null));
                 this.walkingPolylines.forEach((p) => p.setMap(null));
                 this.markers.forEach((p) => p.setMap(null));
-                let colors = ['#990000', '#009900', '#999900', '#000099'];
+                let colors = ['#990000', '#009900', '#990099', '#000099', '#009999'];
                 response.data.forEach((step, i) => {
                     if(step.route_path){
                         this.polylines.push(new google.maps.Polyline({
@@ -158,27 +158,41 @@ class MapController {
                         }));
                     });
                 });
-                this.walkingPolylines.push(new google.maps.Polyline({
-                    map: this.map,
-                    path: [this.origin, response.data[0].route_path[0]],
-                    strokeColor: '#FFD1DC'
-                }));
-                var last_data = response.data[response.data.length - 1];
-                this.walkingPolylines.push(new google.maps.Polyline({
-                    map: this.map,
-                    path: [this.destination, last_data.route_path[last_data.route_path.length - 1]],
-                    strokeColor: '#FFD1DC'
-                }));
-                for(var i = 0; i < response.data.length - 2; i++) {
+                if(response.data.length > 0) {
+                    this.$http({
+                        method: 'GET',
+                        url: '/walking_path.json',
+                        params: {
+                            src_lat: this.origin.lat(),
+                            src_lon: this.origin.lng(),
+                            dest_lat: response.data[0].route_path[0].lat,
+                            dest_lon: response.data[0].route_path[0].lng
+                        }
+                    }).then(data => {
+                        console.log(data);
+                        this.walkingPolylines.push(new google.maps.Polyline({
+                            map: this.map,
+                            path: data.data.route,
+                            strokeColor: '#DDB1BC'
+                        }));
+                    });
+                    const last_data = response.data[response.data.length - 1];
                     this.walkingPolylines.push(new google.maps.Polyline({
                         map: this.map,
-                        path: [response.data[i].route_path[response.data[i].route_path.length - 1], response.data[i + 1].route_path[0]],
-                        strokeColor: '#FFD1DC'
+                        path: [this.destination, last_data.route_path[last_data.route_path.length - 1]],
+                        strokeColor: '#DDB1BC'
                     }));
+                    for(let i = 0; i < response.data.length - 2; i++) {
+                        this.walkingPolylines.push(new google.maps.Polyline({
+                            map: this.map,
+                            path: [response.data[i].route_path[response.data[i].route_path.length - 1], response.data[i + 1].route_path[0]],
+                            strokeColor: '#DDB1BC'
+                        }));
+                    }
                 }
             }).finally(() => {
                 this.loading = false;
-            })
+            });
         } else {
             alert('Faltou os dois pontos.');
         }
