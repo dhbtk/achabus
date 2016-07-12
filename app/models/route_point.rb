@@ -44,26 +44,12 @@ class RoutePoint < ApplicationRecord
         distance = if rp.id == self.id
                      0
                    else
-                     sql = <<-EOF
-SELECT st_length(st_makeline(geom)::geography) as route_line
-FROM
-(
-  SELECT (st_dumppoints(route)).geom FROM routes WHERE id = #{self.route_id} LIMIT (#{rp.polyline_index} + 1) OFFSET #{self.polyline_index}
-) foo
-                     EOF
-                     Route.connection.execute(sql).values[0][0]
+                     Route.route_segment(self.route_id, self.polyline_index, rp.polyline_index)&.length || 0
                    end
-        distance + 7*self.point.position.distance(target.point.position)
+        distance + 7*RouteTracer.walking_distance(self, target)
       elsif target.route_id == self.route_id
         if target.order > self.order
-          sql = <<-EOF
-SELECT st_length(st_makeline(geom)::geography) as route_line
-FROM
-(
-  SELECT (st_dumppoints(route)).geom FROM routes WHERE id = #{self.route_id} LIMIT (#{target.polyline_index} + 1) OFFSET #{self.polyline_index}
-) foo
-          EOF
-          Route.connection.execute(sql).values[0][0]
+          Route.route_segment(self.route_id, self.polyline_index, target.polyline_index)&.length || 0
         else
           raise ArgumentError, 'Não podemos voltar para trás'
         end
