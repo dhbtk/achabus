@@ -25,7 +25,7 @@ class VirtualPoint
   end
 
   def cost_to target
-    RouteTracer.walking_distance(self, target)*7
+    RouteTracer.walking_time(self, target)
   end
 
   def point
