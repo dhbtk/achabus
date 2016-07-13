@@ -62,6 +62,87 @@ class RouteTracer
     res || a.point.position.distance(b.point.position)
   end
 
+  # Aqui temos um modelo simples para aceleração/desaceleração de um ônibus.
+  # Fazemos de conta que ônibus têm aceleração constante, 1 m/s, até chegarem a 11 m/s (39,6 km/h).
+  # Após ficarem pelo menos 330 m nessa velocidade (30s) eles aceleram para 17 m/s a 1 m/s², demorando 6 segundos.
+  # Depois disso, independentemente da velocidade que estão, freiam a -1 m/s² para parar no próximo ponto.
+  #
+  # A distância de aceleração é igual a integral da aceleração sobre o tempo. Como temos aceleração linear, para a
+  # aceleração inicial e desaceleração final temos um triângulo, e para a aceleração no meio do percurso, temos um
+  # quadrilátero.
+# @param [Float] length o percurso entre um ponto e outro
+# @return [Float] o tempo em segundos
+  def self.driving_time(length)
+    # 121 é a distância necessária para acelerar até 11 m/s e parar.
+    if length <= 121
+      # O nosso gráfico de velocidade/tempo fica assim:
+      #     /\
+      #    /  \
+      #   /    \
+      #  /      \
+      # ---------
+      #    x | y
+      # Os dois lados são iguais, x + x = length, logo,
+      length/2
+    elsif length > 121 && length <= 451
+      # Nosso gráfico é um trapézio isósceles neste caso.
+      #    /---------\
+      #   /           \
+      #  /             \
+      # /               \
+      # -----------------
+      # O ônibus usa 60,5m para acelerar até 11 m/s e o mesmo espaço para parar.
+      # Portanto, para percursos entre 121 m e 451 m (121 + 330 para acelerar até quase 60 km/h), temos MRV no meio do
+      # percurso.
+      22 + (length - 121)/11
+    elsif length > 451 && length <= 679.5 # ???
+      # A distância que percorremos para acelerar de 11 m/s para 17 m/s é:
+      # Um retângulo com altura 11 e base 6 + um triângulo com base 6 e altura 6. Assim: d = 84 m
+      # Mais 121 para acelerar, 330 para manter, e 17*17/2 para desacelerar, temos então 679,5 m para cairmos no último
+      # if.
+      #
+      # O gráfico aqui é assim, e temos que achar x e y:
+      #
+      #        /\
+      #       /  \
+      #   /---    \
+      #  / length  \
+      # /           \
+      # -------------
+      # Mas o tempo para chegar até a acelerada nós já conhecemos, é 11s + 30s (41s), que são 60,5 m + 330 m (390,5 m).
+      # Se descontarmos este valor da área (length), ficamos com a área somente desta figura aqui:
+      #   /\
+      #  /  \
+      # |\   \
+      # |17\  \
+      # |    \ \
+      # |-------
+      # Precisamos saber o comprimento da diagonal primeiro para aí conseguir saber a altura do quadrilátero.
+    else
+      # Aqui temos dois trapézios isósceles.
+      #             /----\
+      #            /b ----\
+      #   /----------------\
+      #  / a                \
+      # /                    \
+      # ----------------------
+      # 11 |  30  |x | 11
+    end
+
+  end
+
+# Aqui assumimos que pessoas andam em velocidade constante.
+# A wikipédia diz que a maioria das pessoas anda a 1,4 m/s, então vamos usar este valor.
+# t = d/v
+#
+# @param [RoutePoint||VirtualPoint] a ponto A
+# @param [RoutePoint||VirtualPoint] b ponto B
+# @return [Float] o tempo em segundos
+  def self.walking_time(a, b)
+
+    walking_distance(a, b)/1.4
+  end
+
   def self.closest_street_vertex(point)
     sql = "
 SELECT id FROM routing.ways_vertices_pgr
@@ -158,36 +239,7 @@ LIMIT 1"
   end
 
   def self.trace_route(start, finish)
-    routes = Route.find_by_sql(['
-SELECT
-  r.*,
-  rp1.order as rp1_order,
-  rp2.order as rp2_order
-FROM routes r
-
-JOIN route_points rp1 ON rp1.route_id = r.id
-JOIN points p1 ON rp1.point_id = p1.id
-
-JOIN route_points rp2 ON rp2.route_id = r.id
-JOIN points p2 ON rp2.point_id = p2.id
-
-WHERE
-rp2.order > rp1.order AND
-p1.waypoint = FALSE AND p2.waypoint = FALSE AND
-st_distance(p1.position, st_point(?, ?)) < 500 AND
-st_distance(p2.position, st_point(?, ?)) < 500
-
-ORDER BY st_distance(p1.position, st_point(?, ?)) + st_distance(p2.position, st_point(?, ?))
-',
-        start.point.position.lon, start.point.position.lat, finish.point.position.lon, finish.point.position.lat,
-        start.point.position.lon, start.point.position.lat, finish.point.position.lon, finish.point.position.lat
-    ])
-    if routes.count > 0
-      route = routes[0]
-      RoutePoint.where(route: route).where('"order" >= ? AND "order" <= ?', route.rp1_order, route.rp2_order).order('"order" ASC')
-    else
-      a_star(start, finish)
-    end
+    a_star(start, finish)
   end
 
   def self.route_between(start, finish)

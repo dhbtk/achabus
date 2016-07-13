@@ -37,17 +37,7 @@ class RoutePoint < ApplicationRecord
     if cached_costs && target.class != VirtualPoint && cached_costs[target]
       cached_costs[target]
     else
-      if target.class == VirtualPoint
-        # para evitar que pulemos adiante, precisamos saber qual o RoutePoint atual ou seguinte que está mais próximo do
-        # VirtualPoint. Daí a distância é a distância até o tal RoutePoint + a distância caminhando
-        rp = RoutePoint.joins(:point).where(points: {waypoint: false}, route: self.route).where('"order" >= ?', self.order).sort_by { |rp| rp.point.position.distance(target.point.position) }.first
-        distance = if rp.id == self.id
-                     0
-                   else
-                     Route.route_segment(self.route_id, self.polyline_index, rp.polyline_index)&.length || 0
-                   end
-        distance + 7*RouteTracer.walking_distance(self, target)
-      elsif target.route_id == self.route_id
+      if target.class == RoutePoint && target.route_id == self.route_id
         if target.order > self.order
           Route.route_segment(self.route_id, self.polyline_index, target.polyline_index)&.length || 0
         else
