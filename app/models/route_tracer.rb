@@ -73,6 +73,7 @@ class RouteTracer
 # @param [Float] length o percurso entre um ponto e outro
 # @return [Float] o tempo em segundos
   def self.driving_time(length)
+    length = length.to_f
     # 121 é a distância necessária para acelerar até 11 m/s e parar.
     if length <= 121
       # O nosso gráfico de velocidade/tempo fica assim:
@@ -83,7 +84,7 @@ class RouteTracer
       # ---------
       #    x | y
       # Os dois lados são iguais, x + x = length, logo,
-      length/2
+      Math.sqrt(2*length)*Math.sqrt(2)
     elsif length > 121 && length <= 451
       # Nosso gráfico é um trapézio isósceles neste caso.
       #    /---------\
@@ -114,19 +115,32 @@ class RouteTracer
       #   /\
       #  /  \
       # |\   \
-      # |17\  \
+      # |11\  \
       # |    \ \
       # |-------
       # Precisamos saber o comprimento da diagonal primeiro para aí conseguir saber a altura do quadrilátero.
+      a = length - 451
+      puts "a: #{a}"
+      base1 = (-11 + Math.sqrt(121 - 4*(-a)))/2
+      base2 = (-11 - Math.sqrt(121 - 4*(-a)))/2
+      puts "base1: #{base1}; base2: #{base2}"
+      base1 + 30 + 11 + 11
     else
       # Aqui temos dois trapézios isósceles.
       #             /----\
-      #            /b ----\
+      #            /b     \
       #   /----------------\
       #  / a                \
       # /                    \
       # ----------------------
       # 11 |  30  |x | 11
+      # Esse é bem mais de boa.
+      # Temos as áreas dos triângulos do trapézio de cima e dos retângulos que eles formam no trapézio de baixo, assim,
+      # sobra apenas descobrir a base de um retângulo sabendo sua altura.
+      a = length - 60.5 - 330 - 66 - 66 - 60.5 # triângulos e retângulos do trapézio de baixo
+      a = a - 18 - 18 # triângulos do trapézio de cima
+      # sobrou apenas o retângulo, que tem altura 17. Sua base é:
+      a/17 + 30 + 11 + 11
     end
 
   end
