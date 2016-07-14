@@ -8,8 +8,8 @@ class RoutePoint < ApplicationRecord
   def neighbors(destination, antecessors)
     if cached_costs && !cached_costs.empty?
       neighbors = cached_costs.keys
-      previous = antecessors[-1]
-      if self.point.waypoint || (previous && previous.class == RoutePoint && previous.route_id != self.route_id)
+      previous = antecessors[-2]
+      if previous && previous.class == RoutePoint && previous.route_id != self.route_id
         neighbors = neighbors.select do |neighbor|
           neighbor.route_id == self.route_id
         end
@@ -39,12 +39,12 @@ class RoutePoint < ApplicationRecord
     else
       if target.class == RoutePoint && target.route_id == self.route_id
         if target.order > self.order
-          Route.route_segment(self.route_id, self.polyline_index, target.polyline_index)&.length || 0
+          RouteTracer.driving_time(Route.route_segment(self.route_id, self.polyline_index, target.polyline_index)&.length || 0)
         else
           raise ArgumentError, 'Não podemos voltar para trás'
         end
       else
-        500 + 7*RouteTracer.walking_distance(self, target)
+        30 + RouteTracer.walking_time(self, target)
       end
     end
   end

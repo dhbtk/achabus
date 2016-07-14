@@ -81,7 +81,6 @@ class RouteTracer
     end
     # A área máxima em que o gráfico é apenas um triângulo e não um trapézio.
     triangle_area = top_speed**2
-    puts "área do triângulo: #{triangle_area}"
     if length <= triangle_area
       Math.sqrt(2*length)*Math.sqrt(2)
     else
