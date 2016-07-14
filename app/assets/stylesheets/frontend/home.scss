@@ -10,14 +10,18 @@
   background-color: rgba(255, 255, 255, 0.8);
   width: 350px;
   z-index: 2;
+  align-items: center;
   p {
     margin-top: 0;
   }
   md-autocomplete {
   	width: 100%;
   }
+  button.md-button {
+    min-width: 40px;
+    max-width: 40px;
+  }
 }
-
 #home-picture {
   z-index: 1;
   position: absolute;

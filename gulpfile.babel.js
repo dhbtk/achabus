@@ -45,6 +45,7 @@ gulp.task('build:js', done => {
 
         const bundle = () => {
             return b.bundle()
+                .on('error', gutil.log.bind(gutil, 'Browserify Error'))
                 .pipe(source(`${entry}.js`))
                 .pipe(buffer())
                 .pipe(sourcemaps.init({loadMaps: true}))
