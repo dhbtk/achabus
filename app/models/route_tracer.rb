@@ -70,79 +70,24 @@ class RouteTracer
   # A distância de aceleração é igual a integral da aceleração sobre o tempo. Como temos aceleração linear, para a
   # aceleração inicial e desaceleração final temos um triângulo, e para a aceleração no meio do percurso, temos um
   # quadrilátero.
-# @param [Float] length o percurso entre um ponto e outro
-# @return [Float] o tempo em segundos
+  # @param [Float] length o percurso entre um ponto e outro
+  # @return [Float] o tempo em segundos
   def self.driving_time(length)
     length = length.to_f
-    # 121 é a distância necessária para acelerar até 11 m/s e parar.
-    if length <= 121
-      # O nosso gráfico de velocidade/tempo fica assim:
-      #     /\
-      #    /  \
-      #   /    \
-      #  /      \
-      # ---------
-      #    x | y
-      # Os dois lados são iguais, x + x = length, logo,
-      Math.sqrt(2*length)*Math.sqrt(2)
-    elsif length > 121 && length <= 451
-      # Nosso gráfico é um trapézio isósceles neste caso.
-      #    /---------\
-      #   /           \
-      #  /             \
-      # /               \
-      # -----------------
-      # O ônibus usa 60,5m para acelerar até 11 m/s e o mesmo espaço para parar.
-      # Portanto, para percursos entre 121 m e 451 m (121 + 330 para acelerar até quase 60 km/h), temos MRV no meio do
-      # percurso.
-      22 + (length - 121)/11
-    elsif length > 451 && length <= 679.5 # ???
-      # A distância que percorremos para acelerar de 11 m/s para 17 m/s é:
-      # Um retângulo com altura 11 e base 6 + um triângulo com base 6 e altura 6. Assim: d = 84 m
-      # Mais 121 para acelerar, 330 para manter, e 17*17/2 para desacelerar, temos então 679,5 m para cairmos no último
-      # if.
-      #
-      # O gráfico aqui é assim, e temos que achar x e y:
-      #
-      #        /\
-      #       /  \
-      #   /---    \
-      #  / length  \
-      # /           \
-      # -------------
-      # Mas o tempo para chegar até a acelerada nós já conhecemos, é 11s + 30s (41s), que são 60,5 m + 330 m (390,5 m).
-      # Se descontarmos este valor da área (length), ficamos com a área somente desta figura aqui:
-      #   /\
-      #  /  \
-      # |\   \
-      # |11\  \
-      # |    \ \
-      # |-------
-      # Precisamos saber o comprimento da diagonal primeiro para aí conseguir saber a altura do quadrilátero.
-      a = length - 451
-      puts "a: #{a}"
-      base1 = (-11 + Math.sqrt(121 - 4*(-a)))/2
-      base2 = (-11 - Math.sqrt(121 - 4*(-a)))/2
-      puts "base1: #{base1}; base2: #{base2}"
-      base1 + 30 + 11 + 11
+    if length < 800
+      top_speed = 7.0 # 39,6 km/h
     else
-      # Aqui temos dois trapézios isósceles.
-      #             /----\
-      #            /b     \
-      #   /----------------\
-      #  / a                \
-      # /                    \
-      # ----------------------
-      # 11 |  30  |x | 11
-      # Esse é bem mais de boa.
-      # Temos as áreas dos triângulos do trapézio de cima e dos retângulos que eles formam no trapézio de baixo, assim,
-      # sobra apenas descobrir a base de um retângulo sabendo sua altura.
-      a = length - 60.5 - 330 - 66 - 66 - 60.5 # triângulos e retângulos do trapézio de baixo
-      a = a - 18 - 18 # triângulos do trapézio de cima
-      # sobrou apenas o retângulo, que tem altura 17. Sua base é:
-      a/17 + 30 + 11 + 11
+      top_speed = 10.0 # 61,2 km/h
     end
-
+    # A área máxima em que o gráfico é apenas um triângulo e não um trapézio.
+    triangle_area = top_speed**2
+    puts "área do triângulo: #{triangle_area}"
+    if length <= triangle_area
+      Math.sqrt(2*length)*Math.sqrt(2)
+    else
+      rectangle_area = length - triangle_area
+      rectangle_area/top_speed + 2*top_speed
+    end
   end
 
 # Aqui assumimos que pessoas andam em velocidade constante.
