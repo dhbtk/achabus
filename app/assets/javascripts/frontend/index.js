@@ -7,7 +7,7 @@ require('angular').module('achaBus', [require('angular-material'), require('angu
 
         $stateProvider.state('home', {
             url: '/',
-            controller: 'HomeController as home',
+            controller: 'HomeController as ctrl',
             templateUrl: '/templates/home.html'
         });
         $stateProvider.state('map', {

@@ -6,7 +6,7 @@
 import $ from 'jquery';
 
 class MapController {
-    constructor($scope, $q, $http, $interval, $timeout) {
+    constructor($scope, $q, $http, $interval, $timeout, $state) {
         this.$http = $http;
         this.$q = $q;
         this.loading = true;
@@ -39,8 +39,8 @@ class MapController {
                         }
                     });
                     this.loading = false;
-                    navigator.geolocation.getCurrentPosition(pos => {
-                        const coords = new google.maps.LatLng({lat: pos.coords.latitude, lng: pos.coords.longitude});
+                    let coords;
+                    const goToLocation = (coords) => {
                         this.origin = coords;
                         this.originMarker = new google.maps.Marker({
                             clickable: false,
@@ -49,7 +49,17 @@ class MapController {
                             label: 'S'
                         });
                         this.reverseGeocodeCoords(coords).then(address => this.originText = address);
-                    });
+                        this.map.setCenter(coords);
+                    };
+                    if($state.params.location) {
+                        coords = new google.maps.LatLng($state.params.location);
+                        goToLocation(coords);
+                    } else {
+                        navigator.geolocation.getCurrentPosition(pos => {
+                            coords = new google.maps.LatLng({lat: pos.coords.latitude, lng: pos.coords.longitude});
+                            goToLocation(coords);
+                        });
+                    }
                 }, 0);
             }
         }, 500);

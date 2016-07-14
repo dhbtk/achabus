@@ -2,14 +2,19 @@
     <div id="home-picture"></div>
     <div id="home-search-box" class="md-whiteframe-3dp" layout="column" layout-align="center center">
         <p>Onde você vai?</p>
-        <md-autocomplete
-                flex
-                ng-disabled="false"
-                md-selected-item="home.search.place"
-                md-search-text="home.search.text"
-                md-items="item in home.searchPlaces(home.search.text)"
-                md-min-length="0">
-            <md-item-template>oi</md-item-template>
-        </md-autocomplete>
+        <div flex layout="row">
+            <md-autocomplete
+                    flex
+                    ng-disabled="false"
+                    md-selected-item="ctrl.search.place"
+                    md-search-text="ctrl.search.text"
+                    md-items="item in ctrl.searchPlaces(ctrl.search.text)"
+                    md-min-length="3">
+                <md-item-template>oi</md-item-template>
+            </md-autocomplete>
+            <md-button>
+                <md-icon>search</md-icon>
+            </md-button>
+        </div>
     </div>
 </div>
