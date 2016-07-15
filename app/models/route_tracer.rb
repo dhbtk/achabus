@@ -139,14 +139,6 @@ LIMIT 1"
     points.empty? ? OpenStruct.new({points: []}) : RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(ls)
   end
 
-  def self.heuristic(a, b)
-    if a == RoutePoint && b == RoutePoint && a.route_id == b.route_id
-      a.point.position.distance(b.point.position)
-    else
-      5*a.point.position.distance(b.point.position)
-    end
-  end
-
   def self.antecessors_to(target, previous)
     path = []
     current = target
@@ -157,7 +149,7 @@ LIMIT 1"
     path
   end
 
-  def self.a_star(source, target)
+  def self.dijkstra(source, target)
     maxint = (2**(0.size * 8 -2) -1)
     costs = {}
     previous = {}
@@ -186,7 +178,7 @@ LIMIT 1"
       current.neighbors(target, antecessors_to(current, previous)).each do |new|
         alt = costs[current] + current.cost_to(new)
         if alt < costs[new]
-          costs[new] = alt + heuristic(target, new)
+          costs[new] = alt
           previous[new] = current
           nodes[new] = alt
         end
@@ -197,7 +189,7 @@ LIMIT 1"
   end
 
   def self.trace_route(start, finish)
-    a_star(start, finish)
+    dijkstra(start, finish)
   end
 
   def self.route_between(start, finish)

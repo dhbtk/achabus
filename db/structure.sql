@@ -357,7 +357,8 @@ CREATE TABLE route_points (
     updated_at timestamp without time zone NOT NULL,
     pass_through boolean DEFAULT false,
     polyline_index integer,
-    nearest_ways_point integer
+    nearest_ways_point integer,
+    closest_way integer
 );
 
 
@@ -421,6 +422,19 @@ ALTER SEQUENCE routes_id_seq OWNED BY routes.id;
 
 CREATE TABLE schema_migrations (
     version character varying NOT NULL
+);
+
+
+--
+-- Name: temp_test; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE temp_test (
+    id integer,
+    origin geography(Point,4326),
+    dest geography,
+    closest geography,
+    path geography
 );
 
 
@@ -967,6 +981,14 @@ CREATE INDEX ways_vertices_pgr_osm_id_idx ON ways_vertices_pgr USING btree (osm_
 SET search_path = public, pg_catalog;
 
 --
+-- Name: fk_rails_0c08ddb811; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY route_points
+    ADD CONSTRAINT fk_rails_0c08ddb811 FOREIGN KEY (closest_way) REFERENCES routing.ways(gid);
+
+
+--
 -- Name: fk_rails_0f75196a8c; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1028,6 +1050,6 @@ ALTER TABLE ONLY place_points
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160309161817'), ('20160309161832'), ('20160309162957'), ('20160309163451'), ('20160309163707'), ('20160309163750'), ('20160309163823'), ('20160309164003'), ('20160309165254'), ('20160309233245'), ('20160314224722'), ('20160314224810'), ('20160314224931'), ('20160316161212'), ('20160404152758'), ('20160615165136'), ('20160628155253'), ('20160702131027'), ('20160702180707'), ('20160708153137'), ('20160710133519');
+INSERT INTO schema_migrations (version) VALUES ('20160309161817'), ('20160309161832'), ('20160309162957'), ('20160309163451'), ('20160309163707'), ('20160309163750'), ('20160309163823'), ('20160309164003'), ('20160309165254'), ('20160309233245'), ('20160314224722'), ('20160314224810'), ('20160314224931'), ('20160316161212'), ('20160404152758'), ('20160615165136'), ('20160628155253'), ('20160702131027'), ('20160702180707'), ('20160708153137'), ('20160710133519'), ('20160715161651');
 
 

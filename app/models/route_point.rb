@@ -4,7 +4,6 @@ class RoutePoint < ApplicationRecord
 
   attr_accessor :cached_costs
 
-  # TODO: não deixar como vizinho um ponto que parta da mesma origem
   def neighbors(destination, antecessors)
     if cached_costs && !cached_costs.empty?
       neighbors = cached_costs.keys
@@ -61,6 +60,19 @@ class RoutePoint < ApplicationRecord
     id = ApplicationRecord.connection.execute(sql).values[0][0]
     self.update(nearest_ways_point: id)
     id
+  end
+
+  def calculate_closest_way
+    sql = "
+    SELECT w.gid
+FROM routing.ways w, route_points rp
+  JOIN points p ON rp.point_id = p.id
+WHERE rp.id = #{self.id} AND
+st_distance(p.position::geography, w.the_geom::geography) < 300
+ORDER BY st_distance(p.position::geography, w.the_geom::geography)
+LIMIT 1;"
+    id = ApplicationRecord.connection.execute(sql).values[0][0]
+    update(closest_way: id)
   end
 
   def self.closest_to lon, lat
