@@ -3,6 +3,7 @@
   top: 0;
   left: 0;
   margin: 8px;
+  max-width: calc(100% - 16px);
 }
 
 div#searchbox {
@@ -42,7 +43,7 @@ button#search-button {
 div#inputs-container {
   padding: 0;
   background-color: #FFFFFF;
-  min-width: 300px;
+  flex: 1;
   overflow: hidden;
 
   & > div {
@@ -80,6 +81,9 @@ div#inputs-container {
       border-right: 1px solid #d9d9d9;
       border-bottom-left-radius: 3px;
       border-bottom-right-radius: 3px;
+      & > button:first-child > md-icon {
+        transform: rotate(180deg);
+      }
     }
   }
 }
@@ -89,4 +93,7 @@ div#inputs-container {
   border-top: 1px solid #d9d9d9;
   border-bottom: 1px solid #d9d9d9;
   height: 46px;
+  & > button:first-child > md-icon {
+    transition: transform 0.25s ease-in-out;
+  }
 }
