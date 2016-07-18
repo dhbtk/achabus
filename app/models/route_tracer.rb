@@ -47,19 +47,35 @@ class RouteTracer
   end
 
   def self.walking_distance(a, b)
-    id1 = a.nearest_ways_point
-    id2 = b.nearest_ways_point
+    seg1 = a.class == VirtualPoint ? ClosestStreetSegment.from_point(a.point.position) : ClosestStreetSegment.from_point_and_gid(a.point.position, a.closest_way)
+    seg2 = b.class == VirtualPoint ? ClosestStreetSegment.from_point(b.point.position) : ClosestStreetSegment.from_point_and_gid(b.point.position, b.closest_way)
+
+    starts = seg1.calculate_segment
+    targets = seg2.calculate_segment
+
+    return a.point.position.distance(b.point.position) if seg1.gid == seg2.gid # FIXME!
 
     sql = "
-    SELECT SUM(ST_Length(the_geom::geography))
-    FROM pgr_dijkstra('
-      SELECT gid as id, source, target, cost, reverse_cost FROM routing.ways
-      WHERE the_geom && ST_Expand(
-      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{id1}, #{id2})), 0.007)'
-    , #{id1}, #{id2}, false) dij
-    LEFT JOIN routing.ways ON dij.node = gid"
-    res = ApplicationRecord.connection.execute(sql).values[0][0]
-    res || a.point.position.distance(b.point.position)
+    SELECT * FROM pgr_dijkstraCost(
+      'SELECT gid as gid, source, target, st_length(the_geom::geography) as cost, st_length(the_geom::geography) as reverse_cost FROM routing.ways',
+      ARRAY[#{starts.join(', ')}], ARRAY[#{targets.join(', ')}], false)
+    "
+    res = ApplicationRecord.connection.execute(sql).values
+
+    res.map do |line| # start_vid, end_vid, cost
+      cost = line[2]
+      if line[0] == seg1.source
+        cost += seg1.closest_point_distance + seg1.source_distance
+      elsif line[0] == seg1.target
+        cost += seg1.closest_point_distance + seg1.target_distance
+      end
+      if line[1] == seg2.source
+        cost += seg2.closest_point_distance + seg2.source_distance
+      elsif line[1] == seg2.target
+        cost += seg2.closest_point_distance + seg2.target_distance
+      end
+      cost
+    end.sort[0]
   end
 
   # Aqui temos um modelo simples para aceleração/desaceleração de um ônibus.
