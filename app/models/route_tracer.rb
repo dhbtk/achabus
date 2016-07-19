@@ -47,17 +47,20 @@ class RouteTracer
   end
 
   def self.walking_distance(a, b)
-    seg1 = a.class == VirtualPoint ? ClosestStreetSegment.from_point(a.point.position) : ClosestStreetSegment.from_point_and_gid(a.point.position, a.closest_way)
-    seg2 = b.class == VirtualPoint ? ClosestStreetSegment.from_point(b.point.position) : ClosestStreetSegment.from_point_and_gid(b.point.position, b.closest_way)
+    seg1 = a.closest_street_segment
+    seg2 = b.closest_street_segment
 
-    starts = seg1.calculate_segment
-    targets = seg2.calculate_segment
+    starts = seg1.get_points
+    targets = seg2.get_points
 
     return a.point.position.distance(b.point.position) if seg1.gid == seg2.gid # FIXME!
 
     sql = "
     SELECT * FROM pgr_dijkstraCost(
-      'SELECT gid as gid, source, target, st_length(the_geom::geography) as cost, st_length(the_geom::geography) as reverse_cost FROM routing.ways',
+      'SELECT gid as id, source, target, st_length(the_geom::geography) as cost, st_length(the_geom::geography) as reverse_cost FROM routing.ways
+      WHERE the_geom && ST_Expand(
+      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{(starts + targets).join(', ')})), 0.01)
+',
       ARRAY[#{starts.join(', ')}], ARRAY[#{targets.join(', ')}], false)
     "
     res = ApplicationRecord.connection.execute(sql).values
