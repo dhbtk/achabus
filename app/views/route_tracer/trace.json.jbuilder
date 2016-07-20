@@ -1,8 +1,7 @@
 json.array!(@path) do |step|
   json.stops(step[:points]) do |point|
     json.name point.name
-    json.lat point.position.lat
-    json.lng point.position.lon
+    json.wkt point.position.to_s
   end
 
   json.route do
