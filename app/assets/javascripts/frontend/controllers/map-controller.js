@@ -4,6 +4,7 @@
 'use strict';
 
 import $ from 'jquery';
+import ol from 'openlayers';
 
 class MapController {
     constructor($scope, $q, $http, $interval, $timeout, $state) {
@@ -14,54 +15,61 @@ class MapController {
         this.origin = null;
         this.originText = null;
         this.destination = null;
-        this.originMarker = null;
-        this.destinationMarker = null;
+        this.originLayer = null;
+        this.originFeature = null;
+        this.destinationLayer = null;
+        this.destinationFeature = null;
         this.destinationText = null;
         this.polylines = [];
         this.markers = [];
         this.walkingPolylines = [];
 
-        let mapWatch = $interval(() => {
-            if(window.google !== undefined) {
-                $interval.cancel(mapWatch);
-                $timeout(() => {
-                    this.map = new google.maps.Map(document.getElementById('map'), {
-                        center: {lat: -25.53413, lng: -54.56901},
-                        zoom: 14,
-                        options: {
-                            disableDoubleClickZoom: true,
-                            disableDefaultUI: true,
-                            styles: [{
-                                featureType: "poi",
-                                elementType: "labels",
-                                stylers: [{visibility: "off"}]
-                            }]
-                        }
-                    });
-                    this.loading = false;
-                    let coords;
-                    const goToLocation = (coords) => {
-                        this.origin = coords;
-                        this.originMarker = new google.maps.Marker({
-                            clickable: false,
-                            map: this.map,
-                            position: coords,
-                            label: 'S'
-                        });
-                        this.reverseGeocodeCoords(coords).then(address => this.originText = address);
-                        this.map.setCenter(coords);
-                    };
-                    if($state.params.location) {
-                        coords = new google.maps.LatLng($state.params.location);
-                        goToLocation(coords);
-                    } else {
-                        navigator.geolocation.getCurrentPosition(pos => {
-                            coords = new google.maps.LatLng({lat: pos.coords.latitude, lng: pos.coords.longitude});
-                            goToLocation(coords);
-                        });
-                    }
-                }, 0);
-            }
+        let mapWatch = $timeout(() => {
+        	this.map = new ol.Map({
+        		controls: [],
+        		layers: [
+        			new ol.layer.Tile({
+        				source: new ol.source.OSM()
+        			})
+        		],
+        		target: 'map',
+        		view: new ol.View({
+        			projection: 'EPSG:4326',
+        			center: [-54.56901, -25.53413],
+        			zoom: 14
+        		})
+        	});
+        	this.loading = false;
+          let coords;
+          const goToLocation = (coords) => {
+              this.origin = coords;
+              this.originFeature = new ol.Feature({
+              	geometry: new ol.geom.Point([coords.lng, coords.lat]),
+              	style: new ol.style.Style({
+              		image: new ol.style.Circle({
+              			radius: 50,
+              			fill: new ol.style.Fill({color: '#995000'})
+              		})
+              	})
+              });
+              this.originLayer = new ol.layer.Vector({
+              	source: new ol.source.Vector({
+              		features: [this.originFeature]
+              	})
+              });
+              this.map.addLayer(this.originLayer);
+              this.reverseGeocodeCoords(coords).then(address => this.originText = address);
+              this.map.getView().setCenter([coords.lng, coords.lat]);
+          };
+          if($state.params.location) {
+              coords = $state.params.location;
+              goToLocation(coords);
+          } else {
+              navigator.geolocation.getCurrentPosition(pos => {
+                  coords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+                  goToLocation(coords);
+              });
+          }
         }, 500);
     }
 
@@ -97,41 +105,55 @@ class MapController {
     }
 
     setOriginPoint() {
-        let ev = google.maps.event.addListener(this.map, "click", (event) => {
-            if(this.originMarker) {
-                this.origin = null;
-                this.originMarker.setMap(null);
-                this.originMarker = null;
-            }
-            this.origin = event.latLng;
-            this.originMarker = new google.maps.Marker({
-                clickable: false,
-                map: this.map,
-                position: event.latLng,
-                label: 'S'
-            });
-            ev.remove();
-            this.reverseGeocodeCoords(event.latLng).then(address => this.originText = address);
-        });
+    	this.map.once('click', (event) => {
+    		const coords = {lat: event.coordinate[1], lng: event.coordinate[0]};
+    		if(this.originLayer) {
+    			this.map.removeLayer(this.originLayer);
+    		}
+      	this.origin = coords;
+      	this.originFeature = new ol.Feature({
+        	geometry: new ol.geom.Point([coords.lng, coords.lat]),
+        	style: new ol.style.Style({
+          	image: new ol.style.Circle({
+            	radius: 50,
+            	fill: new ol.style.Fill({color: '#995000'})
+          	})
+        	})
+      	});
+      	this.originLayer = new ol.layer.Vector({
+        	source: new ol.source.Vector({
+          	features: [this.originFeature]
+        	})
+      	});
+      	this.map.addLayer(this.originLayer);
+        this.reverseGeocodeCoords(coords).then(address => this.originText = address);
+      });
     }
 
     setDestinationPoint() {
-        let ev = google.maps.event.addListener(this.map, "click", (event) => {
-            if(this.destinationMarker) {
-                this.destination = null;
-                this.destinationMarker.setMap(null);
-                this.destinationMarker = null;
-            }
-            this.destination = event.latLng;
-            this.destinationMarker = new google.maps.Marker({
-                clickable: false,
-                map: this.map,
-                position: event.latLng,
-                label: 'F'
-            });
-            ev.remove();
-            this.reverseGeocodeCoords(event.latLng).then(address => this.destinationText = address);
-        });
+    	this.map.once('click', (event) => {
+    		const coords = {lat: event.coordinate[1], lng: event.coordinate[0]};
+    		if(this.destinationLayer) {
+    			this.map.removeLayer(this.destinationLayer);
+    		}
+      	this.destination = coords;
+      	this.destinationFeature = new ol.Feature({
+        	geometry: new ol.geom.Point([coords.lng, coords.lat]),
+        	style: new ol.style.Style({
+          	image: new ol.style.Circle({
+            	radius: 50,
+            	fill: new ol.style.Fill({color: '#009900'})
+          	})
+        	})
+      	});
+      	this.destinationLayer = new ol.layer.Vector({
+        	source: new ol.source.Vector({
+          	features: [this.destinationFeature]
+        	})
+      	});
+      	this.map.addLayer(this.destinationLayer);
+        this.reverseGeocodeCoords(coords).then(address => this.destinationText = address);
+      });
     }
 
     traceRoute() {
@@ -141,10 +163,10 @@ class MapController {
                 method: 'GET',
                 url: '/trace_route.json',
                 params: {
-                    src_lat: this.origin.lat(),
-                    src_lon: this.origin.lng(),
-                    dest_lat: this.destination.lat(),
-                    dest_lon: this.destination.lng()
+                    src_lat: this.origin.lat,
+                    src_lon: this.origin.lng,
+                    dest_lat: this.destination.lat,
+                    dest_lon: this.destination.lng
                 }
             }).then((response) => {
                 console.log(response.data);
