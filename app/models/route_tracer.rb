@@ -4,6 +4,10 @@ require 'priority_queue'
 class RouteTracer
   @point_cache = []
 
+  #
+  # CACHE DE PONTOS
+  #
+
   def self.calculate_point_cache
     @point_cache.clear
     i = 1
@@ -46,21 +50,100 @@ class RouteTracer
     end
   end
 
+  #
+  # ROTAS A PÉ
+  #
+
   def self.walking_distance(a, b)
-    id1 = a.nearest_ways_point
-    id2 = b.nearest_ways_point
+    seg1 = a.closest_street_segment
+    seg2 = b.closest_street_segment
+
+    return a.point.position.distance(b.point.position) if seg1.gid == seg2.gid # FIXME!
+    walking_path_data(seg1, seg2)[2]
+  end
+
+  def self.walking_path(a, b)
+    seg1 = a.closest_street_segment
+    seg2 = b.closest_street_segment
+
+    factory = RGeo::Geographic.spherical_factory(srid: 4326)
+
+    return factory.multi_line_string([factory.line_string([a.point.position, b.point.position])]) if seg1.gid == seg2.gid # FIXME!
+
+    starts = seg1.get_points
+    targets = seg2.get_points
+
+    closest_path = walking_path_data(seg1, seg2)
 
     sql = "
-    SELECT SUM(ST_Length(the_geom::geography))
-    FROM pgr_dijkstra('
-      SELECT gid as id, source, target, cost, reverse_cost FROM routing.ways
+    SELECT st_astext(the_geom) FROM pgr_dijkstra(
+      'SELECT gid as id, source, target, st_length(the_geom::geography) as cost, st_length(the_geom::geography) as reverse_cost FROM routing.ways
       WHERE the_geom && ST_Expand(
-      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{id1}, #{id2})), 0.007)'
-    , #{id1}, #{id2}, false) dij
-    LEFT JOIN routing.ways ON dij.node = gid"
-    res = ApplicationRecord.connection.execute(sql).values[0][0]
-    res || a.point.position.distance(b.point.position)
+      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{closest_path[0..1].join(', ')})), 0.01)
+',
+      #{closest_path[0]}, #{closest_path[1]}, false) dij join routing.ways w on w.gid = edge"
+
+    lines = ApplicationRecord.connection.execute(sql).values.map{|x| factory.parse_wkt(x[0])}
+
+    lines << factory.parse_wkt(seg1.closest_point_line) if factory.parse_wkt(seg1.closest_point_line)
+    lines << factory.parse_wkt(seg2.closest_point_line) if factory.parse_wkt(seg2.closest_point_line)
+    if closest_path[0] == seg1.source
+      lines << factory.parse_wkt(seg1.source_line) if factory.parse_wkt(seg1.source_line)
+    elsif closest_path[0] == seg1.target
+      lines << factory.parse_wkt(seg1.target_line) if factory.parse_wkt(seg1.target_line)
+    end
+    if closest_path[1] == seg2.source
+      lines << factory.parse_wkt(seg2.source_line) if factory.parse_wkt(seg2.source_line)
+    elsif closest_path[1] == seg2.target
+      lines << factory.parse_wkt(seg2.target_line) if factory.parse_wkt(seg2.target_line)
+    end
+
+    factory.multi_line_string(lines).to_s
   end
+
+  def self.walking_path_data(seg1, seg2)
+    starts = seg1.get_points
+    targets = seg2.get_points
+
+    sql = "
+    SELECT * FROM pgr_dijkstraCost(
+      'SELECT gid as id, source, target, st_length(the_geom::geography) as cost, st_length(the_geom::geography) as reverse_cost FROM routing.ways
+      WHERE the_geom && ST_Expand(
+      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{(starts + targets).join(', ')})), 0.01)
+',
+      ARRAY[#{starts.join(', ')}], ARRAY[#{targets.join(', ')}], false)"
+    res = ApplicationRecord.connection.execute(sql).values
+
+    res.map do |line| # start_vid, end_vid, cost
+      cost = line[2]
+      if line[0] == seg1.source
+        cost += seg1.closest_point_distance + seg1.source_distance
+      elsif line[0] == seg1.target
+        cost += seg1.closest_point_distance + seg1.target_distance
+      end
+      if line[1] == seg2.source
+        cost += seg2.closest_point_distance + seg2.source_distance
+      elsif line[1] == seg2.target
+        cost += seg2.closest_point_distance + seg2.target_distance
+      end
+      [line[0], line[1], cost]
+    end.sort{|x,y| x[2] <=> y[2]}[0]
+  end
+
+  # Aqui assumimos que pessoas andam em velocidade constante.
+  # A wikipédia diz que a maioria das pessoas anda a 1,4 m/s, então vamos usar este valor.
+  # t = d/v
+  #
+  # @param [RoutePoint||VirtualPoint] a ponto A
+  # @param [RoutePoint||VirtualPoint] b ponto B
+  # @return [Float] o tempo em segundos
+  def self.walking_time(a, b)
+    walking_distance(a, b)/1.4
+  end
+
+  #
+  # ROTAS DIRIGINDO
+  #
 
   # Aqui temos um modelo simples para aceleração/desaceleração de um ônibus.
   # Fazemos de conta que ônibus têm aceleração constante, 1 m/s, até chegarem a 11 m/s (39,6 km/h).
@@ -89,55 +172,9 @@ class RouteTracer
     end
   end
 
-# Aqui assumimos que pessoas andam em velocidade constante.
-# A wikipédia diz que a maioria das pessoas anda a 1,4 m/s, então vamos usar este valor.
-# t = d/v
-#
-# @param [RoutePoint||VirtualPoint] a ponto A
-# @param [RoutePoint||VirtualPoint] b ponto B
-# @return [Float] o tempo em segundos
-  def self.walking_time(a, b)
-
-    walking_distance(a, b)/1.4
-  end
-
-  def self.closest_street_vertex(point)
-    sql = "
-SELECT id FROM routing.ways_vertices_pgr
-WHERE the_geom::geography <-> st_point(#{point.lon}, #{point.lat})::geography < 300
-ORDER BY the_geom <-> st_point(#{point.lon}, #{point.lat})::geography
-LIMIT 1"
-    ApplicationRecord.connection.execute(sql).values[0][0]
-  end
-
-  def self.walking_path(a, b)
-    id1 = closest_street_vertex a
-    id2 = closest_street_vertex b
-
-    sql = "
-    SELECT st_asText(the_geom::geography), st_asText(st_reverse(the_geom)::geography) as flip_geom, source, target
-    FROM pgr_dijkstra('
-      SELECT gid as id, source, target, cost, reverse_cost FROM routing.ways
-      WHERE the_geom && ST_Expand(
-      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{id1}, #{id2})), 0.007)'
-    , #{id1}, #{id2}, false) dij
-    LEFT JOIN routing.ways ON dij.node = gid"
-    source = id1
-    points = []
-    ApplicationRecord.connection.execute(sql).values.each do |row|
-      line = row[0]
-      if source != row[2]
-        line = row[1]
-        source = row[2]
-      else
-        source = row[3]
-      end
-      points += RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(line).points
-    end
-    ls = "LINESTRING (#{points.uniq.map{|p| "#{p.lon} #{p.lat}"}.join(',')})"
-    puts ls
-    points.empty? ? OpenStruct.new({points: []}) : RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(ls)
-  end
+  #
+  # PATHFINDING DE ROTAS DE ÔNIBUS
+  #
 
   def self.antecessors_to(target, previous)
     path = []
@@ -188,10 +225,6 @@ LIMIT 1"
     []
   end
 
-  def self.trace_route(start, finish)
-    dijkstra(start, finish)
-  end
-
   def self.route_between(start, finish)
     begin
       RubyProf.start
@@ -199,7 +232,7 @@ LIMIT 1"
       ActiveRecord::Base.logger.level = 1
       load_point_cache if @point_cache.empty?
 
-      route = trace_route(start, finish)
+      route = dijkstra(start, finish)
 
       ActiveRecord::Base.logger.level = old_level
     ensure
@@ -241,6 +274,6 @@ FROM
     boicy = VirtualPoint.new -54.577825, -25.546901
     rodo  = VirtualPoint.new -54.562939, -25.520758
     ActiveRecord::Base.logger.level = old_level
-    route_between boicy, rodo
+    walking_path boicy, rodo
   end
 end

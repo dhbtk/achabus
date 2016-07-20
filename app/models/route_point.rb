@@ -2,7 +2,10 @@ class RoutePoint < ApplicationRecord
   belongs_to :route
   belongs_to :point
 
+  after_find :set_closest_street_segment
+
   attr_accessor :cached_costs
+  attr_reader :closest_street_segment
 
   def neighbors(destination, antecessors)
     if cached_costs && !cached_costs.empty?
@@ -60,6 +63,10 @@ class RoutePoint < ApplicationRecord
     id = ApplicationRecord.connection.execute(sql).values[0][0]
     self.update(nearest_ways_point: id)
     id
+  end
+
+  def set_closest_street_segment
+    @closest_street_segment = ClosestStreetSegment.from_point_and_gid(self.point.position, self.closest_way)
   end
 
   def calculate_closest_way
