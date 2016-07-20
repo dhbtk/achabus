@@ -254,16 +254,13 @@ FROM
   SELECT (st_dumppoints(route)).geom FROM routes WHERE id = #{route_id} LIMIT (#{group[-1].polyline_index - group[0].polyline_index} + 1) OFFSET #{group[0].polyline_index}
 ) foo
       EOF
-      path = RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(Route.connection.execute(sql).values[0][0])
+      path = RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(Route.connection.execute(sql).values[0][0]).to_s
       {
           start_point: start,
           end_point: finish,
           points: group.map(&:point),
           route: group[0].route,
-          route_path: path&.points&.map do |p|
-            p = RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(p.to_s)
-            {lat: p.lat, lng: p.lon}
-          end
+          route_path: path
       }
     end
   end

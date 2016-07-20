@@ -19,57 +19,59 @@ class MapController {
         this.originFeature = null;
         this.destinationLayer = null;
         this.destinationFeature = null;
+        this.polylineLayer = null;
+        this.markerLayer = null;
         this.destinationText = null;
         this.polylines = [];
         this.markers = [];
         this.walkingPolylines = [];
 
         let mapWatch = $timeout(() => {
-        	this.map = new ol.Map({
-        		controls: [],
-        		layers: [
-        			new ol.layer.Tile({
-        				source: new ol.source.OSM()
-        			})
-        		],
-        		target: 'map',
-        		view: new ol.View({
-        			projection: 'EPSG:4326',
-        			center: [-54.56901, -25.53413],
-        			zoom: 14
-        		})
-        	});
-        	this.loading = false;
-          let coords;
-          const goToLocation = (coords) => {
-              this.origin = coords;
-              this.originFeature = new ol.Feature({
-              	geometry: new ol.geom.Point([coords.lng, coords.lat]),
-              	style: new ol.style.Style({
-              		image: new ol.style.Circle({
-              			radius: 50,
-              			fill: new ol.style.Fill({color: '#995000'})
-              		})
-              	})
-              });
-              this.originLayer = new ol.layer.Vector({
-              	source: new ol.source.Vector({
-              		features: [this.originFeature]
-              	})
-              });
-              this.map.addLayer(this.originLayer);
-              this.reverseGeocodeCoords(coords).then(address => this.originText = address);
-              this.map.getView().setCenter([coords.lng, coords.lat]);
-          };
-          if($state.params.location) {
-              coords = $state.params.location;
-              goToLocation(coords);
-          } else {
-              navigator.geolocation.getCurrentPosition(pos => {
-                  coords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
-                  goToLocation(coords);
-              });
-          }
+            this.map = new ol.Map({
+                controls: [],
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    })
+                ],
+                target: 'map',
+                view: new ol.View({
+                    projection: 'EPSG:4326',
+                    center: [-54.56901, -25.53413],
+                    zoom: 14
+                })
+            });
+            this.loading = false;
+            let coords;
+            const goToLocation = (coords) => {
+                this.origin = coords;
+                this.originFeature = new ol.Feature({
+                    geometry: new ol.geom.Point([coords.lng, coords.lat]),
+                    style: new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 50,
+                            fill: new ol.style.Fill({color: '#995000'})
+                        })
+                    })
+                });
+                this.originLayer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [this.originFeature]
+                    })
+                });
+                this.map.addLayer(this.originLayer);
+                this.reverseGeocodeCoords(coords).then(address => this.originText = address);
+                this.map.getView().setCenter([coords.lng, coords.lat]);
+            };
+            if($state.params.location) {
+                coords = $state.params.location;
+                goToLocation(coords);
+            } else {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    coords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+                    goToLocation(coords);
+                });
+            }
         }, 500);
     }
 
@@ -105,55 +107,55 @@ class MapController {
     }
 
     setOriginPoint() {
-    	this.map.once('click', (event) => {
-    		const coords = {lat: event.coordinate[1], lng: event.coordinate[0]};
-    		if(this.originLayer) {
-    			this.map.removeLayer(this.originLayer);
-    		}
-      	this.origin = coords;
-      	this.originFeature = new ol.Feature({
-        	geometry: new ol.geom.Point([coords.lng, coords.lat]),
-        	style: new ol.style.Style({
-          	image: new ol.style.Circle({
-            	radius: 50,
-            	fill: new ol.style.Fill({color: '#995000'})
-          	})
-        	})
-      	});
-      	this.originLayer = new ol.layer.Vector({
-        	source: new ol.source.Vector({
-          	features: [this.originFeature]
-        	})
-      	});
-      	this.map.addLayer(this.originLayer);
-        this.reverseGeocodeCoords(coords).then(address => this.originText = address);
-      });
+        this.map.once('click', (event) => {
+            const coords = {lat: event.coordinate[1], lng: event.coordinate[0]};
+            if(this.originLayer) {
+                this.map.removeLayer(this.originLayer);
+            }
+            this.origin = coords;
+            this.originFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coords.lng, coords.lat]),
+                style: new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 50,
+                        fill: new ol.style.Fill({color: '#995000'})
+                    })
+                })
+            });
+            this.originLayer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [this.originFeature]
+                })
+            });
+            this.map.addLayer(this.originLayer);
+            this.reverseGeocodeCoords(coords).then(address => this.originText = address);
+        });
     }
 
     setDestinationPoint() {
-    	this.map.once('click', (event) => {
-    		const coords = {lat: event.coordinate[1], lng: event.coordinate[0]};
-    		if(this.destinationLayer) {
-    			this.map.removeLayer(this.destinationLayer);
-    		}
-      	this.destination = coords;
-      	this.destinationFeature = new ol.Feature({
-        	geometry: new ol.geom.Point([coords.lng, coords.lat]),
-        	style: new ol.style.Style({
-          	image: new ol.style.Circle({
-            	radius: 50,
-            	fill: new ol.style.Fill({color: '#009900'})
-          	})
-        	})
-      	});
-      	this.destinationLayer = new ol.layer.Vector({
-        	source: new ol.source.Vector({
-          	features: [this.destinationFeature]
-        	})
-      	});
-      	this.map.addLayer(this.destinationLayer);
-        this.reverseGeocodeCoords(coords).then(address => this.destinationText = address);
-      });
+        this.map.once('click', (event) => {
+            const coords = {lat: event.coordinate[1], lng: event.coordinate[0]};
+            if(this.destinationLayer) {
+                this.map.removeLayer(this.destinationLayer);
+            }
+            this.destination = coords;
+            this.destinationFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coords.lng, coords.lat]),
+                style: new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 50,
+                        fill: new ol.style.Fill({color: '#009900'})
+                    })
+                })
+            });
+            this.destinationLayer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [this.destinationFeature]
+                })
+            });
+            this.map.addLayer(this.destinationLayer);
+            this.reverseGeocodeCoords(coords).then(address => this.destinationText = address);
+        });
     }
 
     traceRoute() {
@@ -170,6 +172,21 @@ class MapController {
                 }
             }).then((response) => {
                 console.log(response.data);
+                if(this.polylineLayer) {
+                    this.map.removeLayer(this.polylineLayer);
+                }
+                if(this.markerLayer) {
+                    this.map.removeLayer(this.markerLayer);
+                }
+                const lines = [];
+                const markers = [];
+                response.data.forEach((step, i) => {
+                    if(step.route_path) {
+                        const feature = new ol.format.WKT().readFeature(step.route_path);
+                        feature.setStyle(new ol.style.Style());
+                    }
+                });
+                return;
                 this.polylines.forEach((p) => p.setMap(null));
                 this.walkingPolylines.forEach((p) => p.setMap(null));
                 this.markers.forEach((p) => p.setMap(null));
