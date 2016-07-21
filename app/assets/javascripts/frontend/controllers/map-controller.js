@@ -7,26 +7,45 @@ import $ from 'jquery';
 import ol from 'openlayers';
 
 class MapController {
-    constructor($scope, $q, $http, $interval, $timeout, $state) {
+    constructor($scope, $q, $http, $timeout, $state) {
+        /**
+         * Serviços
+         */
         this.$http = $http;
         this.$q = $q;
+        this.$timeout = $timeout;
+        /**
+         * Estado do controller
+         */
         this.loading = true;
+        this.sidenavOpen = false;
+        /**
+         * O objeto do mapa
+         * @type {ol.Map}
+         */
         this.map = null;
+        /**
+         * Nossas coordenadas
+         */
         this.origin = null;
         this.originText = null;
         this.destination = null;
+        this.destinationText = null;
+        /**
+         * Camadas do mapa
+         */
         this.originLayer = null;
         this.originFeature = null;
         this.destinationLayer = null;
         this.destinationFeature = null;
         this.polylineLayer = null;
         this.markerLayer = null;
-        this.destinationText = null;
-        this.polylines = [];
-        this.markers = [];
-        this.walkingPolylines = [];
+        /**
+         * Informação das rotas
+         */
+        this.routes = [];
 
-        let mapWatch = $timeout(() => {
+        $timeout(() => {
             this.map = new ol.Map({
                 controls: [],
                 layers: [
@@ -80,6 +99,16 @@ class MapController {
      */
     toggleOrigin() {
         $('#origin-container').toggleClass('show');
+    }
+
+    /**
+     * Abre e fecha nossa sidenav
+     */
+    toggleSidenav() {
+        this.sidenavOpen = !this.sidenavOpen;
+        this.$timeout(() => {
+            this.map.updateSize();
+        }, 25);
     }
 
     /**
@@ -172,6 +201,9 @@ class MapController {
                 }
             }).then((response) => {
                 console.log(response.data);
+                if(!this.sidenavOpen) {
+                    this.toggleSidenav();
+                }
                 if(this.polylineLayer) {
                     this.map.removeLayer(this.polylineLayer);
                 }
@@ -235,57 +267,8 @@ class MapController {
 
                 this.map.addLayer(this.polylineLayer);
                 this.map.addLayer(this.markerLayer);
-                /*this.polylines.forEach((p) => p.setMap(null));
-                this.walkingPolylines.forEach((p) => p.setMap(null));
-                this.markers.forEach((p) => p.setMap(null));
-                response.data.forEach((step, i) => {
-                    if(step.route_path){
-                        this.polylines.push(new google.maps.Polyline({
-                            map: this.map,
-                            path: step.route_path,
-                            strokeColor: colors[i]
-                        }));
-                    }
-                    step.stops.forEach((p) => {
-                        this.markers.push(new google.maps.Marker({
-                            map: this.map,
-                            position: p,
-                            label: i.toString()
-                        }));
-                    });
-                });
-                if(response.data.length > 0) {
-                    this.$http({
-                        method: 'GET',
-                        url: '/walking_path.json',
-                        params: {
-                            src_lat: this.origin.lat(),
-                            src_lon: this.origin.lng(),
-                            dest_lat: response.data[0].route_path[0].lat,
-                            dest_lon: response.data[0].route_path[0].lng
-                        }
-                    }).then(data => {
-                        console.log(data);
-                        this.walkingPolylines.push(new google.maps.Polyline({
-                            map: this.map,
-                            path: data.data.route,
-                            strokeColor: '#DDB1BC'
-                        }));
-                    });
-                    const last_data = response.data[response.data.length - 1];
-                    this.walkingPolylines.push(new google.maps.Polyline({
-                        map: this.map,
-                        path: [this.destination, last_data.route_path[last_data.route_path.length - 1]],
-                        strokeColor: '#DDB1BC'
-                    }));
-                    for(let i = 0; i < response.data.length - 2; i++) {
-                        this.walkingPolylines.push(new google.maps.Polyline({
-                            map: this.map,
-                            path: [response.data[i].route_path[response.data[i].route_path.length - 1], response.data[i + 1].route_path[0]],
-                            strokeColor: '#DDB1BC'
-                        }));
-                    }
-                }*/
+
+                this.routes = response.data.route;
             }).finally(() => {
                 this.loading = false;
             });

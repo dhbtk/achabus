@@ -4,6 +4,7 @@
   left: 0;
   margin: 8px;
   max-width: calc(100% - 16px);
+  z-index: 2;
 }
 
 div#searchbox {
@@ -95,5 +96,20 @@ div#inputs-container {
   height: 46px;
   & > button:first-child > md-icon {
     transition: transform 0.25s ease-in-out;
+  }
+}
+
+#nav-info {
+  overflow-x: hidden;
+  width: 0;
+  //transition: width 0.25s ease-in-out;
+
+  &.open {
+    width: 414px;
+  }
+
+  md-toolbar > .md-toolbar-tools {
+    height: 112px;
+    max-height: 112px;
   }
 }

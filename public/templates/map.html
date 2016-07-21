@@ -1,8 +1,25 @@
-<div id="map" style="height: 100%; flex: 1" class="map"></div>
+<div style="flex: 1" layout="row">
+    <md-content id="nav-info" ng-class="{open: ctrl.sidenavOpen}" layout="column">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+
+            </div>
+        </md-toolbar>
+        <div flex style="overflow: auto">
+            <ul>
+                <li ng-repeat="route in ctrl.routes">
+                    Pegue a linha <strong>{{route.route.line.name}}</strong><br>
+                    Ponto: {{route.stops[0].name}}
+                </li>
+            </ul>
+        </div>
+    </md-content>
+    <div id="map" style="height: 100%;" flex class="map"></div>
+</div>
 <md-progress-linear md-mode="indeterminate" ng-show="ctrl.loading" style="position: absolute; top: 0; width: 100%"></md-progress-linear>
 <div id="searchbox-container">
     <div id="searchbox">
-        <md-button id="menu-button">
+        <md-button id="menu-button" ng-click="ctrl.toggleSidenav()">
             <md-icon>menu</md-icon>
         </md-button>
         <div id="inputs-container">

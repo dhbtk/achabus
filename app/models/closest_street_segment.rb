@@ -23,7 +23,7 @@ class ClosestStreetSegment
     point_text = @point.to_s
     sql = "SELECT gid
 FROM routing.ways
-WHERE st_dwithin(the_geom :: GEOGRAPHY, st_geographyfromtext('#{point_text}'), 50)
+WHERE st_dwithin(the_geom :: GEOGRAPHY, st_geographyfromtext('#{point_text}'), 500)
 ORDER BY ST_distance(the_geom :: GEOGRAPHY, st_geographyfromtext('#{point_text}'))
 LIMIT 1"
     @gid = ApplicationRecord.connection.execute(sql).values[0][0]
