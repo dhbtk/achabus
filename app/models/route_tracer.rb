@@ -245,24 +245,28 @@ class RouteTracer
         f << "%s - %s/%s\n  %s\n" % [rp.route.line.identifier, rp.route.origin, rp.route.destination, rp.point.name]
       end
     end
-    route.group_by{|p| p.route_id}.map do |route_id, group|
-      group = group.sort_by { |rp| rp.order } # ????
-      sql = <<-EOF
-SELECT st_astext(st_makeline(geom)::geography) as route_line
-FROM
-(
-  SELECT (st_dumppoints(route)).geom FROM routes WHERE id = #{route_id} LIMIT (#{group[-1].polyline_index - group[0].polyline_index} + 1) OFFSET #{group[0].polyline_index}
-) foo
-      EOF
-      path = RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt(Route.connection.execute(sql).values[0][0]).to_s
+    route_array = route.group_by{|p| p.route_id}.map do |route_id, group|
+      raise 'Ordem totalmente errada!' unless group == group.sort_by { |rp| rp.order }
       {
           start_point: start,
           end_point: finish,
+          route_points: group,
           points: group.map(&:point),
           route: group[0].route,
-          route_path: path
+          route_path: Route.route_segment(route_id, group[0].polyline_index, group[-1].polyline_index).to_s,
+          total_time: 0.upto(group.length - 2).map{|i| driving_time(Route.route_segment(route_id, group[i].polyline_index, group[i + 1].polyline_index).length)}.sum
       }
     end
+    {
+        route: route_array,
+        walking_paths: {
+            start: walking_path(start, route[0]),
+            finish: walking_path(route[-1], finish),
+            between_routes: 0.upto(route_array.length - 2).map do |i|
+              walking_path(route_array[i][:route_points][-1], route_array[i + 1][:route_points][0])
+            end
+        }
+    }
   end
 
   def self.test_route

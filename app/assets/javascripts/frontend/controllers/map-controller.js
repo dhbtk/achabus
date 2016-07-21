@@ -118,7 +118,7 @@ class MapController {
                 style: new ol.style.Style({
                     image: new ol.style.Circle({
                         radius: 50,
-                        fill: new ol.style.Fill({color: '#995000'})
+                        fill: new ol.style.Fill({color: [127,80,0,1]})
                     })
                 })
             });
@@ -144,7 +144,7 @@ class MapController {
                 style: new ol.style.Style({
                     image: new ol.style.Circle({
                         radius: 50,
-                        fill: new ol.style.Fill({color: '#009900'})
+                        fill: new ol.style.Fill({color: [0,127,0,1]})
                     })
                 })
             });
@@ -179,18 +179,65 @@ class MapController {
                     this.map.removeLayer(this.markerLayer);
                 }
                 const lines = [];
-                const markers = [];
-                response.data.forEach((step, i) => {
+                const points = [];
+                //const colors = ['#990000', '#009900', '#990099', '#000099', '#009999'];
+                const colors = [[127, 0, 0, 1], [0, 127, 0, 1], [127, 0, 127, 1], [0, 0, 127, 1], [0, 127, 127, 1]];
+                response.data.route.forEach((step, i) => {
                     if(step.route_path) {
                         const feature = new ol.format.WKT().readFeature(step.route_path);
-                        feature.setStyle(new ol.style.Style());
+                        feature.setStyle(new ol.style.Style({
+                            stroke: new ol.style.Stroke({
+                                color: colors[i % (colors.length + 1)],
+                                width: 5
+                            })
+                        }));
+                        lines.push(feature);
                     }
+                    step.stops.forEach(point => {
+                        const feature = new ol.format.WKT().readFeature(point.wkt);
+                        feature.setStyle(new ol.style.Style({
+                            image: new ol.style.Circle({
+                                radius: 10,
+                                fill: new ol.style.Fill({color: colors[i % (colors.length + 1)]})
+                            }),
+                            text: new ol.style.Text({
+                                text: (i + 1).toString(),
+                                fill: new ol.style.Fill({color: [255, 255, 255, 1]})
+                            })
+                        }));
+                        points.push(feature);
+                    });
                 });
-                return;
-                this.polylines.forEach((p) => p.setMap(null));
+                const walking_lines = response.data.walking_paths.between_routes;
+                walking_lines.push(response.data.walking_paths.start);
+                walking_lines.push(response.data.walking_paths.finish);
+                walking_lines.forEach(line => {
+                    const feature = new ol.format.WKT().readFeature(line);
+                    feature.setStyle(new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: [221, 177, 188, 1], // #DDB1BC
+                            width: 5
+                        })
+                    }));
+                    lines.push(feature);
+                });
+
+                this.polylineLayer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: lines
+                    })
+                });
+                this.markerLayer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: points
+                    })
+                });
+
+                this.map.addLayer(this.polylineLayer);
+                this.map.addLayer(this.markerLayer);
+                /*this.polylines.forEach((p) => p.setMap(null));
                 this.walkingPolylines.forEach((p) => p.setMap(null));
                 this.markers.forEach((p) => p.setMap(null));
-                let colors = ['#990000', '#009900', '#990099', '#000099', '#009999'];
                 response.data.forEach((step, i) => {
                     if(step.route_path){
                         this.polylines.push(new google.maps.Polyline({
@@ -238,7 +285,7 @@ class MapController {
                             strokeColor: '#DDB1BC'
                         }));
                     }
-                }
+                }*/
             }).finally(() => {
                 this.loading = false;
             });
