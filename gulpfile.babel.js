@@ -22,8 +22,8 @@ import del from 'del';
 const JS_ROOT = './app/assets/javascripts';
 const CSS_ROOT = './app/assets/stylesheets';
 
-const JS_DEST = './public/js';
-const CSS_DEST = './public/css';
+const JS_DEST = './src/main/resources/static/js';
+const CSS_DEST = './src/main/resources/static/css';
 
 const MODULES = ['admin', 'frontend'];
 

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="admin" ng-controller="MainController" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Cadê o Busão? - {{pageTitle}}</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/admin.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+
+<body layout="row">
+<md-progress-linear style="position: absolute; top: 0; left: 0; width: 100%; z-index: 300" md-mode="indeterminate" ng-style="{'visibility': (loading || transitioning) ? 'visible' : 'hidden'}"></md-progress-linear>
+<md-sidenav id="sidenav" layout="column" md-component-id="left" class="md-sidenav-left" md-is-locked-open="$mdMedia('gt-sm')" md-disable-backdrop="" md-whiteframe="4">
+    <md-toolbar class="md-whiteframe-1dp">
+        <div class="md-toolbar-tools">
+            <h2><span>Cadê o Busão?</span></h2>
+        </div>
+    </md-toolbar>
+    <md-sidemenu>
+        <md-sidemenu-group>
+            <md-subheader class="md-no-sticky">
+                Linhas e Grupos
+            </md-subheader>
+            <md-sidemenu-button ui-sref="home">Home</md-sidemenu-button>
+            <md-sidemenu-button ui-sref="lines.index">Linhas</md-sidemenu-button>
+            <md-sidemenu-button ui-sref="map">Editor de Rotas</md-sidemenu-button>
+        </md-sidemenu-group>
+    </md-sidemenu>
+</md-sidenav>
+<div id="main-view" ui-view="" flex="" layout="column">
+</div>
+</body>
+<script type="application/javascript" src="/js/admin.js"></script>
+<script async="async" defer="defer"
+        src="https://maps.googleapis.com/maps/api/js">
+</script>
+</html>

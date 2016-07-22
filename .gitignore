@@ -27,3 +27,10 @@ node_modules
 public/js/*
 public/css/*
 browserify-cache.json
+out
+build
+.gradle
+achabus.iws
+src/main/resources/static/js/*
+src/main/resources/static/css/*
+gradle
