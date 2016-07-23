@@ -9,15 +9,15 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 
 /**
- * Created by eduardo on 22/07/16.
+ * Entidade para uma parada de ônibus ou um waypoint de roteamento.
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "points")
 public @Data class Point extends AbstractEntity
 {
-    @Type(type = "org.hibernate.spatial.GeometryType")
-    private org.geolatte.geom.Point position;
+    @Type(type = "jts_geometry")
+    private com.vividsolutions.jts.geom.Point position;
     private String name;
     private String notable_name;
     private Boolean notable;

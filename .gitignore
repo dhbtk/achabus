@@ -33,4 +33,3 @@ build
 achabus.iws
 src/main/resources/static/js/*
 src/main/resources/static/css/*
-gradle
