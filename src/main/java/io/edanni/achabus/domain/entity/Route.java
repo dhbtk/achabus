@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "routes")
-public @Data class Route extends AbstractEntity
+public class Route extends AbstractEntity
 {
     private String observation;
     @ManyToOne
@@ -28,4 +28,54 @@ public @Data class Route extends AbstractEntity
     private String origin;
     @NotNull
     private String destination;
+
+    public String getObservation()
+    {
+        return observation;
+    }
+
+    public void setObservation(String observation)
+    {
+        this.observation = observation;
+    }
+
+    public Line getLine()
+    {
+        return line;
+    }
+
+    public void setLine(Line line)
+    {
+        this.line = line;
+    }
+
+    public LineString getRoute()
+    {
+        return route;
+    }
+
+    public void setRoute(LineString route)
+    {
+        this.route = route;
+    }
+
+    public String getOrigin()
+    {
+        return origin;
+    }
+
+    public void setOrigin(String origin)
+    {
+        this.origin = origin;
+    }
+
+    public String getDestination()
+    {
+        return destination;
+    }
+
+    public void setDestination(String destination)
+    {
+        this.destination = destination;
+    }
 }
