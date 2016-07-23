@@ -10,13 +10,32 @@ import javax.validation.constraints.NotNull;
 /**
  * Grupo de linhas de ônibus.
  */
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "line_groups")
-public @Data class LineGroup extends AbstractEntity
+public class LineGroup extends AbstractEntity
 {
     @NotNull
     private String name;
     @NotNull
     private String city;
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public String getCity()
+    {
+        return city;
+    }
+
+    public void setCity(String city)
+    {
+        this.city = city;
+    }
 }

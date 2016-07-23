@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "lines")
-public @Data class Line extends AbstractEntity
+public class Line extends AbstractEntity
 {
     private String identifier;
 
@@ -25,4 +25,34 @@ public @Data class Line extends AbstractEntity
     @ManyToOne
     @NotNull
     private LineGroup lineGroup;
+
+    public String getIdentifier()
+    {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier)
+    {
+        this.identifier = identifier;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public LineGroup getLineGroup()
+    {
+        return lineGroup;
+    }
+
+    public void setLineGroup(LineGroup lineGroup)
+    {
+        this.lineGroup = lineGroup;
+    }
 }

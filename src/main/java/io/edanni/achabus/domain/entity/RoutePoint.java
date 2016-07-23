@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "route_points")
-public @Data
+public
 class RoutePoint extends AbstractEntity
 {
     @NotNull
@@ -31,4 +31,54 @@ class RoutePoint extends AbstractEntity
     @ManyToOne
     @JoinColumn(name = "closest_way")
     private Way closestWay;
+
+    public Route getRoute()
+    {
+        return route;
+    }
+
+    public void setRoute(Route route)
+    {
+        this.route = route;
+    }
+
+    public Point getPoint()
+    {
+        return point;
+    }
+
+    public void setPoint(Point point)
+    {
+        this.point = point;
+    }
+
+    public Integer getOrder()
+    {
+        return order;
+    }
+
+    public void setOrder(Integer order)
+    {
+        this.order = order;
+    }
+
+    public Integer getPolylineIndex()
+    {
+        return polylineIndex;
+    }
+
+    public void setPolylineIndex(Integer polylineIndex)
+    {
+        this.polylineIndex = polylineIndex;
+    }
+
+    public Way getClosestWay()
+    {
+        return closestWay;
+    }
+
+    public void setClosestWay(Way closestWay)
+    {
+        this.closestWay = closestWay;
+    }
 }
