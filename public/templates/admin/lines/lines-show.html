@@ -111,7 +111,7 @@
                                 </thead>
                                 <tbody md-body>
                                 <tr md-row ng-repeat="time in times">
-                                    <td md-cell>{{time.time | date: 'HH:mm'}}</td>
+                                    <td md-cell>{{time.time | date: 'HH:mm' : 'UTC'}}</td>
                                     <td md-cell>{{time.observation}}</td>
                                     <td md-cell>
                                         <md-button ng-click="ctrl.editTime(time, ctrl.newTimes[period].routeOptions[route].routes, $event)">

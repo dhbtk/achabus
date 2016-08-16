@@ -2,6 +2,8 @@ class RoutePoint < ApplicationRecord
   belongs_to :route
   belongs_to :point
 
+  validates :route, :point, :order, :polyline_index, presence: true
+
   after_find :set_closest_street_segment
 
   attr_accessor :cached_costs

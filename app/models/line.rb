@@ -3,6 +3,8 @@ class Line < ApplicationRecord
   has_many :routes
   has_many :timetables, through: :routes
 
+  validates :line_group, :name, :timetable_link, presence: true
+
   default_scope { order('identifier ASC') }
 
   def self.filter(str)

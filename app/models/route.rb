@@ -4,7 +4,7 @@ class Route < ApplicationRecord
   has_many :route_points, -> { order('"order" ASC') }, dependent: :destroy
   has_many :points, through: :route_points
 
-  validates :origin, :destination, presence: true
+  validates :origin, :destination, :line, presence: true
 
   def route_lonlat
     self.route&.points&.map{|x| {lat: x.y, lon: x.x}}

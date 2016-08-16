@@ -1,5 +1,7 @@
 class VirtualPoint
+
   attr_reader :nearest_ways_point, :closest_street_segment
+
   def initialize(lon, lat)
     @point = RGeo::Geographic.spherical_factory(srid: 4326).parse_wkt("POINT (#{lon} #{lat})")
     @nearest_ways_point = nil
@@ -14,6 +16,7 @@ class VirtualPoint
     end
     @cached_costs = cached_costs
   end
+
   def neighbors(destination, previous)
     if !@cached_costs.empty?
       @cached_costs.keys
