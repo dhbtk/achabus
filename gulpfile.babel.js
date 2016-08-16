@@ -19,8 +19,8 @@ import browserifyInc from 'browserify-incremental';
 
 import del from 'del';
 
-const JS_ROOT = './app/assets/javascripts';
-const CSS_ROOT = './app/assets/stylesheets';
+const JS_ROOT = './frontend/js';
+const CSS_ROOT = './frontend/css';
 
 const JS_DEST = './public/js';
 const CSS_DEST = './public/css';
