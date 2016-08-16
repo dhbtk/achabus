@@ -9,18 +9,12 @@ class Timetable < ApplicationRecord
         saturday: where(sunday: false, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: true),
         sunday: where(sunday: true, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false)
     }.map do |key, cond|
-      path = line.path
-      puts path.join(', ')
-      origin_dests = []
-      0.upto(path.length - 2) do |i|
-        origin_dests << [path[i], path[i + 1]]
-      end
-      origin_dests += origin_dests.reverse.map{|i| i.reverse}
+      origin_dests = line.path_combinations
       entries = []
       origin_dests.each do |origin, destination|
         route_ids = line.routes.where(origin: origin, destination: destination).pluck(:id)
         entries << ["#{origin}, #{destination}", cond.where('route_id IN (?)', route_ids).order(
-            "CASE date_part('hour', \"time\") WHEN 0 THEN 24 ELSE date_part('hour', \"time\") END, date_part('minute', \"time\")")]
+            "CASE date_part('hour', \"time\") WHEN 0 THEN 24 ELSE date_part('hour', \"time\") END, date_part('minute', \"time\")")] unless route_ids.empty?
       end
       [key, entries.to_h]
     end.to_h
