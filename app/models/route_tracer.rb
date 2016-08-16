@@ -8,6 +8,7 @@ class RouteTracer
   # CACHE DE PONTOS
   #
 
+  # Gera e salva o cache de distâncias entre os pontos.
   def self.calculate_point_cache
     @point_cache.clear
     i = 1
@@ -26,11 +27,14 @@ class RouteTracer
     save_point_cache
   end
 
+  # Salva o cache de distâncias entre os pontos.
   def self.save_point_cache
     serialized = @point_cache.map{|rp| [rp.id, rp.cached_costs.map{|n,c| [n.id, c]}.to_h]}.to_h
     File.write('/tmp/achabus-point-cache.json', serialized.to_json)
   end
 
+  # Carrega o cache de pontos do disco.
+  # Provavelmente deveria ser removido, a não ser que gerá-lo venha a tomar um tempo absurdo (mais de um minuto?)
   def self.load_point_cache
     begin
       id_hash = JSON.parse(File.read('/tmp/achabus-point-cache.json'))
@@ -54,6 +58,11 @@ class RouteTracer
   # ROTAS A PÉ
   #
 
+  # Retorna a distância a pé entre dois pontos.
+  #
+  # @param [RoutePoint||VirtualPoint] a ponto A
+  # @param [RoutePoint||VirtualPoint] b ponto B
+  # @return [Float] a distância
   def self.walking_distance(a, b)
     seg1 = a.closest_street_segment
     seg2 = b.closest_street_segment
@@ -62,6 +71,11 @@ class RouteTracer
     walking_path_data(seg1, seg2)[2]
   end
 
+  # Retorna a rota a pé entre dois pontos.
+  #
+  # @param [RoutePoint||VirtualPoint] a ponto A
+  # @param [RoutePoint||VirtualPoint] b ponto B
+  # @return [RGeo::Geographic::ProjectedMultiLineStringImpl] a rota
   def self.walking_path(a, b)
     seg1 = a.closest_street_segment
     seg2 = b.closest_street_segment
@@ -101,6 +115,11 @@ class RouteTracer
     factory.multi_line_string(lines).to_s
   end
 
+  # Retorna o primeiro e segundo pontos do segmento de rua mais próximo aos pontos passados por parâmetro.
+  #
+  # @param [ClosestStreetSegment] seg1 O ponto de início
+  # @param [ClosestStreetSegment] seg2 O ponto de fim
+  # @return [Array] Array com id do vértice de início, id do vértice de fim e distância total
   def self.walking_path_data(seg1, seg2)
     starts = seg1.get_points
     targets = seg2.get_points
@@ -145,14 +164,10 @@ class RouteTracer
   # ROTAS DIRIGINDO
   #
 
-  # Aqui temos um modelo simples para aceleração/desaceleração de um ônibus.
-  # Fazemos de conta que ônibus têm aceleração constante, 1 m/s, até chegarem a 11 m/s (39,6 km/h).
-  # Após ficarem pelo menos 330 m nessa velocidade (30s) eles aceleram para 17 m/s a 1 m/s², demorando 6 segundos.
-  # Depois disso, independentemente da velocidade que estão, freiam a -1 m/s² para parar no próximo ponto.
+  # Aqui temos um modelinho simples para o perfil de velocidade de um ônibus. Assumimos que ele acelera e desacelera a
+  # 1 m/s², com velocidades máximas de 7 m/s (25,2 km/h), caso o percurso seja menor que 800 m, e 10 m/s (36 km/h) caso
+  # o percurso seja maior.
   #
-  # A distância de aceleração é igual a integral da aceleração sobre o tempo. Como temos aceleração linear, para a
-  # aceleração inicial e desaceleração final temos um triângulo, e para a aceleração no meio do percurso, temos um
-  # quadrilátero.
   # @param [Float] length o percurso entre um ponto e outro
   # @return [Float] o tempo em segundos
   def self.driving_time(length)
@@ -176,6 +191,11 @@ class RouteTracer
   # PATHFINDING DE ROTAS DE ÔNIBUS
   #
 
+  # Retorna os nós antecessores ao target.
+  #
+  # @param [RoutePoint||VirtualPoint] target o ponto alvo
+  # @param [Hash] previous um Hash com todos os antecessores do grafo
+  # @return [Array] um array de antecessores
   def self.antecessors_to(target, previous)
     path = []
     current = target
@@ -186,6 +206,11 @@ class RouteTracer
     path
   end
 
+  # Traça uma rota entre dois [VirtualPoint]s.
+  #
+  # @param [VirtualPoint] source o ponto de partida
+  # @param [VirtualPoint] target o ponto de destino
+  # @return [Array] um array com os pontos intermediários, em ordem
   def self.dijkstra(source, target)
     maxint = (2**(0.size * 8 -2) -1)
     costs = {}
@@ -225,6 +250,11 @@ class RouteTracer
     []
   end
 
+  # Traça uma rota entre dois pontos.
+  #
+  # @param [VirtualPoint] source o ponto de partida
+  # @param [VirtualPoint] target o ponto de destino
+  # @return [Array] um array com os pontos intermediários, em ordem
   def self.route_between(start, finish)
     begin
       RubyProf.start
