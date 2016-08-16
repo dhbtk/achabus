@@ -7,8 +7,9 @@ class TimePopupController {
         this.$mdDialog = $mdDialog;
         this.$http = $http;
         this.$mdToast = $mdToast;
+        this.$filter = $filter;
         this.time = time;
-        this.time.time = $filter('date')(time.time, 'HH:mm');
+        this.time.time = $filter('date')(time.time, 'HH:mm', 'UTC');
         this.routes = routes;
     }
 
@@ -17,7 +18,7 @@ class TimePopupController {
     }
 
     confirm() {
-        this.$http.patch(`/timetables/${this.time.id}.json`, {time: this.time}).then(data => this.$mdDialog.hide(),
+        this.$http.patch(`/timetables/${this.time.id}.json`, {timetable: this.time}).then(data => this.$mdDialog.hide(),
             data => this.$mdToast.showSimple(`Erro ${data.status}: ${data.statusText}`));
     }
 

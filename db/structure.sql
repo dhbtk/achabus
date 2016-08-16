@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 9.5.3
--- Dumped by pg_dump version 9.5.3
+-- Dumped by pg_dump version 9.5.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -245,70 +245,6 @@ ALTER SEQUENCE lines_id_seq OWNED BY lines.id;
 
 
 --
--- Name: place_points; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE place_points (
-    id integer NOT NULL,
-    place_id integer,
-    point_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: place_points_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE place_points_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: place_points_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE place_points_id_seq OWNED BY place_points.id;
-
-
---
--- Name: places; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE places (
-    id integer NOT NULL,
-    "position" geometry(Point),
-    name character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: places_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE places_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: places_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE places_id_seq OWNED BY places.id;
-
-
---
 -- Name: points; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -316,8 +252,6 @@ CREATE TABLE points (
     id integer NOT NULL,
     "position" geography(Point,4326),
     name character varying,
-    notable_name character varying,
-    notable boolean,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     waypoint boolean DEFAULT false,
@@ -355,10 +289,8 @@ CREATE TABLE route_points (
     "order" integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    pass_through boolean DEFAULT false,
     polyline_index integer,
-    nearest_ways_point integer,
-    closest_way integer
+    nearest_ways_point integer
 );
 
 
@@ -422,19 +354,6 @@ ALTER SEQUENCE routes_id_seq OWNED BY routes.id;
 
 CREATE TABLE schema_migrations (
     version character varying NOT NULL
-);
-
-
---
--- Name: temp_test; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE temp_test (
-    id integer,
-    origin geography(Point,4326),
-    dest geography,
-    closest geography,
-    path geography
 );
 
 
@@ -675,20 +594,6 @@ ALTER TABLE ONLY lines ALTER COLUMN id SET DEFAULT nextval('lines_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY place_points ALTER COLUMN id SET DEFAULT nextval('place_points_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY places ALTER COLUMN id SET DEFAULT nextval('places_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY points ALTER COLUMN id SET DEFAULT nextval('points_id_seq'::regclass);
 
 
@@ -760,22 +665,6 @@ ALTER TABLE ONLY line_groups
 
 ALTER TABLE ONLY lines
     ADD CONSTRAINT lines_pkey PRIMARY KEY (id);
-
-
---
--- Name: place_points_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY place_points
-    ADD CONSTRAINT place_points_pkey PRIMARY KEY (id);
-
-
---
--- Name: places_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY places
-    ADD CONSTRAINT places_pkey PRIMARY KEY (id);
 
 
 --
@@ -886,20 +775,6 @@ CREATE INDEX index_lines_on_line_group_id ON lines USING btree (line_group_id);
 
 
 --
--- Name: index_place_points_on_place_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_place_points_on_place_id ON place_points USING btree (place_id);
-
-
---
--- Name: index_place_points_on_point_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_place_points_on_point_id ON place_points USING btree (point_id);
-
-
---
 -- Name: index_route_points_on_point_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -981,14 +856,6 @@ CREATE INDEX ways_vertices_pgr_osm_id_idx ON ways_vertices_pgr USING btree (osm_
 SET search_path = public, pg_catalog;
 
 --
--- Name: fk_rails_0c08ddb811; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY route_points
-    ADD CONSTRAINT fk_rails_0c08ddb811 FOREIGN KEY (closest_way) REFERENCES routing.ways(gid);
-
-
---
 -- Name: fk_rails_0f75196a8c; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1013,14 +880,6 @@ ALTER TABLE ONLY timetables
 
 
 --
--- Name: fk_rails_2e21720959; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY place_points
-    ADD CONSTRAINT fk_rails_2e21720959 FOREIGN KEY (point_id) REFERENCES points(id);
-
-
---
 -- Name: fk_rails_521d5f75d4; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1037,19 +896,11 @@ ALTER TABLE ONLY route_points
 
 
 --
--- Name: fk_rails_ece2798472; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY place_points
-    ADD CONSTRAINT fk_rails_ece2798472 FOREIGN KEY (place_id) REFERENCES places(id);
-
-
---
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160309161817'), ('20160309161832'), ('20160309162957'), ('20160309163451'), ('20160309163707'), ('20160309163750'), ('20160309163823'), ('20160309164003'), ('20160309165254'), ('20160309233245'), ('20160314224722'), ('20160314224810'), ('20160314224931'), ('20160316161212'), ('20160404152758'), ('20160615165136'), ('20160628155253'), ('20160702131027'), ('20160702180707'), ('20160708153137'), ('20160710133519'), ('20160715161651');
+INSERT INTO schema_migrations (version) VALUES ('20160309161817'), ('20160309161832'), ('20160309162957'), ('20160309163451'), ('20160309163707'), ('20160309163750'), ('20160309163823'), ('20160309164003'), ('20160309165254'), ('20160309233245'), ('20160314224722'), ('20160314224810'), ('20160314224931'), ('20160316161212'), ('20160404152758'), ('20160615165136'), ('20160628155253'), ('20160702131027'), ('20160702180707'), ('20160708153137'), ('20160710133519'), ('20160715161651'), ('20160816154018');
 
 

@@ -20,5 +20,6 @@ module Achabus
     end
 
     config.active_record.schema_format = :sql
+    config.active_record.time_zone_aware_types = [:datetime, :time]
   end
 end

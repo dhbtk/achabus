@@ -2,6 +2,8 @@ class Point < ApplicationRecord
   has_many :place_points
   has_many :places, through: :place_points
 
+  validates :position, :heading, :waypoint, presence: true
+
   DELTA = 0.00005 # Aprox. 5 metros de latitude
 
   def lat_lng

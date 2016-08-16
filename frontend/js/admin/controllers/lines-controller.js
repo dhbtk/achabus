@@ -2,8 +2,11 @@
  * Created by eduardo on 29/06/16.
  */
 'use strict';
+
+import moment from 'moment';
+
 class LinesController {
-    constructor($state, $http, $scope, $rootScope, $mdToast, $mdDialog, $q) {
+    constructor($state, $http, $scope, $rootScope, $mdToast, $mdDialog, $q, $filter) {
         /**
          * Serviços
          */
@@ -13,6 +16,7 @@ class LinesController {
         this.$mdToast = $mdToast;
         this.$mdDialog = $mdDialog;
         this.$q = $q;
+        this.$filter = $filter;
 
         /**
          * Estado
@@ -142,6 +146,7 @@ class LinesController {
      * @param period mon_fri, saturday ou sunday
      */
     addTime(time, period) {
+        time.time = this.$filter('date')(time.time, 'HH:mm');
         time.sunday = time.monday = time.tuesday = time.wednesday = time.thursday = time.friday = time.saturday = false;
         if(period === 'mon_fri') {
             time.monday = time.tuesday = time.wednesday = time.thursday = time.friday = true;
