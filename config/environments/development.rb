@@ -33,8 +33,11 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
       address: 'mail.edanni.io',
       user_name: ENV['EMAIL_USERNAME'],
-      password: ENV['EMAIL_PASSWORD']
+      password: ENV['EMAIL_PASSWORD'],
+      port: 587
   }
+
+  config.action_mailer.default_url_options = { host: 'localhost' }
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false

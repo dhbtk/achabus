@@ -2,7 +2,7 @@
  * Created by eduardo on 27/06/16.
  */
 class MainController {
-    constructor($scope, $state, $rootScope, $mdToast) {
+    constructor($scope, $state, $rootScope, $mdToast, $http, $window) {
         $scope.pageTitle = 'Manutenção';
         $scope.transitioning = false;
 
@@ -26,6 +26,13 @@ class MainController {
          */
         $scope.setTitle = function(title) {
             $scope.pageTitle = title;
+        };
+
+        /**
+         *
+         */
+        $scope.logout = function() {
+            $http.delete('/admins/sign_out').then(() => $window.location = '/admins/sign_in');
         };
     }
 }
