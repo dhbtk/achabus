@@ -40,6 +40,25 @@
   }
 }
 
+md-toolbar.logout-toolbar {
+  min-height: 32px;
+  font-size: 12px;
+  padding: 0 !important;
+}
+
+.md-toolbar-tools.logout-toolbar-tools {
+  height: 32px;
+  max-height: 32px;
+  font-size: 14px;
+}
+
+.logout-toolbar .md-button {
+  padding: 0;
+  min-width: 32px;
+  min-height: 28px;
+  line-height: 28px;
+}
+
 /**
  * Aquela pira das ui-views aninhadas
  */

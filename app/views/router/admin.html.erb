@@ -22,7 +22,7 @@
         <h2><span>Cadê o Busão?</span></h2>
       </div>
     </md-toolbar>
-    <md-sidemenu>
+    <md-sidemenu flex>
       <md-sidemenu-group>
         <md-subheader class="md-no-sticky">
           Linhas e Grupos
@@ -32,6 +32,14 @@
         <md-sidemenu-button ui-sref="map">Editor de Rotas</md-sidemenu-button>
       </md-sidemenu-group>
     </md-sidemenu>
+    <md-toolbar class="logout-toolbar">
+      <div class="md-toolbar-tools logout-toolbar-tools" layout="row">
+        <span flex></span>
+        <md-button ng-click="logout()">
+          <md-icon>exit_to_app</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
   </md-sidenav>
   <div id="main-view" ui-view flex layout="column">
   </div>
