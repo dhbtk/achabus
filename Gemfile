@@ -25,7 +25,6 @@ end
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> in views
-  gem 'web-console', '~> 3.0'
   gem 'listen', '~> 3.0.5'
 end
 
@@ -38,3 +37,4 @@ gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
 gem 'geokit'
 gem 'kaminari'
 gem 'ruby-prof'
+gem 'devise'

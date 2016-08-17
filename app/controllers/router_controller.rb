@@ -1,6 +1,6 @@
 class RouterController < ApplicationController
   layout false
-  skip_before_action :auth_basic_temp, only: [:frontend]
+  skip_before_action :authenticate_admin!, only: [:frontend]
   def admin
   end
 
