@@ -89,6 +89,6 @@ class PointsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def point_params
-    params.require(:point).permit(:position, :heading, :name, :notable_name, :notable, :waypoint)
+    params.require(:point).permit(:position, :heading, :name, :waypoint)
   end
 end
