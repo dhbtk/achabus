@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :admins
 
   resources :route_points do
     member do
@@ -26,7 +27,10 @@ Rails.application.routes.draw do
   end
   resources :line_groups
 
-  get 'admin', to: 'router#admin'
+  scope '/admin' do
+    root to: 'router#admin'
+  end
+
   root to: 'router#frontend'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html

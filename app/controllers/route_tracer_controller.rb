@@ -1,5 +1,5 @@
 class RouteTracerController < ApplicationController
-  skip_before_action :auth_basic_temp
+  skip_before_action :authenticate_admin!
   def trace
     @source = VirtualPoint.new(params[:src_lon], params[:src_lat])
     @destination = VirtualPoint.new(params[:dest_lon], params[:dest_lat])

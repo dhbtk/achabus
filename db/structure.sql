@@ -165,6 +165,46 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: admins; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE admins (
+    id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    email character varying DEFAULT ''::character varying NOT NULL,
+    encrypted_password character varying DEFAULT ''::character varying NOT NULL,
+    reset_password_token character varying,
+    reset_password_sent_at timestamp without time zone,
+    remember_created_at timestamp without time zone,
+    sign_in_count integer DEFAULT 0 NOT NULL,
+    current_sign_in_at timestamp without time zone,
+    last_sign_in_at timestamp without time zone,
+    current_sign_in_ip character varying,
+    last_sign_in_ip character varying
+);
+
+
+--
+-- Name: admins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE admins_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: admins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE admins_id_seq OWNED BY admins.id;
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -580,6 +620,13 @@ SET search_path = public, pg_catalog;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY admins ALTER COLUMN id SET DEFAULT nextval('admins_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY line_groups ALTER COLUMN id SET DEFAULT nextval('line_groups_id_seq'::regclass);
 
 
@@ -642,6 +689,14 @@ ALTER TABLE ONLY ways_vertices_pgr ALTER COLUMN id SET DEFAULT nextval('ways_ver
 
 
 SET search_path = public, pg_catalog;
+
+--
+-- Name: admins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY admins
+    ADD CONSTRAINT admins_pkey PRIMARY KEY (id);
+
 
 --
 -- Name: ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -766,6 +821,20 @@ ALTER TABLE ONLY ways_vertices_pgr
 
 
 SET search_path = public, pg_catalog;
+
+--
+-- Name: index_admins_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_admins_on_email ON admins USING btree (email);
+
+
+--
+-- Name: index_admins_on_reset_password_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_admins_on_reset_password_token ON admins USING btree (reset_password_token);
+
 
 --
 -- Name: index_lines_on_line_group_id; Type: INDEX; Schema: public; Owner: -
@@ -901,6 +970,6 @@ ALTER TABLE ONLY route_points
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160309161817'), ('20160309161832'), ('20160309162957'), ('20160309163451'), ('20160309163707'), ('20160309163750'), ('20160309163823'), ('20160309164003'), ('20160309165254'), ('20160309233245'), ('20160314224722'), ('20160314224810'), ('20160314224931'), ('20160316161212'), ('20160404152758'), ('20160615165136'), ('20160628155253'), ('20160702131027'), ('20160702180707'), ('20160708153137'), ('20160710133519'), ('20160715161651'), ('20160816154018');
+INSERT INTO schema_migrations (version) VALUES ('20160309161817'), ('20160309161832'), ('20160309162957'), ('20160309163451'), ('20160309163707'), ('20160309163750'), ('20160309163823'), ('20160309164003'), ('20160309165254'), ('20160309233245'), ('20160314224722'), ('20160314224810'), ('20160314224931'), ('20160316161212'), ('20160404152758'), ('20160615165136'), ('20160628155253'), ('20160702131027'), ('20160702180707'), ('20160708153137'), ('20160710133519'), ('20160715161651'), ('20160816154018'), ('20160817150702'), ('20160817150715');
 
 
