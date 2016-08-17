@@ -41,15 +41,13 @@
                     heading: {{model.selectedPoint.heading}}</p>
             </div>
             <md-content flex layout-padding md-scroll-y>
-                <md-list class="md-dense" flex>
-                    <md-subheader class="md-no-sticky">Rotas</md-subheader>
-                    <md-list-item class="md-2-line" ng-repeat="route in model.routes" ng-click="selectRoute(route)">
-                        <div class="md-list-item-text">
-                            <h4>{{route.name}}</h4>
-                            <p>{{model.selectedRoute == route ? 'Selecionada' : ''}}</p>
-                        </div>
-                    </md-list-item>
-                </md-list>
+                <strong>Rotas</strong>
+                <ul>
+                    <li ng-repeat="route in model.routes" ng-click="selectRoute(route)" style="cursor: pointer">
+                        {{route.name}}<br>
+                        <small ng-if="model.selectedRoute == route">Selecionada</small>
+                    </li>
+                </ul>
             </md-content>
         </div>
     </div>
