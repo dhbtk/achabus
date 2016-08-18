@@ -223,7 +223,7 @@ class MapEditorController {
                     $scope.model.routes = [];
                     $http.get('/lines/' + line.id + '.json').then(function (line) {
                         line.data.routes.forEach(function (route) {
-                            $http.get('/routes/' + route.id + '.json').then(data => $scope.model.routes.push(new Route(data.data, $scope.map, $scope.model.points)));
+                            $http.get('/routes/' + route.id + '.json').then(data => $scope.model.routes.push(new Route(data.data, $scope.map, $scope.model.points, $http)));
                         });
                     });
                 }

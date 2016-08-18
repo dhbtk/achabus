@@ -32,9 +32,22 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'dotenv-rails'
 
+# Para o roteamento
 gem 'PriorityQueue'
-gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
-gem 'geokit'
-gem 'kaminari'
 gem 'ruby-prof'
+
+# Para dados geográficos
+gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
+
+# Para utilizar serviços de geocoding
+gem 'geokit'
+
+# Para integração com o OSRM rodando local
+gem 'rgeo-geojson'
+gem 'rest-client'
+
+# Paginação em geral na interface
+gem 'kaminari'
+
+# Autenticação no geral
 gem 'devise'

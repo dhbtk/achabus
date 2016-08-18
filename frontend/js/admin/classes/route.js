@@ -2,7 +2,8 @@ import RoutePoint from './route_point';
 import $ from 'jquery';
 
 class Route {
-    constructor(nameOrObject, map, points) {
+    constructor(nameOrObject, map, points, $http) {
+        this.$http = $http;
         if (typeof nameOrObject === 'object') {
             this.name = nameOrObject.name;
             this.id = nameOrObject.id;
@@ -65,19 +66,15 @@ class Route {
             this.points.push(new RoutePoint(point, 0));
         }
         else {
-            const svc = new google.maps.DirectionsService();
-            svc.route({
-                origin: this.points[this.points.length - 1].point.marker.getPosition(),
-                destination: point.marker.getPosition(),
-                travelMode: google.maps.DirectionsTravelMode.DRIVING
-            }, (res, status) => {
-                if (status == google.maps.DirectionsStatus.OK) {
-                    const line = res.routes[0].overview_path;
-                    for (let i = 0; i < line.length; i++) {
-                        this.path.push(line[i]);
-                    }
-                    this.points.push(new RoutePoint(point, this.path.getLength() - 1));
-                }
+            this.$http.get('/driving_path', {params: {
+                src_lon: this.points[this.points.length - 1].point.marker.getPosition().lng(),
+                src_lat: this.points[this.points.length - 1].point.marker.getPosition().lat(),
+                dst_lon: point.marker.getPosition().lng(),
+                dst_lat: point.marker.getPosition().lat()
+            }}).then(data => {
+                const points = data.data.points;
+                points.forEach(p => this.path.push(new google.maps.LatLng(p)));
+                this.points.push(new RoutePoint(point, this.path.length - 1));
             });
         }
     }

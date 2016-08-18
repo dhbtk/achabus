@@ -4,10 +4,7 @@ class RoutePoint < ApplicationRecord
 
   validates :route, :point, :order, :polyline_index, presence: true
 
-  after_find :set_closest_street_segment
-
   attr_accessor :cached_costs
-  attr_reader :closest_street_segment
 
   def neighbors(destination, antecessors)
     if cached_costs && !cached_costs.empty?
@@ -51,37 +48,6 @@ class RoutePoint < ApplicationRecord
         30 + RouteTracer.walking_time(self, target)
       end
     end
-  end
-
-  def nearest_ways_point
-    super || calculate_nearest_ways_point
-  end
-
-  def calculate_nearest_ways_point
-    lon = point.position.lon
-    lat = point.position.lat
-    sql ="SELECT id FROM routing.ways_vertices_pgr WHERE the_geom::geography <-> ST_Point(#{lon}, #{lat})::geography < 300
-	ORDER BY the_geom::geography <-> ST_Point(#{lon}, #{lat})::geography LIMIT 1"
-    id = ApplicationRecord.connection.execute(sql).values[0][0]
-    self.update(nearest_ways_point: id)
-    id
-  end
-
-  def set_closest_street_segment
-    @closest_street_segment = ClosestStreetSegment.from_point_and_gid(self.point.position, self.closest_way)
-  end
-
-  def calculate_closest_way
-    sql = "
-    SELECT w.gid
-FROM routing.ways w, route_points rp
-  JOIN points p ON rp.point_id = p.id
-WHERE rp.id = #{self.id} AND
-st_distance(p.position::geography, w.the_geom::geography) < 300
-ORDER BY st_distance(p.position::geography, w.the_geom::geography)
-LIMIT 1;"
-    id = ApplicationRecord.connection.execute(sql).values[0][0]
-    update(closest_way: id)
   end
 
   def self.closest_to lon, lat

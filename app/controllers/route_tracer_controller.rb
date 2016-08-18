@@ -1,5 +1,5 @@
 class RouteTracerController < ApplicationController
-  skip_before_action :authenticate_admin!
+  skip_before_action :authenticate_admin!, except: [:driving_path]
   def trace
     @source = VirtualPoint.new(params[:src_lon], params[:src_lat])
     @destination = VirtualPoint.new(params[:dest_lon], params[:dest_lat])
@@ -13,5 +13,11 @@ class RouteTracerController < ApplicationController
     dest = factory.parse_wkt("POINT (#{params[:dest_lon]} #{params[:dest_lat]})")
 
     render json: {wkt: RouteTracer.walking_path(source, dest).to_s}
+  end
+
+  def driving_path
+    render json: {points: OSRM.driving_path(params[:src_lon], params[:src_lat], params[:dst_lon], params[:dst_lat]).points.map do |point|
+      {lat: point.lat, lng: point.lon}
+    end}
   end
 end

@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   end
   get 'trace_route', to: 'route_tracer#trace'
   get 'walking_path', to: 'route_tracer#walking_path'
+  get 'driving_path', to: 'route_tracer#driving_path'
 
 
   resources :lines do
