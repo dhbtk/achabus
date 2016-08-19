@@ -1,0 +1,17 @@
+<md-toolbar class="md-whiteframe-1dp">
+    <div layout="row" class="md-toolbar-tools">
+        <md-button ng-click="ctrl.openLine()">Abrir linha</md-button>
+        <div ng-if="ctrl.line" flex layout="row" layout-align="center center">
+            <h2><span>{{ctrl.line.identifier}} - {{ctrl.line.name}}</span></h2>
+            <span flex></span>
+            <md-button ng-href="{{ctrl.line.itinerary_link}}" target="_blank" class="md-raised md-accent">Abrir Itinerário
+            </md-button>
+            <md-button ng-href="{{ctrl.line.timetable_link}}" target="_blank" class="md-raised md-accent">Abrir Horário
+            </md-button>
+        </div>
+        <div ng-if="!ctrl.line" layout="column">
+            Nenhuma linha selecionada
+        </div>
+    </div>
+</md-toolbar>
+<div id="map" flex></div>
