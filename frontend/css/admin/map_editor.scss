@@ -35,3 +35,37 @@ object[width="0"] {
 #map {
   //height: 500px;
 }
+
+#map-container {
+  position: relative;
+}
+
+#point-toolpane {
+  position: absolute;
+  max-height: calc(100% - 20px);
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+#point-toolpane .small-toolbar {
+  min-height: 32px;
+}
+
+#point-toolpane .small-toolbar div.md-toolbar-tools {
+  height: 32px;
+  max-height: 32px;
+  font-size: 14px;
+}
+
+#point-toolpane md-input-container {
+  margin-bottom: 0;
+}
+
+#point-toolpane button.md-button {
+  min-width: 32px;
+  margin: 0;
+}
