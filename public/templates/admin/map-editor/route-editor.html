@@ -14,4 +14,47 @@
         </div>
     </div>
 </md-toolbar>
-<div id="map" flex></div>
+<div flex layout="column" id="map-container">
+    <div id="map" flex></div>
+    <div id="point-toolpane" class="md-whiteframe-1dp" ng-if="ctrl.selectedPoint">
+        <md-toolbar class="md-whiteframe-1dp small-toolbar">
+            <div class="md-toolbar-tools">
+                <h2><span>{{ctrl.selectedPoint.get('waypoint') ? 'Waypoint' : 'Parada'}}</span></h2>
+                <span flex></span>
+                <md-button ng-click="ctrl.moveLeft(ctrl.selectedPoint.get('id'))">
+                    <md-icon>keyboard_arrow_left</md-icon>
+                </md-button>
+                <md-button ng-click="ctrl.moveForward(ctrl.selectedPoint.get('id'))">
+                    <md-icon>keyboard_arrow_up</md-icon>
+                </md-button>
+                <md-button ng-click="ctrl.moveBackward(ctrl.selectedPoint.get('id'))">
+                    <md-icon>keyboard_arrow_down</md-icon>
+                </md-button>
+                <md-button ng-click="ctrl.moveRight(ctrl.selectedPoint.get('id'))">
+                    <md-icon>keyboard_arrow_right</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <div layout="column" style="padding: 0 10px;">
+            <md-input-container>
+                <label>Nome</label>
+                <input type="text" value="{{ctrl.selectedPoint.get('name')}}">
+            </md-input-container>
+            <md-input-container>
+                <label>Orientação</label>
+                <input type="text" value="{{ctrl.selectedPoint.get('heading')}}">
+            </md-input-container>
+        </div>
+        <md-toolbar class="small-toolbar">
+            <div class="md-toolbar-tools">
+                <span flex></span>
+                <md-button>
+                    <md-icon>save</md-icon>
+                </md-button>
+                <md-button>
+                    <md-icon>delete</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+    </div>
+</div>

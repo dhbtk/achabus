@@ -66,7 +66,7 @@ require('./module').config(function ($stateProvider, $urlRouterProvider, $breadc
      */
     $stateProvider.state('routes', {
         url: '/routes',
-        controller: 'RouteEditorController',
+        controller: 'RouteEditorController as ctrl',
         templateUrl: '/templates/admin/map-editor/route-editor.html'
     });
 
