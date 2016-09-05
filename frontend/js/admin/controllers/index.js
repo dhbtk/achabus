@@ -1,9 +1,10 @@
 'use strict';
 
 require('../module')
-    .controller('MainController', require('./main-controller.js'))
-    .controller('LinesController', require('./lines-controller.js'))
-    .controller('LinePopupController', require('./line-popup-controller.js'))
-    .controller('RoutePopupController', require('./route-popup-controller.js'))
+    .controller('MainController', require('./main-controller'))
+    .controller('LinesController', require('./lines-controller'))
+    .controller('LinePopupController', require('./line-popup-controller'))
+    .controller('RoutePopupController', require('./route-popup-controller'))
     .controller('TimePopupController', require('./time-popup-controller.js'))
-    .controller('MapEditorController', require('./map-editor-controller'));
+    .controller('PointEditorController', require('./point-editor-controller'))
+    .controller('RouteEditorController', require('./route-editor-controller'));

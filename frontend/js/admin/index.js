@@ -54,12 +54,20 @@ require('./module').config(function ($stateProvider, $urlRouterProvider, $breadc
         }
     });
     /**
+     * Editor de Pontos
+     */
+    $stateProvider.state('points', {
+        url: '/points',
+        controller: 'PointEditorController',
+        templateUrl: '/templates/admin/map-editor/point-editor.html'
+    });
+    /**
      * Editor de Rotas
      */
-    $stateProvider.state('map', {
-        url: '/map',
-        controller: 'MapEditorController',
-        templateUrl: '/templates/admin/map-editor/map-editor.html'
+    $stateProvider.state('routes', {
+        url: '/routes',
+        controller: 'RouteEditorController as ctrl',
+        templateUrl: '/templates/admin/map-editor/route-editor.html'
     });
 
 

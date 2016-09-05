@@ -1,0 +1,34 @@
+<md-toolbar class="md-whiteframe-1dp">
+    <div layout="row" class="md-toolbar-tools">
+        <div layout="row" ng-if="model.selectedPoint" flex>
+            <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'left')">
+                <md-icon>keyboard_arrow_left</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'forward')">
+                <md-icon>keyboard_arrow_up</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'backward')">
+                <md-icon>keyboard_arrow_down</md-icon>
+            </md-button>
+            <md-button class="md-icon-button" ng-click="movePoint(model.selectedPoint.id, 'right')">
+                <md-icon>keyboard_arrow_right</md-icon>
+            </md-button>
+            <span flex></span>
+            <span style="font-size: 14px">{{model.selectedPoint.name || 'Sem nome'}}</span>
+            <md-button ng-click="deletePoint(model.selectedPoint)" class="md-icon-button">
+                <md-icon>delete</md-icon>
+            </md-button>
+        </div>
+    </div>
+</md-toolbar>
+<div flex layout="row">
+    <div class="big-map-container" flex layout="column">
+        <div id="map" flex></div>
+        <div id="street-view" style="display: none"></div>
+        <md-button ng-show="streetView" ng-click="toggleStreetView()" class="md-primary md-raised back-button">Voltar</md-button>
+        <md-button ng-show="streetView" ng-click="addPoint()" class="md-primary md-raised add-button">Adicionar Ponto
+        </md-button>
+    </div>
+    <div class="little-map-container">
+    </div>
+</div>
