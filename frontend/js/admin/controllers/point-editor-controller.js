@@ -1,11 +1,10 @@
 /**
  * Created by eduardo on 01/07/16.
  */
-import $ from 'jquery';
-import angular from 'angular';
-import Route from '../classes/route';
+import $ from "jquery";
+import angular from "angular";
 
-class MapEditorController {
+class PointEditorController {
     constructor($scope, $mdDialog, $mdToast, $http, $timeout, $interval) {
         /*
          * Modelo
@@ -33,9 +32,6 @@ class MapEditorController {
         $scope.streetView = null;
 
         $scope.model = {
-            line: null,
-            selectedRoute: null,
-            routes: [],
             points: {},
             selectedPoint: null
         };
@@ -72,9 +68,6 @@ class MapEditorController {
                         $timeout(function () {
                             $scope.model.selectedPoint = point;
                         });
-                        if ($scope.model.selectedRoute) {
-                            $scope.model.selectedRoute.handleClick(point);
-                        }
                     });
                 }
                 const nums = point.position.split('(')[1].split(' ');
@@ -162,74 +155,6 @@ class MapEditorController {
             }
         };
 
-        /** Menu Linhas **/
-
-        // Linhas -> Abrir linha
-        $scope.openLine = function (ev) {
-            $mdDialog.show({
-                controller: function($scope, $mdDialog, $http, $q) {
-                    $scope.model = {
-                        line_groups: [],
-                        line_group: null,
-                        lines: [],
-                        line: null
-                    };
-                    $scope.cancel = function () {
-                        $mdDialog.cancel();
-                    };
-                    $scope.confirm = function () {
-                        $mdDialog.hide($scope.model.line);
-                    };
-
-                    $scope.findLine = function(text) {
-                        let def = $q.defer();
-                        $http.get('/lines.json', {params: {filter: text}}).then(data => def.resolve(data.data.content), a => def.reject(a));
-                        return def.promise;
-                    };
-                },
-                templateUrl: '/templates/admin/map-editor/map-editor-open-line.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose: true
-            }).then(function (line) {
-                if (line) {
-                    $scope.model.line = line;
-                    if (!google.maps) {
-                        return;
-                    }
-                    if ($scope.kmlLayer !== null) {
-                        $scope.kmlLayer.setMap(null);
-                    }
-                    if(line.itinerary_link) {
-                        let url = new URL(line.itinerary_link);
-                        let kmlUrl;
-                        if (url.host.match(/www\.google\.com/)) {
-                            kmlUrl = "https://www.google.com/maps/d/kml?mid=" + url.search.match(/mid=([^&]+)/)[1] + "&nl=1";
-                        }
-                        else {
-                            kmlUrl = url.href + "&output=kml";
-                        }
-
-                        $scope.kmlLayer = new google.maps.KmlLayer({
-                            url: kmlUrl,
-                            map: $scope.map,
-                            suppressInfoWindows: true,
-                            clickable: false,
-                            preserveViewport: false
-                        });
-                    }
-
-                    $scope.model.routes.forEach(r => r.unload());
-                    $scope.model.routes = [];
-                    $http.get('/lines/' + line.id + '.json').then(function (line) {
-                        line.data.routes.forEach(function (route) {
-                            $http.get('/routes/' + route.id + '.json').then(data => $scope.model.routes.push(new Route(data.data, $scope.map, $scope.model.points)));
-                        });
-                    });
-                }
-            });
-        };
-
         // Troca de modo de visualização
         $scope.toggleStreetView = function () {
             if ($scope.streetView === null) {
@@ -312,23 +237,6 @@ class MapEditorController {
         };
 
         /*
-         * Rotas
-         */
-
-        $scope.selectRoute = function (route) {
-            if($scope.model.selectedRoute) {
-                $scope.model.selectedRoute.hide();
-            }
-            route.show();
-            $scope.model.selectedRoute = route;
-        };
-
-        $scope.saveRoute = function (route) {
-            route.save();
-            $mdToast.showSimple('Rota salva com sucesso.');
-        };
-
-        /*
          * Inicialização
          */
         let mapWatch = $interval(() => {
@@ -375,7 +283,7 @@ class MapEditorController {
                     }
                     else {
                         $timeout(function () {
-                            if ($scope.model.selectedRoute && !$scope.model.selectedPoint) {
+                            if (!$scope.model.selectedPoint) {
                                 $scope.addWaypoint(e.latLng);
                             }
                             $scope.model.selectedPoint = null;
@@ -400,4 +308,4 @@ class MapEditorController {
     }
 }
 
-module.exports = MapEditorController;
+module.exports = PointEditorController;

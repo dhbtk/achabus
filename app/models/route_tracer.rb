@@ -64,89 +64,16 @@ class RouteTracer
   # @param [RoutePoint||VirtualPoint] b ponto B
   # @return [Float] a distância
   def self.walking_distance(a, b)
-    seg1 = a.closest_street_segment
-    seg2 = b.closest_street_segment
-
-    return a.point.position.distance(b.point.position) if seg1.gid == seg2.gid # FIXME!
-    walking_path_data(seg1, seg2)[2]
+    OSRM.walking_path(a.point.position.lon, a.point.position.lat, b.point.position.lon, b.point.position.lat).length
   end
 
   # Retorna a rota a pé entre dois pontos.
   #
   # @param [RoutePoint||VirtualPoint] a ponto A
   # @param [RoutePoint||VirtualPoint] b ponto B
-  # @return [RGeo::Geographic::ProjectedMultiLineStringImpl] a rota
+  # @return [RGeo::Geographic::SphericalLineStringImpl] a rota
   def self.walking_path(a, b)
-    seg1 = a.closest_street_segment
-    seg2 = b.closest_street_segment
-
-    factory = RGeo::Geographic.spherical_factory(srid: 4326)
-
-    return factory.multi_line_string([factory.line_string([a.point.position, b.point.position])]) if seg1.gid == seg2.gid # FIXME!
-
-    starts = seg1.get_points
-    targets = seg2.get_points
-
-    closest_path = walking_path_data(seg1, seg2)
-
-    sql = "
-    SELECT st_astext(the_geom) FROM pgr_dijkstra(
-      'SELECT gid as id, source, target, st_length(the_geom::geography) as cost, st_length(the_geom::geography) as reverse_cost FROM routing.ways
-      WHERE the_geom && ST_Expand(
-      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{closest_path[0..1].join(', ')})), 0.01)
-',
-      #{closest_path[0]}, #{closest_path[1]}, false) dij join routing.ways w on w.gid = edge"
-
-    lines = ApplicationRecord.connection.execute(sql).values.map{|x| factory.parse_wkt(x[0])}
-
-    lines << factory.parse_wkt(seg1.closest_point_line) if factory.parse_wkt(seg1.closest_point_line)
-    lines << factory.parse_wkt(seg2.closest_point_line) if factory.parse_wkt(seg2.closest_point_line)
-    if closest_path[0] == seg1.source
-      lines << factory.parse_wkt(seg1.source_line) if factory.parse_wkt(seg1.source_line)
-    elsif closest_path[0] == seg1.target
-      lines << factory.parse_wkt(seg1.target_line) if factory.parse_wkt(seg1.target_line)
-    end
-    if closest_path[1] == seg2.source
-      lines << factory.parse_wkt(seg2.source_line) if factory.parse_wkt(seg2.source_line)
-    elsif closest_path[1] == seg2.target
-      lines << factory.parse_wkt(seg2.target_line) if factory.parse_wkt(seg2.target_line)
-    end
-
-    factory.multi_line_string(lines).to_s
-  end
-
-  # Retorna o primeiro e segundo pontos do segmento de rua mais próximo aos pontos passados por parâmetro.
-  #
-  # @param [ClosestStreetSegment] seg1 O ponto de início
-  # @param [ClosestStreetSegment] seg2 O ponto de fim
-  # @return [Array] Array com id do vértice de início, id do vértice de fim e distância total
-  def self.walking_path_data(seg1, seg2)
-    starts = seg1.get_points
-    targets = seg2.get_points
-
-    sql = "
-    SELECT * FROM pgr_dijkstraCost(
-      'SELECT gid as id, source, target, st_length(the_geom::geography) as cost, st_length(the_geom::geography) as reverse_cost FROM routing.ways
-      WHERE the_geom && ST_Expand(
-      (SELECT ST_Collect(the_geom) FROM routing.ways_vertices_pgr WHERE id IN (#{(starts + targets).join(', ')})), 0.01)
-',
-      ARRAY[#{starts.join(', ')}], ARRAY[#{targets.join(', ')}], false)"
-    res = ApplicationRecord.connection.execute(sql).values
-
-    res.map do |line| # start_vid, end_vid, cost
-      cost = line[2]
-      if line[0] == seg1.source
-        cost += seg1.closest_point_distance + seg1.source_distance
-      elsif line[0] == seg1.target
-        cost += seg1.closest_point_distance + seg1.target_distance
-      end
-      if line[1] == seg2.source
-        cost += seg2.closest_point_distance + seg2.source_distance
-      elsif line[1] == seg2.target
-        cost += seg2.closest_point_distance + seg2.target_distance
-      end
-      [line[0], line[1], cost]
-    end.sort{|x,y| x[2] <=> y[2]}[0]
+    OSRM.walking_path(a.point.position.lon, a.point.position.lat, b.point.position.lon, b.point.position.lat)
   end
 
   # Aqui assumimos que pessoas andam em velocidade constante.
@@ -290,8 +217,8 @@ class RouteTracer
     {
         route: route_array,
         walking_paths: {
-            start: walking_path(start, route[0]),
-            finish: walking_path(route[-1], finish),
+            start: route[0] ? walking_path(start, route[0]) : nil,
+            finish: route[-1] ? walking_path(route[-1], finish) : nil,
             between_routes: 0.upto(route_array.length - 2).map do |i|
               walking_path(route_array[i][:route_points][-1], route_array[i + 1][:route_points][0])
             end
@@ -305,6 +232,6 @@ class RouteTracer
     boicy = VirtualPoint.new -54.577825, -25.546901
     rodo  = VirtualPoint.new -54.562939, -25.520758
     ActiveRecord::Base.logger.level = old_level
-    walking_path boicy, rodo
+    route_between boicy, rodo
   end
 end
