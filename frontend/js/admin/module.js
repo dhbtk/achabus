@@ -3,4 +3,9 @@
  */
 let angular = require('angular');
 require('angular-breadcrumb');
-module.exports = angular.module('admin', [require('angular-material'), require('angular-material-sidemenu'), require('angular-ui-router'), require('angular-material-data-table'), 'ncy-angular-breadcrumb']);
+module.exports = angular.module('admin', [
+    require('angular-material'),
+    require('angular-material-sidemenu'),
+    require('angular-ui-router'),
+    require('angular-material-data-table'),
+    'ncy-angular-breadcrumb']);
