@@ -4,21 +4,33 @@
             <div class="md-toolbar-tools">
                 <h2>Abrir Linha</h2>
                 <span flex></span>
-                <md-button class="md-icon-button" ng-click="cancel()">
-                    &times;
+                <md-button ng-click="cancel()">
+                    <md-icon>close</md-icon>
                 </md-button>
             </div>
         </md-toolbar>
         <md-dialog-content>
             <div class="md-dialog-content" layout="column">
-                <md-autocomplete md-selected-item="model.line"
-                                 md-search-text="model.text"
-                                 md-items="line in findLine(model.text)"
+                <md-autocomplete md-selected-item="line"
+                                 md-search-text="text"
+                                 md-items="line in findLine(text)"
                                  md-item-text="line.name"
                                  md-floating-label="Linha"
                                  md-min-length="0">
                     <md-item-template>
-                        {{line.identifier}} - {{line.name}}
+                        <div layout="row">
+                            <span layout="row" layout-align="center center">
+                                <h2>{{line.identifier}}</h2>
+                            </span>
+                            <div layout="column">
+                                <span>
+                                    {{line.name}}
+                                </span>
+                                <small>
+                                    {{line.line_group.name}} - {{line.line_group.city}}
+                                </small>
+                            </div>
+                        </div>
                     </md-item-template>
                 </md-autocomplete>
             </div>

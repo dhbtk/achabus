@@ -5,19 +5,32 @@ class OSRM
 
   # @return [RGeo::Geographic::SphericalLineStringImpl] caminho
   def self.walking_path(src_lon, src_lat, dst_lon, dst_lat)
-    route_path(SERVER_ADDRESS, WALKING_PORT, 'walking', src_lon, src_lat, dst_lon, dst_lat)
+    simple_route_path(SERVER_ADDRESS, WALKING_PORT, 'walking', src_lon, src_lat, dst_lon, dst_lat)
   end
 
   # @return [RGeo::Geographic::SphericalLineStringImpl] caminho
   def self.driving_path(src_lon, src_lat, dst_lon, dst_lat)
-    route_path(SERVER_ADDRESS, DRIVING_PORT, 'driving', src_lon, src_lat, dst_lon, dst_lat)
+    simple_route_path(SERVER_ADDRESS, DRIVING_PORT, 'driving', src_lon, src_lat, dst_lon, dst_lat)
+  end
+
+  def self.full_driving_path(points)
+    long_route_path(SERVER_ADDRESS, DRIVING_PORT, 'driving', points)
   end
 
   private
 
   # @return [RGeo::Geographic::SphericalLineStringImpl] caminho
-  def self.route_path(address, port, profile, src_lon, src_lat, dst_lon, dst_lat)
+  def self.simple_route_path(address, port, profile, src_lon, src_lat, dst_lon, dst_lat)
     url = "http://#{address}:#{port}/route/v1/#{profile}/#{src_lon},#{src_lat};#{dst_lon},#{dst_lat}"
+    route_path_by_url(url)
+  end
+
+  def self.long_route_path(address, port, profile, points)
+    url = "http://#{address}:#{port}/route/v1/#{profile}/" + points.map{|p| "#{p.lon},#{p.lat}"}.join(';')
+    route_path_by_url(url)
+  end
+
+  def self.route_path_by_url(url)
     response = RestClient.get(url, params: {overview: :full, geometries: :geojson})
     root_json = JSON::parse(response.body)
     raise 'Rota retornada pelo OSRM está vazia!' unless root_json['routes'].count > 0

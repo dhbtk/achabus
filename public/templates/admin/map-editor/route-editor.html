@@ -1,8 +1,16 @@
 <md-toolbar class="md-whiteframe-1dp">
     <div layout="row" class="md-toolbar-tools">
         <md-button ng-click="ctrl.openLine()">Abrir linha</md-button>
-        <div ng-if="ctrl.line" flex layout="row" layout-align="center center">
-            <h2><span>{{ctrl.line.identifier}} - {{ctrl.line.name}}</span></h2>
+        <div ng-if="ctrl.line" flex layout="row" layout-align="start center">
+            <div layout="column">
+                <span style="font-size: 14px">{{ctrl.line.identifier}} - {{ctrl.line.name}}</span>
+                <span flex></span>
+                <md-select style="font-size: 14px; margin: 0" ng-model="ctrl.selectedRoute" placeholder="Rota" class="md-no-underline">
+                    <md-option ng-repeat="route in ctrl.line.routes" value="{{route.id}}" md-on-close="ctrl.onSelectRoute()">
+                        {{route.name}}
+                    </md-option>
+                </md-select>
+            </div>
             <span flex></span>
             <md-button ng-href="{{ctrl.line.itinerary_link}}" target="_blank" class="md-raised md-accent">Abrir Itinerário
             </md-button>
@@ -19,7 +27,7 @@
     <div id="point-toolpane" class="md-whiteframe-1dp" ng-if="ctrl.selectedPoint">
         <md-toolbar class="md-whiteframe-1dp small-toolbar">
             <div class="md-toolbar-tools">
-                <h2><span>{{ctrl.selectedPoint.get('waypoint') ? 'Waypoint' : 'Parada'}}</span></h2>
+                <h2><span>{{ctrl.selectedPointData.waypoint ? 'Waypoint' : 'Parada'}}</span></h2>
                 <span flex></span>
                 <md-button ng-click="ctrl.moveLeft(ctrl.selectedPoint.get('id'))">
                     <md-icon>keyboard_arrow_left</md-icon>
@@ -38,20 +46,23 @@
         <div layout="column" style="padding: 0 10px;">
             <md-input-container>
                 <label>Nome</label>
-                <input type="text" value="{{ctrl.selectedPoint.get('name')}}">
+                <input type="text" ng-model="ctrl.selectedPointData.name">
             </md-input-container>
             <md-input-container>
                 <label>Orientação</label>
-                <input type="text" value="{{ctrl.selectedPoint.get('heading')}}">
+                <input type="number" ng-model="ctrl.selectedPointData.heading">
             </md-input-container>
+            <md-checkbox ng-model="ctrl.selectedPointData.waypoint">Waypoint</md-checkbox>
         </div>
-        <md-toolbar class="small-toolbar">
+        <md-toolbar class="small-toolbar" style="box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.34)">
             <div class="md-toolbar-tools">
-                <span flex></span>
-                <md-button>
+                <md-button ng-click="ctrl.savePoint()">
                     <md-icon>save</md-icon>
                 </md-button>
-                <md-button>
+                <span flex></span>
+                <span style="font-size: 12px">id: {{ctrl.selectedPointData.id}}</span>
+                <span flex></span>
+                <md-button ng-click="ctrl.deletePoint()">
                     <md-icon>delete</md-icon>
                 </md-button>
             </div>

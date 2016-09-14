@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   get 'trace_route', to: 'route_tracer#trace'
   get 'walking_path', to: 'route_tracer#walking_path'
   get 'driving_path', to: 'route_tracer#driving_path'
+  get 'route_path/:points', to: 'route_tracer#route_total_path', points: RouteTracerController::POINT_ROUTING_REGEX
 
 
   resources :lines do

@@ -2,15 +2,18 @@
  * Created by eduardo on 19/08/16.
  */
 import ol from 'openlayers';
+import Route from '../classes/route';
 
 class RouteEditorController {
-    constructor($timeout, $http) {
+    constructor($timeout, $http, $mdToast, $mdDialog, $scope) {
         /*-------------------------------------------------------------------
          *                             SERVICES
          *-------------------------------------------------------------------*/
 
         this.$timeout = $timeout;
         this.$http = $http;
+        this.$mdToast = $mdToast;
+        this.$mdDialog = $mdDialog;
 
         /*-------------------------------------------------------------------
          *                            ATTRIBUTES
@@ -54,11 +57,34 @@ class RouteEditorController {
          * @type {ol.Feature}
          */
         this.selectedPoint = null;
+        /**
+         * Dados do ponto atualmente selecionado.
+         */
+        this.selectedPointData = {};
+
+        /**
+         * Linha atualmente ativa.
+         */
+        this.line = null;
+        /**
+         * Rota atualmente ativa.
+         * @type {Route}
+         */
+        this.route = null;
+        /**
+         * Rota selecionada nas opções.
+         */
+        this.selectedRoute = null;
+
+        //
+        //
+        //
 
         // Timeout para inicializar o mapa do openstreetmap.
         $timeout(() => {
             this.map = new ol.Map({
                 controls: [],
+                interactions: ol.interaction.defaults({doubleClickZoom: false}),
                 layers: [
                     new ol.layer.Tile({
                         source: new ol.source.OSM()
@@ -78,16 +104,40 @@ class RouteEditorController {
                 this.$timeout(() => {
                     const oldSelected = this.selectedPoint;
                     this.selectedPoint = event.selected[0];
-                    if(oldSelected != null) {
+                    if(oldSelected) {
                         this._updatePointStyle(oldSelected);
                     }
-                    if(this.selectedPoint != null) {
+                    if(this.selectedPoint) {
                         this._updatePointStyle(this.selectedPoint);
+                        this.selectedPointData = {
+                            id: this.selectedPoint.get('id'),
+                            name: this.selectedPoint.get('name'),
+                            waypoint: this.selectedPoint.get('waypoint'),
+                            heading: parseFloat(this.selectedPoint.get('heading'))
+                        };
+                        if(this.route) {
+                            this.route.handleClick(this.selectedPoint);
+                        }
                     }
                 });
             });
+            this.map.on('dblclick', /** @type {ol.MapBrowserEvent} */ event => {
+                console.log(event);
+                if(!this.selectedPoint) {
+                    const point = {
+                        position: "POINT (" + event.coordinate[0] + " " + event.coordinate[1] + ")",
+                        waypoint: true,
+                        heading: 0
+                    };
+                    this.$http.post('/points.json', {point: point}).then(data => {
+                        this._createPoint(data.data);
+                    });
+                }
+            });
             this._loadPoints();
         }, 500);
+
+        $scope.$watch('ctrl.selectedRoute', () => this.onSelectRoute());
     }
 
     /*-------------------------------------------------------------------
@@ -102,20 +152,30 @@ class RouteEditorController {
         this.$http.get('/points.json').then(data => {
             const points = data.data;
             points.forEach(point => {
-                const feature = new ol.Feature({
-                    id: point.id,
-                    name: point.name,
-                    waypoint: point.waypoint,
-                    heading: point.heading,
-                    geometry: new ol.geom.Point(point.coords)
-                });
-                this._updatePointStyle(feature);
-                this.points.push(feature);
+                this._createPoint(point);
             });
         });
     }
 
     /**
+     *
+     * @param point
+     * @private
+     */
+    _createPoint(point) {
+        const feature = new ol.Feature({
+            id: point.id,
+            name: point.name,
+            waypoint: point.waypoint,
+            heading: point.heading,
+            geometry: new ol.geom.Point(point.coords)
+        });
+        this._updatePointStyle(feature);
+        this.points.push(feature);
+    }
+
+    /**
+     * Atualiza a visualização de um ponto no mapa.
      *
      * @param {ol.Feature} point
      * @private
@@ -123,7 +183,7 @@ class RouteEditorController {
     _updatePointStyle(point) {
         const waypoint = point.get('waypoint');
         const id = point.get('id');
-        const selected = this.selectedPoint != null && this.selectedPoint.get('id') == id;
+        const selected = this.selectedPoint && this.selectedPoint.get('id') == id;
         if(waypoint) {
             if(selected) {
                 point.setStyle(new ol.style.Style({
@@ -162,6 +222,7 @@ class RouteEditorController {
     }
 
     /**
+     * Atualiza os dados de um ponto a partir da informação recebida do backend.
      *
      * @param pointData
      * @private
@@ -178,11 +239,44 @@ class RouteEditorController {
         }
     }
 
+    /**
+     * Fecha uma linha em preparação para abrir outra.
+     * @private
+     */
+    _closeLine() {
+        // TODO esconder as rotas atuais, limpar as camadas etc
+    }
+
+    /**
+     * Abre uma rota no editor.
+     *
+     * @param id identificador da rota
+     * @private
+     */
+    _openRoute(id) {
+        this.$http.get(`/routes/${id}.json`).then(data => {
+            this.route = new Route(data.data, this.routeLayer, this.points, this.$http);
+        });
+    }
+
+    /**
+     * Fecha uma rota.
+     * @private
+     */
+    _closeRoute() {
+
+    }
+
     /*-------------------------------------------------------------------
      *                             HANDLERS
      *-------------------------------------------------------------------*/
 
+    //
+    // Pontos
+    //
+
     /**
+     * Move o ponto para a esquerda.
      *
      * @param id
      */
@@ -193,6 +287,7 @@ class RouteEditorController {
     }
 
     /**
+     * Move o ponto para a direita.
      *
      * @param id
      */
@@ -203,6 +298,7 @@ class RouteEditorController {
     }
 
     /**
+     * Move o ponto para frente.
      *
      * @param id
      */
@@ -213,6 +309,7 @@ class RouteEditorController {
     }
 
     /**
+     * Move o ponto para trás.
      *
      * @param id
      */
@@ -220,6 +317,79 @@ class RouteEditorController {
         this.$http.post(`/points/${id}/backward.json`).then(data => {
             this._updatePointData(data.data);
         });
+    }
+
+    /**
+     * Salva o ponto selecionado.
+     */
+    savePoint() {
+        if(this.selectedPoint) {
+            const data = {
+                name: this.selectedPointData.name,
+                heading: this.selectedPointData.heading,
+                waypoint: this.selectedPointData.waypoint
+            };
+            this.$http.patch(`/points/${this.selectedPointData.id}.json`, {point: data}).then(data => {
+                console.log(data);
+                this._updatePointData(data.data);
+                this.$mdToast.showSimple('Ponto atualizado com sucesso.');
+            });
+        }
+    }
+
+    /**
+     * Delete o ponto selecionado.
+     */
+    deletePoint() {
+        if(this.selectedPoint && confirm('Excluir o ponto selecionado?')) {
+            const id = this.selectedPointData.id;
+            this.$http.delete(`/points/${id}.json`).then(data => {
+                this.$mdToast.showSimple('Ponto removido com sucesso.');
+                this.points.remove(this.selectedPoint);
+                this.selectedPoint = null;
+            });
+        }
+    }
+
+    //
+    // Linhas
+    //
+
+    openLine() {
+        this.$mdDialog.show({
+            controller: function($scope, $http, $mdDialog, $q) {
+                $scope.lines = [];
+                $scope.line = null;
+                $scope.text = '';
+
+                $scope.cancel = function () {
+                    $mdDialog.cancel();
+                };
+                $scope.confirm = function () {
+                    $mdDialog.hide($scope.line);
+                };
+
+                $scope.findLine = function(text) {
+                    let def = $q.defer();
+                    $http.get('/lines.json', {params: {filter: text}}).then(data => def.resolve(data.data.content), a => def.reject(a));
+                    return def.promise;
+                };
+            },
+            templateUrl: '/templates/admin/map-editor/route-editor-open-line.html'
+        }).then(line => {
+            this._closeLine();
+            this.line = line;
+        });
+    }
+
+    //
+    // Rotas
+    //
+
+    onSelectRoute() {
+        if(this.selectedRoute) {
+            this._openRoute(this.selectedRoute);
+        }
     }
 }
 

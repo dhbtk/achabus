@@ -1,44 +1,60 @@
-import RoutePoint from './route_point';
+import RoutePoint from './route-point';
 import $ from 'jquery';
+import ol from 'openlayers';
 
 class Route {
-    constructor(nameOrObject, map, points, $http) {
+    /**
+     *
+     * @param routeData
+     * @param {ol.layer.Layer} layer
+     * @param {ol.Collection} points
+     * @param $http
+     */
+    constructor(routeData, layer, points, $http) {
+        /**
+         *
+         */
         this.$http = $http;
-        if (typeof nameOrObject === 'object') {
-            this.name = nameOrObject.name;
-            this.id = nameOrObject.id;
-            this.line_id = nameOrObject.line_id;
-            this.parent_route_id = nameOrObject.parent_route_id;
-        }
-        else {
-            this.name = nameOrObject;
-        }
-        this.color = '#000000';
-        this.path = new google.maps.MVCArray();
-        this.map = map;
-        this.poly = new google.maps.Polyline({
-            map: this.map,
-            strokeColor: this.color,
-            strokeOpacity: 1.0,
-            strokeWeight: 5
-        });
-        this.poly.setVisible(false);
-        this.points = [];
-        this.poly.setPath(this.path);
-        console.log(nameOrObject);
-        if(nameOrObject.route_lonlat) {
-            nameOrObject.route_lonlat.forEach(p => this.path.push(new google.maps.LatLng({lat: p.lat, lng: p.lon})));
-        }
-        if(nameOrObject.route_points) {
-            nameOrObject.route_points.forEach(p => this.points.push(new RoutePoint(points[p.point_id], p.polyline_index)));
+        /**
+         *
+         */
+        this.routeData = routeData;
+        /**
+         *
+         * @type {ol.layer.Layer}
+         */
+        this.layer = layer;
+        /**
+         *
+         * @type {ol.Collection}
+         */
+        this.points = points;
+        /**
+         *
+         * @type {Array}
+         */
+        this.routePoints = [];
+        /**
+         * Flag indicando se a rota foi alterada.
+         * @type {boolean}
+         */
+        this.dirty = false;
+
+        if(this.routeData.route) {
+            this.layer.setSource(new ol.source.Vector({
+                features: [new ol.format.WKT().readFeature(this.routeData.route)]
+            }));
         }
     }
 
+    /**
+     *
+     * @param {ol.Feature} point
+     */
     handleClick(point) {
-        for (let i = 0; i < this.points.length; i++) {
-            if (this.points[i].point.id == point.id) {
-                // Só remover caso seja o último, senão não fazemos nada
-                if (this.points[i].point.id == this.points[this.points.length - 1].point.id) {
+        for(let i = 0; i < this.routePoints.length; i++) {
+            if(point.get('id') == this.routePoints[i].point.get('id')) {
+                if(this.routePoints.length == i + 1) {
                     this._removePoint(point);
                 }
                 return;
@@ -62,19 +78,16 @@ class Route {
     }
     
     _addPoint(point) {
-        if (this.points.length < 1) {
-            this.points.push(new RoutePoint(point, 0));
+        if (this.routePoints.length < 1) {
+            this.routePoints.push(new RoutePoint(point, 0));
         }
         else {
-            this.$http.get('/driving_path', {params: {
-                src_lon: this.points[this.points.length - 1].point.marker.getPosition().lng(),
-                src_lat: this.points[this.points.length - 1].point.marker.getPosition().lat(),
-                dst_lon: point.marker.getPosition().lng(),
-                dst_lat: point.marker.getPosition().lat()
-            }}).then(data => {
-                const points = data.data.points;
-                points.forEach(p => this.path.push(new google.maps.LatLng(p)));
-                this.points.push(new RoutePoint(point, this.path.length - 1));
+            const routePoint = new RoutePoint(point, null);
+            this.routePoints.push(routePoint);
+            this.$http.get(`/route_path/${this._pointsQuery()}`).then(data => {
+                this.layer.setSource(new ol.source.Vector({
+                    features: [new ol.format.WKT().readFeature(data.data.wkt)]
+                }));
             });
         }
     }
@@ -111,6 +124,13 @@ class Route {
     
     _serializeRoute() {
         return 'LINESTRING(' + this.path.getArray().map(p => p.lng() + ' ' + p.lat()).join(',') + ')';
+    }
+
+    _pointsQuery() {
+        return this.routePoints.map(p => {
+            const coords = p.point.getGeometry().getCoordinates();
+            return coords[0] + ',' + coords[1];
+        }).join(':');
     }
     
     _serialize() {
