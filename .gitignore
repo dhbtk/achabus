@@ -27,3 +27,4 @@ node_modules
 public/js/*
 public/css/*
 browserify-cache.json
+map.osm

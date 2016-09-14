@@ -1,0 +1,28 @@
+#!/bin/bash
+LEFT_LON='-54.6233'
+TOP_LAT='-25.4036'
+RIGHT_LON='-54.4215'
+BOT_LAT='-25.7009'
+#FIXME
+OSRM_INSTALL_DIR=$HOME/misc_sources/osrm-backend
+curl -o map.osm "http://overpass-api.de/api/map?bbox=$LEFT_LON,$BOT_LAT,$RIGHT_LON,$TOP_LAT"
+osm2pgsql -d openstreetmap -s map.osm
+# Limpando OSRM
+rm -rf $HOME/osrm/*
+cd $HOME/osrm
+mkdir driving walking
+cd driving
+ln -s $HOME/achabus/map.osm
+ln -s $OSRM_INSTALL_DIR/profiles/car.lua profile.lua
+cd ../walking
+ln -s $HOME/achabus/map.osm
+ln -s $OSRM_INSTALL_DIR/profiles/foot.lua profile.lua
+cd ..
+# Gerando dados OSRM
+cd driving
+osrm-extract map.osrm
+osrm-contract map.osrm
+cd ../walking
+osrm-extract map.osrm
+osrm-contract map.osrm
+echo "Pronto!"
