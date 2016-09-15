@@ -391,6 +391,12 @@ class RouteEditorController {
             this._openRoute(this.selectedRoute);
         }
     }
+
+    saveRoute() {
+        if(this.route) {
+            this.route.save();
+        }
+    }
 }
 
 module.exports = RouteEditorController;

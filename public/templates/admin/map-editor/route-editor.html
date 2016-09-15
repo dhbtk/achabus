@@ -11,6 +11,11 @@
                     </md-option>
                 </md-select>
             </div>
+            <div layout="column" ng-if="ctrl.route">
+                <md-button ng-click="ctrl.saveRoute()">
+                    <md-icon>save</md-icon>
+                </md-button>
+            </div>
             <span flex></span>
             <md-button ng-href="{{ctrl.line.itinerary_link}}" target="_blank" class="md-raised md-accent">Abrir Itinerário
             </md-button>
