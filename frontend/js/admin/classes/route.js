@@ -45,6 +45,10 @@ class Route {
                 features: [new ol.format.WKT().readFeature(this.routeData.route)]
             }));
         }
+        this.routeData.route_points.forEach(routePoint => {
+            const point = this.points.getArray().find(p => p.get('id') == routePoint.point_id);
+            this.routePoints.push(new RoutePoint(point, routePoint.polyline_index));
+        });
     }
 
     /**
@@ -55,7 +59,7 @@ class Route {
         for(let i = 0; i < this.routePoints.length; i++) {
             if(point.get('id') == this.routePoints[i].point.get('id')) {
                 if(this.routePoints.length == i + 1) {
-                    this._removePoint(point);
+                    this._removeLastPoint();
                 }
                 return;
             }
@@ -64,19 +68,19 @@ class Route {
         this._addPoint(point);
     }
 
-    hide() {
-        this.poly.setVisible(false);
-    }
-
-    show() {
-        this.poly.setVisible(true);
-    }
-
+    /**
+     *
+     */
     save() {
-        $.ajax({url: '/routes/' + this.id + '.json', method: 'PATCH', data: this._serialize()});
+        $.ajax({url: '/routes/' + this.routeData.id + '.json', method: 'PATCH', data: this._serialize()});
         this._serializePoints().forEach(p => $.ajax({url: '/route_points.json', method: 'POST', data: p}));
     }
-    
+
+    /**
+     *
+     * @param point
+     * @private
+     */
     _addPoint(point) {
         if (this.routePoints.length < 1) {
             this.routePoints.push(new RoutePoint(point, 0));
@@ -88,63 +92,73 @@ class Route {
                 this.layer.setSource(new ol.source.Vector({
                     features: [new ol.format.WKT().readFeature(data.data.wkt)]
                 }));
+                routePoint.pathIndex = this.layer.getSource().getFeatures()[0].getGeometry().getCoordinates().length - 1;
             });
         }
     }
-    
-    _removePoint(point) {
-        let index = -1;
-        const routePoint = this.points.find(function (el, i) {
-            if (el.point.id == point.id) {
-                index = i;
-                return true;
-            }
-            return false;
-        }, this);
-        console.log(routePoint);
-        console.log(index);
 
-        if (index === 0) {
-            this.points.pop();
-            return;
-        }
-
-        const prevPoint = this.points[index - 1];
-        for (let i = this.path.getLength() - 1; i > prevPoint.pathIndex; i--) {
-            this.path.removeAt(i);
-        }
-        this.points.pop();
-    }
-    
-
-    
+    /**
+     *
+     * @returns {Array}
+     * @private
+     */
     _serializePoints() {
-        return this.points.map((p, i) => p._serialize(this, i));
-    }
-    
-    _serializeRoute() {
-        return 'LINESTRING(' + this.path.getArray().map(p => p.lng() + ' ' + p.lat()).join(',') + ')';
+        return this.routePoints.map((p, i) => p._serialize(this, i));
     }
 
+    /**
+     *
+     * @private
+     */
+    _serializeRoute() {
+        return new ol.format.WKT().writeGeometry(this.layer.getSource().getFeatures()[0].getGeometry());
+    }
+
+    /**
+     *
+     * @returns {string}
+     * @private
+     */
     _pointsQuery() {
         return this.routePoints.map(p => {
             const coords = p.point.getGeometry().getCoordinates();
             return coords[0] + ',' + coords[1];
         }).join(':');
     }
-    
+
+    /**
+     *
+     * @returns {{route: {name: *, line_id: *, parent_route_id: *, route: *}}}
+     * @private
+     */
     _serialize() {
         return {
             route: {
-                name: this.name,
-                line_id: this.line_id,
-                parent_route_id: this.parent_route_id,
+                name: this.routeData.name,
+                line_id: this.routeData.line_id,
+                parent_route_id: this.routeData.parent_route_id,
                 route: this._serializeRoute()
             }
         };
     }
-    
 
+
+    /**
+     *
+     * @private
+     */
+    _removeLastPoint() {
+        this.routePoints.pop();
+        if(this.routePoints.length > 1) {
+            this.$http.get(`/route_path/${this._pointsQuery()}`).then(data => {
+                this.layer.setSource(new ol.source.Vector({
+                    features: [new ol.format.WKT().readFeature(data.data.wkt)]
+                }));
+            });
+        } else {
+            this.layer.setSource(new ol.source.Vector());
+        }
+    }
 }
 
 module.exports = Route;

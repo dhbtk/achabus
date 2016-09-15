@@ -7,8 +7,8 @@ class RoutePoint {
     _serialize(route, order) {
         return {
             route_point: {
-                route_id: route.id,
-                point_id: this.point.id,
+                route_id: route.routeData.id,
+                point_id: this.point.get('id'),
                 order: order,
                 polyline_index: this.pathIndex
             }
