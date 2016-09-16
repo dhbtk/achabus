@@ -1,6 +1,6 @@
 class Line < ApplicationRecord
   belongs_to :line_group
-  has_many :routes
+  has_many :routes, -> { order("origin ASC, coalesce(observation, '') ASC") }
   has_many :timetables, through: :routes
 
   validates :line_group, :name, :timetable_link, presence: true
