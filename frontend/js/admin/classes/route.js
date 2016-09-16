@@ -44,6 +44,8 @@ class Route {
             this.layer.setSource(new ol.source.Vector({
                 features: [new ol.format.WKT().readFeature(this.routeData.route)]
             }));
+        } else {
+            this.layer.setSource(new ol.source.Vector());
         }
         this.routeData.route_points.forEach(routePoint => {
             const point = this.points.getArray().find(p => p.get('id') == routePoint.point_id);
@@ -60,6 +62,7 @@ class Route {
             if(point.get('id') == this.routePoints[i].point.get('id')) {
                 if(this.routePoints.length == i + 1) {
                     this._removeLastPoint();
+                    this.dirty = true;
                 }
                 return;
             }
@@ -74,6 +77,7 @@ class Route {
     save() {
         $.ajax({url: '/routes/' + this.routeData.id + '.json', method: 'PATCH', data: this._serialize()});
         this._serializePoints().forEach(p => $.ajax({url: '/route_points.json', method: 'POST', data: p}));
+        this.dirty = false;
     }
 
     /**
